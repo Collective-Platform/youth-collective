@@ -15,20 +15,19 @@ const TribeCard = ({
   imageSrc: string;
   imageAlt: string;
 }) => (
-  <div className="flex-1 min-w-70">
+  <div className="flex-1">
     <Link
       href={href}
-      className="flex flex-col items-center justify-center group"
+      className="relative block aspect-square overflow-hidden group"
     >
-      <p className="absolute z-10 text-white text-4xl font-heading drop-shadow-lg">
+      <p className="absolute inset-0 z-10 flex items-center justify-center text-white text-4xl font-heading drop-shadow-lg">
         {title}
       </p>
       <Image
         src={imageSrc}
         alt={imageAlt}
-        width={400}
-        height={400}
-        className="transition-transform duration-300 group-hover:scale-105"
+        fill
+        className="object-cover transition-transform duration-300 group-hover:scale-105"
       />
     </Link>
   </div>
@@ -50,10 +49,10 @@ export default function HomePage() {
         <div className="hidden lg:block flex-1">
           <Image
             src="/assets/Untitled_design_liR9LnHLUuLfVZyBWMD2l.jpg"
-            alt="Community photo"
+            alt="Youth photo"
             width={600}
-            height={900}
-            className="w-full h-auto object-cover rounded-lg"
+            height={800}
+            className="w-full max-h-[90vh] object-cover rounded-lg"
           />
         </div>
       </section>
@@ -63,7 +62,7 @@ export default function HomePage() {
         <TribeCard
           href="/pre-teens"
           title="Pre-Teens"
-          imageSrc="/assets/349A9717-1_Hh-xM17_QBPmc90SMou3u.jpg"
+          imageSrc="/assets/pre-teens-security.jpg"
           imageAlt="Pre-teens group"
         />
         <TribeCard

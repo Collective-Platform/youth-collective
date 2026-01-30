@@ -3,7 +3,6 @@
 import Footer from "@/app/components/Footer";
 import Navbar from "@/app/components/Navbar";
 import Image from "next/image";
-import Link from "next/link";
 
 export default function ServeIndexPage() {
   return (
@@ -29,7 +28,7 @@ export default function ServeIndexPage() {
           {/* Mobile Image */}
           <div className="block lg:hidden w-full">
             <Image
-              src="/assets/Edited_DSC6178-5_Tt_HNqQVnRymBmxHvP2Lc.jpg"
+              src="/assets/carina-in-van.jpg"
               width={750}
               height={1127}
               alt="Youth serving"
@@ -50,7 +49,7 @@ export default function ServeIndexPage() {
         {/* Right Image (Desktop only) */}
         <div className="hidden lg:flex flex-1 items-center justify-center">
           <Image
-            src="/assets/Edited_DSC6178-5_Tt_HNqQVnRymBmxHvP2Lc.jpg"
+            src="/assets/carina-in-van.jpg"
             width={750}
             height={1127}
             alt="Youth serving"
@@ -60,28 +59,6 @@ export default function ServeIndexPage() {
         </div>
       </section>
 
-      {/* Mission Link Section */}
-      <section className="py-8 px-6 lg:px-16 xl:px-24 border-t border-gray-800">
-        <Link
-          href="/serve/mission"
-          className="font-heading text-black no-underline flex items-center justify-center gap-4 text-xl md:text-2xl hover:text-gray-300 transition-colors"
-        >
-          <span>Mission</span>
-          <span className="w-6 h-6 flex items-center justify-center">
-            <svg
-              width="100%"
-              height="100%"
-              viewBox="0 0 1024 1024"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                fill="currentColor"
-                d="M340.864 149.312a30.592 30.592 0 0 0 0 42.752L652.736 512L340.864 831.872a30.592 30.592 0 0 0 0 42.752a29.12 29.12 0 0 0 41.728 0L714.24 534.336a32 32 0 0 0 0-44.672L382.592 149.376a29.12 29.12 0 0 0-41.728 0z"
-              />
-            </svg>
-          </span>
-        </Link>
-      </section>
       <Footer />
     </main>
   );

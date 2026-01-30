@@ -86,7 +86,7 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="flex items-center justify-between mx-auto my-12 max-w-7xl px-4 md:px-8">
+    <header className="w-full flex items-center justify-between mx-auto my-12 max-w-7xl px-4 md:px-8">
       {/* Logo */}
       <div className="shrink-0">
         <Link
