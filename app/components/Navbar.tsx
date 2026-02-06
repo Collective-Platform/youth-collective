@@ -16,7 +16,6 @@ const navLinks = {
   ],
   practiceTheWay: [
     { href: "/community", label: "Live in Community" },
-    { href: "/alpha", label: "Alpha Youth" },
     { href: "/pray", label: "Pray" },
     { href: "/serve", label: "Serve" },
     { href: "https://give.collective.my/", label: "Give", external: true },

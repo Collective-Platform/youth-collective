@@ -62,9 +62,6 @@ export default function Footer() {
           >
             Live in Community
           </Link>
-          <Link href="/alpha" className="no-underline hover:underline text-sm">
-            Alpha Youth
-          </Link>
           <Link href="/pray" className="no-underline hover:underline text-sm">
             Pray
           </Link>
