@@ -20,7 +20,7 @@ export default function TallyEmbed({
 
     const loadEmbeds = () => {
       if (typeof (window as { Tally?: { loadEmbeds: () => void } }).Tally !== "undefined") {
-        (window as { Tally: { loadEmbeds: () => void } }).Tally.loadEmbeds();
+        (window as unknown as { Tally: { loadEmbeds: () => void } }).Tally.loadEmbeds();
       } else {
         document
           .querySelectorAll("iframe[data-tally-src]:not([src])")
