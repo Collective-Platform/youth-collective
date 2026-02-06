@@ -51,7 +51,7 @@ export default function InternshipContent() {
 
             {/* Right - Image */}
             <div className="w-full md:w-1/2 flex items-center justify-center p-8 bg-[#ecebe4]">
-              <div className="relative aspect-3/4 w-full max-w-125">
+              <div className="relative aspect-3/4 xl:aspect-square w-full max-w-170">
                 <Image
                   src="/assets/internship/internship_dance.jpg"
                   alt="Youth Program"
