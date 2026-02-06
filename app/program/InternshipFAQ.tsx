@@ -67,12 +67,12 @@ const FAQItem = ({
 }) => (
   <Accordion.Item value={value} className="border-b border-black/80 w-full">
     <Accordion.Header>
-      <Accordion.Trigger className="w-full flex justify-between items-center py-6 bg-transparent border-none cursor-pointer text-black text-xl font-bold text-left uppercase tracking-wide group hover:text-[#FF6B35] transition-colors">
+      <Accordion.Trigger className="w-full flex justify-between items-center py-6 bg-transparent border-none cursor-pointer text-black text-base font-bold text-left tracking-wide group hover:text-[#FF6B35] transition-colors">
         {question}
         <ChevronDown className="w-6 h-6 transition-transform duration-300 group-data-[state=open]:rotate-180 text-[#FF6B35]" />
       </Accordion.Trigger>
     </Accordion.Header>
-    <Accordion.Content className="overflow-hidden text-black/80 text-base leading-relaxed data-[state=open]:animate-slideDown data-[state=closed]:animate-slideUp">
+    <Accordion.Content className="overflow-hidden text-black/80 text-sm leading-relaxed data-[state=open]:animate-slideDown data-[state=closed]:animate-slideUp">
       <div className="pb-6">{answer}</div>
     </Accordion.Content>
   </Accordion.Item>
@@ -82,7 +82,7 @@ export default function InternshipFAQ() {
   return (
     <section id="faqs" className="bg-[#ecebe4] text-black py-24 px-4">
       <div className="max-w-3xl mx-auto">
-        <h2 className="text-[clamp(32px,6vw,56px)] font-black uppercase text-center mb-16">
+        <h2 className="text-[clamp(32px,6vw,56px)] font-heading text-center leading-tight mb-8">
           We know you&apos;ve got questions (FAQ)
         </h2>
 
@@ -101,8 +101,12 @@ export default function InternshipFAQ() {
             />
           ))}
         </Accordion.Root>
-        <p className="mt-16 text-center text-black text-md">
-          If you have any further questions, please email youth@collective.my
+        <p className="mt-8 text-center text-black text-sm">
+          Questions? Reach out to{" "}
+          <a className="text-[#FF6B35]" href="mailto:carinalau@collective.my">
+            carinalau@collective.my
+          </a>{" "}
+          — we&apos;d love to hear from you.
         </p>
       </div>
     </section>

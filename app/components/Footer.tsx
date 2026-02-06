@@ -32,7 +32,7 @@ const DiscordIcon = () => (
 export default function Footer() {
   return (
     <footer className="text-black py-12">
-      <Container className="flex flex-col items-start gap-8 lg:flex-row lg:flex-wrap lg:justify-around text-center">
+      <Container className="flex flex-col items-center gap-8 lg:flex-row lg:flex-wrap lg:justify-around text-center">
         {/* Find Your Tribe */}
         <div className="flex flex-col gap-2">
           <h3 className="font-bold text-lg">Find Your Tribe</h3>
