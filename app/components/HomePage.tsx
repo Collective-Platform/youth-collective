@@ -85,59 +85,6 @@ export default function HomePage() {
         />
       </Container>
 
-      {/* Alpha Youth Section */}
-      {/* <section className="relative bg-[#5138e0] py-10 my-12 overflow-hidden">
-        <Container className="text-center relative z-10">
-          {/* Decorative Images - positioned absolutely */}
-          <Image
-            src="/assets/alpha/What_s_on_your_mind_aZKPaQ0byEEFmMxIO3VG3.png"
-            alt="What's on your mind"
-            width={300}
-            height={200}
-            className="mx-auto mb-6"
-          />
-
-          <p className="text-lg md:text-xl text-white mb-4">
-            An 8 week journey to explore life, faith, and meaning—no judgment,
-            no pressure, just real conversations.
-          </p>
-
-          <p className="font-bold text-[#c1fe03] mb-6">
-            Sunday | 1pm - 3pm | Stage 8
-          </p>
-
-          <Link
-            href="/alpha"
-            className="inline-block bg-[#c1fe03] text-[#ff0087] px-8 py-3 rounded-lg font-bold border-2 border-[#ff0087] hover:bg-[#ff0087] hover:text-[#c1fe03] hover:border-[#c1fe03] transition-colors"
-          >
-            Join Alpha
-          </Link>
-        </Container>
-
-        {/* Decorative corner images */}
-        <Image
-          src="/assets/Icon_1_a-hU9tJFz_p_ks0lpsvkQ.png"
-          alt=""
-          width={200}
-          height={200}
-          className="absolute -left-10 top-0 w-32 md:w-48 opacity-80"
-        />
-        <Image
-          src="/assets/Icon_3_aW_gDKiW0gTfDJErmdojF.png"
-          alt=""
-          width={200}
-          height={200}
-          className="absolute -right-10 top-0 w-32 md:w-48 opacity-80"
-        />
-        <Image
-          src="/assets/Icon_2_EbPOWXD_WcapVhJTZZjdh.png"
-          alt=""
-          width={200}
-          height={200}
-          className="absolute -right-10 bottom-0 w-32 md:w-48 opacity-80"
-        />
-      </section> */}
-
       <Footer />
     </main>
   );
