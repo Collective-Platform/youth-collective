@@ -23,7 +23,7 @@ export default function CommunityPage() {
 
       {/* Age & Description */}
       <section className="py-4 px-4 text-center max-w-4xl mx-auto">
-        <p className="text-sm md:text-lg text-gray-800">
+        <p className="text-sm md:text-lg ">
           Spiritual maturity goes from something you do alone to something we do
           together.
         </p>
@@ -44,7 +44,7 @@ export default function CommunityPage() {
             <h3 className="font-heading text-2xl md:text-3xl mb-4">
               Live as family
             </h3>
-            <p className="text-sm md:text-lg text-gray-800 mb-6">
+            <p className="text-sm md:text-lg  mb-6">
               As the family of God, we take time to eat together, pray for one
               another, talk honestly and share life together. We exist to love
               and support each other in practical ways.
@@ -53,10 +53,10 @@ export default function CommunityPage() {
 
           {/* Become like Jesus */}
           <div>
-            <h3 className="font-heading text-2xl md:text-3xl text-white mb-4">
+            <h3 className="font-heading text-2xl md:text-3xl mb-4">
               Become like Jesus
             </h3>
-            <p className="text-sm md:text-lg text-gray-800 mb-6">
+            <p className="text-sm md:text-lg  mb-6">
               Through deep friendships, we can change our lives to be more like
               Jesus by helping each other follow him. Yes, living together means
               we&apos;ll have conflict. But that&apos;s okay. When we stick with
@@ -67,10 +67,10 @@ export default function CommunityPage() {
 
           {/* Do what Jesus did */}
           <div>
-            <h3 className="font-['Archivo_Black'] text-2xl md:text-3xl text-white mb-4">
+            <h3 className="font-['Archivo_Black'] text-2xl md:text-3xl mb-4">
               Do what Jesus did
             </h3>
-            <p className="text-sm md:text-lg text-gray-800 mb-6">
+            <p className="text-sm md:text-lg  mb-6">
               We&apos;re not just living for ourselves, we&apos;re living for
               something bigger. We want to do what Jesus would do if He was one
               of us, working with God to show his love to those we meet and
@@ -97,7 +97,7 @@ export default function CommunityPage() {
             </h2>
             <div className="space-y-6">
               <div>
-                <p className="text-gray-800 text-base leading-relaxed">
+                <p className="text-base leading-relaxed">
                   <b>Eat Together</b>
                   <br />
                   We gather around the table to eat together and talk to each
@@ -106,7 +106,7 @@ export default function CommunityPage() {
                 </p>
               </div>
               <div>
-                <p className="text-gray-600 text-base leading-relaxed">
+                <p className="text-base leading-relaxed">
                   <b>Learn Together</b>
                   <br />
                   We learn about a practice from the way of Jesus and discuss
@@ -126,10 +126,10 @@ export default function CommunityPage() {
               How it works?
             </h2>
             <div className="space-y-6">
-              <p className="text-gray-800 text-base leading-relaxed">
+              <p className="text-base font-bold leading-relaxed">
                 Information alone is not enough to produce formation.
               </p>
-              <p className="text-gray-600 text-base leading-relaxed">
+              <p className="text-base leading-relaxed">
                 The Practices are a multi-week journey that you do with a group.
                 Each week, you&apos;ll meet with your group to learn. Then
                 you&apos;ll try to put it into practice in your life. Before you
@@ -159,12 +159,12 @@ export default function CommunityPage() {
       </section>
 
       {/* Commit to Community CTA */}
-      <section className="bg-black py-16 px-6">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="font-['Archivo_Black'] text-3xl md:text-4xl text-white mb-6">
+      <section className="py-16 px-6">
+        <div className="max-w-4xl mx-auto text-left">
+          <h2 className="font-['Archivo_Black'] text-3xl md:text-4xl  mb-6">
             Commit to a Community
           </h2>
-          <p className="text-gray-300 text-lg leading-relaxed max-w-2xl mx-auto">
+          <p className="text-lg leading-relaxed mx-auto">
             Be a part of this family and stick it out to grow together. You need
             a safe space as much as everyone else, but it only works if all of
             us show up together.

@@ -49,7 +49,7 @@ export default function HomePage() {
 
         <div className="flex-1">
           <Image
-            src="/assets/Untitled_design_liR9LnHLUuLfVZyBWMD2l.jpg"
+            src="/assets/homepage/hero-image.jpg"
             alt="Youth photo"
             width={1200}
             height={800}

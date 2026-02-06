@@ -15,37 +15,37 @@ export default function MissionPage() {
     <main className="w-full min-h-screen font-sans antialiased">
       <Navbar />
       {/* Hero Title Section */}
-      <section className="flex flex-col items-center justify-center min-h-[50vh] relative overflow-hidden">
-        <div className="flex flex-col items-center justify-center w-full h-full bg-black">
-          <h1 className="text-6xl md:text-8xl lg:text-9xl font-heading text-black tracking-tight opacity-20">
-            MISSION
-          </h1>
-        </div>
-      </section>
+      <div className="py-4 px-4 relative z-10 text-center">
+        <h1 className="text-5xl lg:text-5xl font-heading text-black tracking-tight">
+          MISSION
+        </h1>
+      </div>
 
       {/* Bring A Light - Image Gallery */}
-      <section className="w-full flex flex-row flex-wrap items-center justify-center gap-0 bg-black">
-        <Image
-          src="/assets/29740048_771956939666401_7113885736889221120_n_YO2h9ojN4veKBMib-ABtm.jpg"
-          alt="Bring A Light mission"
-          width={1000}
-          height={562}
-          className="w-full md:w-1/3 h-auto object-cover aspect-video"
-        />
-        <Image
-          src="/assets/Edited30086490_588511634834733_7278561109504688128_n_868Rp-tnQ8GEH-Yofx-Wf.jpg"
-          alt="Bring A Light mission"
-          width={1000}
-          height={562}
-          className="w-full md:w-1/3 h-auto object-cover aspect-video"
-        />
-        <Image
-          src="/assets/Edited30079384_728303054224776_9128337033503178752_n_1Kp8NeGFUfK7kimXdpXNq.jpg"
-          alt="Bring A Light mission"
-          width={750}
-          height={424}
-          className="w-full md:w-1/3 h-auto object-cover aspect-video"
-        />
+      <section className="w-full overflow-x-auto">
+        <div className="flex flex-row min-w-max md:min-w-0">
+          <Image
+            src="/assets/serve/missions/bring-a-light.jpg"
+            alt="Bring A Light mission"
+            width={1000}
+            height={562}
+            className="w-[80vw] md:w-1/3 h-auto object-cover aspect-video shrink-0 md:shrink"
+          />
+          <Image
+            src="/assets/serve/missions/bring-a-light-2.jpg"
+            alt="Bring A Light mission"
+            width={1000}
+            height={562}
+            className="w-[80vw] md:w-1/3 h-auto object-cover aspect-video shrink-0 md:shrink"
+          />
+          <Image
+            src="/assets/serve/missions/bring-a-light-3.jpg"
+            alt="Bring A Light mission"
+            width={750}
+            height={424}
+            className="w-[80vw] md:w-1/3 h-auto object-cover aspect-video shrink-0 md:shrink"
+          />
+        </div>
       </section>
 
       {/* Bring A Light - Content */}
@@ -61,26 +61,30 @@ Date: 3 - 6 August
 Cost: RM 400
 Deadline: 28 May 2023`}
           </p>
-          <CTAButton href="#tally-open=3lrK1V&tally-layout=modal" variant="inverted-pill">COUNT ME IN!</CTAButton>
+          <CTAButton href="#tally-open=3lrK1V&tally-layout=modal">
+            COUNT ME IN!
+          </CTAButton>
         </div>
       </section>
 
       {/* Trip Up North - Image Gallery */}
-      <section className="w-full flex flex-row flex-wrap items-center justify-center gap-0 ">
-        <Image
-          src="/assets/soul_christmas_FYvB67nRJjsZc30xT6ydV.png"
-          alt="Soul Christmas"
-          width={896}
-          height={598}
-          className="w-full md:w-1/2 h-auto object-cover"
-        />
-        <Image
-          src="/assets/soul_kids_MrxZ2wkRWPnHdPUeihMMx.png"
-          alt="Soul Kids"
-          width={1000}
-          height={1003}
-          className="w-full md:w-1/2 h-auto object-cover"
-        />
+      <section className="w-full overflow-x-auto">
+        <div className="flex flex-row min-w-max md:min-w-0">
+          <Image
+            src="/assets/serve/missions/soul-christmas.png"
+            alt="Soul Christmas"
+            width={896}
+            height={598}
+            className="w-[80vw] md:w-1/2 h-auto object-cover aspect-video shrink-0 md:shrink"
+          />
+          <Image
+            src="/assets/serve/missions/soul-kids.png"
+            alt="Soul Kids"
+            width={1000}
+            height={1003}
+            className="w-[80vw] md:w-1/2 h-auto object-cover aspect-video shrink-0 md:shrink"
+          />
+        </div>
       </section>
 
       {/* Trip Up North - Content */}
@@ -96,33 +100,37 @@ Date : 28 June - 1 July
 Cost: RM 200
 Deadline: 21 May 2023`}
           </p>
-          <CTAButton href="#tally-open=3xY41E&tally-layout=modal" variant="inverted-pill">COUNT ME IN!</CTAButton>
+          <CTAButton href="#tally-open=3xY41E&tally-layout=modal">
+            COUNT ME IN!
+          </CTAButton>
         </div>
       </section>
 
       {/* Refugee School - Image Gallery */}
-      <section className="w-full flex flex-row flex-wrap items-center justify-center gap-0 bg-black">
-        <Image
-          src="/assets/EditedIMG_4235_(1)_ATGoCcqiP4d5xphgkprDm.jpg"
-          alt="Refugee School"
-          width={1500}
-          height={1125}
-          className="w-full md:w-1/3 h-auto object-cover"
-        />
-        <Image
-          src="/assets/EditedIMG_4235_DOl_kwmu3J5cw_eZJNJ3M.jpg"
-          alt="Refugee School"
-          width={750}
-          height={563}
-          className="w-full md:w-1/3 h-auto object-cover"
-        />
-        <Image
-          src="/assets/EditedIMG_4394_tUvpXJPHaCEesErfZWvr-.jpg"
-          alt="Refugee School"
-          width={750}
-          height={563}
-          className="w-full md:w-1/3 h-auto object-cover"
-        />
+      <section className="w-full overflow-x-auto">
+        <div className="flex flex-row min-w-max md:min-w-0">
+          <Image
+            src="/assets/serve/missions/refugee-school-1.jpg"
+            alt="Refugee School"
+            width={1500}
+            height={1125}
+            className="w-[80vw] md:w-1/3 h-auto object-cover aspect-video shrink-0 md:shrink"
+          />
+          <Image
+            src="/assets/serve/missions/refugee-school-2.jpg"
+            alt="Refugee School"
+            width={750}
+            height={563}
+            className="w-[80vw] md:w-1/3 h-auto object-cover aspect-video shrink-0 md:shrink"
+          />
+          <Image
+            src="/assets/serve/missions/refugee-school-3.jpg"
+            alt="Refugee School"
+            width={750}
+            height={563}
+            className="w-[80vw] md:w-1/3 h-auto object-cover aspect-video shrink-0 md:shrink"
+          />
+        </div>
       </section>
 
       {/* Refugee School Title */}
@@ -182,7 +190,9 @@ Deadline: 21 May 2023`}
             those on the margins. See what God can do through you when you
             choose to support and stand for those who are in need.
           </p>
-          <CTAButton href="#tally-open=wLpvNz&tally-layout=modal" variant="inverted-pill">SIGN ME UP!</CTAButton>
+          <CTAButton href="#tally-open=wLpvNz&tally-layout=modal">
+            SIGN ME UP!
+          </CTAButton>
         </div>
       </section>
 

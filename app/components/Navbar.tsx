@@ -17,12 +17,12 @@ const navLinks = {
   practiceTheWay: [
     { href: "/community", label: "Live in Community" },
     { href: "/pray", label: "Pray" },
-    { href: "/serve", label: "Serve" },
+    // { href: "/serve", label: "Serve" },
     { href: "https://give.collective.my/", label: "Give", external: true },
   ],
   joinATeam: [
-    { href: "/serve/ss", label: "SS" },
-    { href: "/serve/mission", label: "Mission" },
+    // { href: "/serve/ss", label: "SS" },
+    // { href: "/serve/mission", label: "Mission" },
     {
       href: "https://collective.my/ministries/",
       label: "Church",

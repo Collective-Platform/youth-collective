@@ -32,7 +32,7 @@ const DiscordIcon = () => (
 export default function Footer() {
   return (
     <footer className="text-black py-12">
-      <Container className="flex flex-col items-center gap-8 lg:flex-row lg:flex-wrap lg:justify-around text-center">
+      <Container className="flex flex-col items-center gap-8 lg:flex-row lg:flex-wrap lg:justify-around lg:items-start text-center">
         {/* Find Your Tribe */}
         <div className="flex flex-col gap-2">
           <h3 className="font-bold text-lg">Find Your Tribe</h3>
@@ -78,12 +78,12 @@ export default function Footer() {
         {/* Join A Team */}
         <div className="flex flex-col gap-2">
           <h3 className="font-bold text-lg">Join A Team</h3>
-          <Link
+          {/* <Link
             href="/serve/ss"
             className="no-underline hover:underline text-sm"
           >
             SS
-          </Link>
+          </Link> */}
           {/* <Link
             href="/serve/mission"
             className="no-underline hover:underline text-sm"

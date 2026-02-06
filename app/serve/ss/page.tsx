@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Footer from "@/app/components/Footer";
 import Navbar from "@/app/components/Navbar";
 import Image from "next/image";
+import TallyEmbed from "@/app/components/TallyEmbed";
 
 export const metadata: Metadata = {
   title: "Serve",
@@ -33,7 +34,7 @@ export default function ServeIndexPage() {
           {/* Mobile Image */}
           <div className="block lg:hidden w-full">
             <Image
-              src="/assets/carina-in-van.jpg"
+              src="/assets/serve/ss/carina-in-van.jpg"
               width={750}
               height={1127}
               alt="Youth serving"
@@ -43,18 +44,19 @@ export default function ServeIndexPage() {
           </div>
 
           {/* Tally Form Embed */}
-          <div
-            className="w-full"
-            dangerouslySetInnerHTML={{
-              __html: `<iframe data-tally-src="https://tally.so/embed/wQV24p?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1" loading="lazy" width="100%" height="416" frameborder="0" marginheight="0" marginwidth="0" title="Serving Form"></iframe><script>var d=document,w="https://tally.so/widgets/embed.js",v=function(){"undefined"!=typeof Tally?Tally.loadEmbeds():d.querySelectorAll("iframe[data-tally-src]:not([src])").forEach((function(e){e.src=e.dataset.tallySrc}))};if("undefined"!=typeof Tally)v();else if(d.querySelector('script[src="'+w+'"]')==null){var s=d.createElement("script");s.src=w,s.onload=v,s.onerror=v,d.body.appendChild(s);}</script>`,
-            }}
-          />
+          <div className="w-full">
+            <TallyEmbed
+              src="https://tally.so/embed/wQV24p?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
+              height={386}
+              title="Serving Form"
+            />
+          </div>
         </div>
 
         {/* Right Image (Desktop only) */}
         <div className="hidden lg:flex flex-1 items-center justify-center">
           <Image
-            src="/assets/carina-in-van.jpg"
+            src="/assets/serve/ss/carina-in-van.jpg"
             width={750}
             height={1127}
             alt="Youth serving"

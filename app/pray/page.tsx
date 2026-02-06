@@ -3,6 +3,7 @@ import Image from "next/image";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import CTAButton from "../components/CTAButton";
+import TaglineBanner from "../components/TaglineBanner";
 
 export const metadata: Metadata = {
   title: "Pray",
@@ -15,54 +16,83 @@ export default function PrayPage() {
     <main className="text-black min-h-screen font-sans">
       <Navbar />
       {/* Hero Section */}
-      <section
-        className="relative flex flex-col items-center justify-center min-h-screen px-4 bg-cover bg-center"
-        style={{
-          backgroundImage:
-            "url('/assets/pray/DSCF7707_(1)_e1jDFreZ5uHHnMF-9ENlh.jpg')",
-        }}
-      >
-        <div className="absolute inset-0 bg-black/50" />
-        <div className="relative z-10 flex flex-col items-center justify-center gap-4">
-          <h1 className="font-heading text-4xl md:text-6xl lg:text-8xl uppercase tracking-tight text-center text-white">
-            PRAY
-          </h1>
-        </div>
+      <div className="relative z-10 text-center">
+        <h1 className="text-5xl lg:text-5xl font-heading text-black tracking-tight uppercase">
+          Pray
+        </h1>
+      </div>
+      {/* Description */}
+      <section className="py-4 px-4 text-center max-w-4xl mx-auto">
+        <p className="text-sm md:text-lg text-gray-800">
+          Prayer is simply talking with God and listening to God.
+        </p>
+      </section>
+
+      <TaglineBanner imageSrc="/assets/pray/DSCF7707_(1).jpg" justify="left">
+        &apos;By praying, we learn to pray.&apos; <br></br> Richard Foster
+      </TaglineBanner>
+
+      <section className="py-4 md:py-16 px-4 max-w-4xl mx-auto">
+        <h2 className="text-3xl uppercase md:text-4xl font-heading mb-6">
+          Pray as you can
+        </h2>
+        <p className="text-sm md:text-lg mb-4">
+          If you’ve never prayed for an hour before, don’t try. It’ll feel like
+          forever. Start with a minute.
+        </p>
+        <h3 className="text-sm md:text-lg mb-4 font-bold">Pray as you can.</h3>
+        <p className="text-sm md:text-lg mb-4">
+          If you zone out when you sit down to pray, try walking down the
+          sidewalk to pray.{" "}
+        </p>
+        <h3 className="text-sm md:text-lg mb-4 font-bold">Pray as you can.</h3>
+        <p className="text-sm md:text-lg mb-4">
+          If you can’t give thanks, don’t fake it. Pray your complaints, anger
+          and confusion.
+        </p>
+        <h3 className="text-sm md:text-lg mb-4 font-bold">Pray as you can.</h3>
+        <p className="text-sm md:text-lg mb-4">
+          If you can’t concentrate to pray out loud, journal your prayers with
+          paper and pen.
+        </p>
+        <h3 className="text-sm md:text-lg mb-4 font-bold">Pray as you can.</h3>
+        <p className="text-sm md:text-lg mb-4">
+          If you can’t pray with hope and faith, God’s not bothered by you. He
+          wants you to tell him about your doubts and disappointment.
+        </p>
+        <h3 className="text-sm md:text-lg mb-4 font-bold">Pray as you can.</h3>
       </section>
 
       {/* Prayer Apps Section */}
       <section className="py-16 px-6">
         <div className="max-w-6xl mx-auto">
-          <p className="text-center text-black text-sm uppercase tracking-widest mb-4">
-            TOOLS
-          </p>
-          <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl text-center text-black mb-12 font-black">
-            Find more ways to pray.
+          <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl text-center text-black mb-12 font-black uppercase">
+            Try praying
           </h2>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Echo Prayer */}
-            <div className="flex flex-col">
-              <div className="relative w-full aspect-video mb-4">
+            <div className="flex flex-col items-start">
+              <div className="relative w-full aspect-square mb-4">
                 <Image
-                  src="/assets/echo_1_vdQpxqI1jl6nzc8vZzHQE.jpg"
+                  src="/assets/pray/inner-room-resource_content_header-scaled_13lZRk8ML9rwnORdISa6_.jpg"
                   alt="Echo Prayer"
                   fill
                   className="object-cover rounded"
                 />
               </div>
               <h3 className="font-heading text-xl md:text-2xl text-black mb-2">
-                Echo Prayer
+                Inner Room
               </h3>
-              <p className="text-gray-400 text-sm md:text-lg leading-relaxed mb-4">
+              <p className="text-black text-sm md:text-lg leading-relaxed mb-4">
                 Turn your phone into a prayer room.
               </p>
-              <CTAButton href="#" variant="inverted-square">PRAY NOW</CTAButton>
+              <CTAButton href="#">PRAY NOW</CTAButton>
             </div>
 
             {/* Lectio 365 */}
-            <div className="flex flex-col">
-              <div className="relative w-full aspect-video mb-4">
+            <div className="flex flex-col items-start">
+              <div className="relative w-full aspect-square mb-4">
                 <Image
                   src="/assets/pray/lectio-scaled_sCGv1_aZFapAInAeye8e8.webp"
                   alt="Lectio 365"
@@ -73,15 +103,17 @@ export default function PrayPage() {
               <h3 className="font-heading text-xl md:text-2xl text-black mb-2">
                 Lectio 365
               </h3>
-              <p className="text-gray-400 text-sm md:text-lg leading-relaxed mb-4">
+              <p className="text-black text-sm md:text-lg leading-relaxed mb-4">
                 Help you to pray the Bible every day.
               </p>
-              <CTAButton href="https://www.24-7prayer.com/resource/lectio-365/" variant="inverted-square">PRAY NOW</CTAButton>
+              <CTAButton href="https://www.24-7prayer.com/resource/lectio-365/">
+                PRAY NOW
+              </CTAButton>
             </div>
 
             {/* How to pray */}
-            <div className="flex flex-col">
-              <div className="relative w-full aspect-video mb-4">
+            <div className="flex flex-col items-start">
+              <div className="relative w-full aspect-square mb-4">
                 <Image
                   src="/assets/pray/inner-room-resource_content_header-scaled_13lZRk8ML9rwnORdISa6_.jpg"
                   alt="How to pray"
@@ -92,11 +124,13 @@ export default function PrayPage() {
               <h3 className="font-heading text-xl md:text-2xl text-black mb-2">
                 How to pray?
               </h3>
-              <p className="text-gray-400 text-sm md:text-lg leading-relaxed mb-4">
+              <p className="text-black text-sm md:text-lg leading-relaxed mb-4">
                 Learn how to pray from 24-7 Prayer, a student-led prayer that
                 went viral and led groups all over the world to pray together.
               </p>
-              <CTAButton href="https://www.24-7prayer.com/how-to-pray/help-me/" variant="inverted-square">LEARN MORE</CTAButton>
+              <CTAButton href="https://www.24-7prayer.com/how-to-pray/help-me/">
+                LEARN MORE
+              </CTAButton>
             </div>
           </div>
         </div>
@@ -105,10 +139,10 @@ export default function PrayPage() {
       {/* Teachings Section */}
       <section className=" py-16 px-6">
         <div className="max-w-6xl mx-auto">
-          <p className="text-center text-gray-400 text-sm uppercase tracking-widest mb-4">
-            TEACHINGS
-          </p>
-          <p className="text-gray-400 text-center text-sm md:text-lg mb-12">
+          <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl text-center text-black mb-4 font-black uppercase">
+            Teachings
+          </h2>
+          <p className="text-black text-center text-sm md:text-lg mb-12">
             Listen to the past teachings on prayer.
           </p>
 
