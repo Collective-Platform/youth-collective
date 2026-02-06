@@ -1,6 +1,7 @@
 import { Analytics } from "@vercel/analytics/react";
 import type { Metadata } from "next";
 import { Inter, Archivo_Black } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 
 const inter = Inter({
@@ -26,6 +27,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <Script
+        src="https://tally.so/widgets/embed.js"
+        strategy="lazyOnload"
+      />
       <body
         className={`${inter.variable} ${archivoBlack.variable} antialiased`}
       >

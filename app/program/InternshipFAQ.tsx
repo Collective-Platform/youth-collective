@@ -27,7 +27,7 @@ const faqs = [
   {
     question: "What does the fee include?",
     answer:
-      "RM599 is inclusive of your stay, transportation, activities, breakfasts, and dinners. Please prepare extra pocket money for your lunch meals and any other miscellaneous items.",
+      "RM599 is inclusive of your stay, transportation, activities, and meals.",
   },
   {
     question: "Do you offer any discounts?",
@@ -47,7 +47,7 @@ const faqs = [
   {
     question: "How will I know if I'm accepted?",
     answer:
-      "After you have submitted the form, we will review and contact you within one week.",
+      "After you have submitted the form, we will review and contact you.",
   },
   {
     question: "What will a typical day look like?",

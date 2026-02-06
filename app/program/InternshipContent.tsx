@@ -1,12 +1,18 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import Image from "next/image";
-import { motion } from "motion/react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import InternshipFAQ from "@/app/program/InternshipFAQ";
 import ProgramButton from "./ProgramButton";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+} from "@/components/ui/carousel";
 
 const skillSetItems = [
   {
@@ -27,42 +33,19 @@ const skillSetItems = [
 ];
 
 function SkillSetSlider() {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  const handleDragEnd = (
-    _: MouseEvent | TouchEvent | PointerEvent,
-    info: { offset: { x: number }; velocity: { x: number } },
-  ) => {
-    const threshold = 50;
-    const velocity = info.velocity.x;
-    const offset = info.offset.x;
-
-    if (offset < -threshold || velocity < -500) {
-      setCurrentIndex((prev) => Math.min(prev + 1, skillSetItems.length - 1));
-    } else if (offset > threshold || velocity > 500) {
-      setCurrentIndex((prev) => Math.max(prev - 1, 0));
-    }
-  };
-
   return (
-    <div className="relative overflow-hidden">
-      <div
-        ref={containerRef}
-        className="w-full md:w-[80%] mx-auto overflow-hidden"
+    <div className="w-full md:w-[80%] mx-auto px-12">
+      <Carousel
+        opts={{
+          align: "start",
+          loop: true,
+        }}
+        className="w-full"
       >
-        <motion.div
-          className="flex"
-          animate={{ x: `-${currentIndex * 100}%` }}
-          transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          drag="x"
-          dragConstraints={{ left: 0, right: 0 }}
-          dragElastic={0.1}
-          onDragEnd={handleDragEnd}
-        >
+        <CarouselContent>
           {skillSetItems.map((item, i) => (
-            <div key={i} className="w-full flex-shrink-0 px-2 md:px-4">
-              <div className="relative aspect-[4/5] md:aspect-[16/9] overflow-hidden">
+            <CarouselItem key={i}>
+              <div className="relative aspect-4/5 md:aspect-video overflow-hidden">
                 <Image
                   src={item.image}
                   alt={item.title}
@@ -79,70 +62,12 @@ function SkillSetSlider() {
                   </p>
                 </div>
               </div>
-            </div>
+            </CarouselItem>
           ))}
-        </motion.div>
-      </div>
-
-      {/* Navigation dots */}
-      <div className="flex justify-center gap-2 mt-6">
-        {skillSetItems.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => setCurrentIndex(i)}
-            className={`w-3 h-3 rounded-full transition-all duration-300 ${
-              i === currentIndex ? "bg-[#FF6B35] w-8" : "bg-white/40"
-            }`}
-            aria-label={`Go to slide ${i + 1}`}
-          />
-        ))}
-      </div>
-
-      {/* Arrow navigation - desktop only */}
-      <button
-        onClick={() => setCurrentIndex((prev) => Math.max(prev - 1, 0))}
-        className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 hover:bg-white/20 items-center justify-center transition-colors"
-        aria-label="Previous slide"
-        disabled={currentIndex === 0}
-      >
-        <svg
-          className="w-6 h-6 text-white"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M15 19l-7-7 7-7"
-          />
-        </svg>
-      </button>
-      <button
-        onClick={() =>
-          setCurrentIndex((prev) =>
-            Math.min(prev + 1, skillSetItems.length - 1),
-          )
-        }
-        className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 hover:bg-white/20 items-center justify-center transition-colors"
-        aria-label="Next slide"
-        disabled={currentIndex === skillSetItems.length - 1}
-      >
-        <svg
-          className="w-6 h-6 text-white"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M9 5l7 7-7 7"
-          />
-        </svg>
-      </button>
+        </CarouselContent>
+        <CarouselPrevious className="hidden md:flex bg-white/10 hover:bg-white/20 border-0 text-white" />
+        <CarouselNext className="hidden md:flex bg-white/10 hover:bg-white/20 border-0 text-white" />
+      </Carousel>
     </div>
   );
 }
@@ -459,7 +384,15 @@ export default function InternshipContent() {
           </div>
 
           <div className="mt-10">
-            <ProgramButton href="#register">APPLY TODAY</ProgramButton>
+            <button
+              data-tally-open="VLJr2y"
+              data-tally-layout="modal"
+              data-tally-width="500"
+              data-tally-hide-title="1"
+              className="inline-block bg-[#f45c36] text-white font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-all duration-300 transform hover:scale-105 border-white border-2 px-12 py-5 text-xl cursor-pointer"
+            >
+              APPLY TODAY
+            </button>
           </div>
 
           <p className="mt-6 text-white/70 text-sm">
