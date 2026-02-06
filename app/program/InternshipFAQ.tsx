@@ -80,7 +80,7 @@ const FAQItem = ({
 
 export default function InternshipFAQ() {
   return (
-    <section id="faqs" className="bg-[#ecebe4] text-black py-24 px-4">
+    <section id="faqs" className="bg-[#ecebe4] text-black py-20 md:py-24 px-4">
       <div className="max-w-3xl mx-auto">
         <h2 className="text-[clamp(32px,6vw,56px)] font-heading text-center leading-tight mb-8">
           We know you&apos;ve got questions (FAQ)

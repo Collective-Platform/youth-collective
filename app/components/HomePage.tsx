@@ -86,7 +86,7 @@ export default function HomePage() {
       </Container>
 
       {/* Alpha Youth Section */}
-      <section className="relative bg-[#5138e0] py-10 my-12 overflow-hidden">
+      {/* <section className="relative bg-[#5138e0] py-10 my-12 overflow-hidden">
         <Container className="text-center relative z-10">
           {/* Decorative Images - positioned absolutely */}
           <Image
@@ -136,7 +136,7 @@ export default function HomePage() {
           height={200}
           className="absolute -right-10 bottom-0 w-32 md:w-48 opacity-80"
         />
-      </section>
+      </section> */}
 
       <Footer />
     </main>
