@@ -1,9 +1,14 @@
-"use client";
-
+import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import CTAButton from "../components/CTAButton";
+
+export const metadata: Metadata = {
+  title: "Pray",
+  description:
+    "Find more ways to pray. Tools and teachings to help you connect with God.",
+};
 
 export default function PrayPage() {
   return (
@@ -14,7 +19,7 @@ export default function PrayPage() {
         className="relative flex flex-col items-center justify-center min-h-screen px-4 bg-cover bg-center"
         style={{
           backgroundImage:
-            "url('/assets/DSCF7707_(1)_e1jDFreZ5uHHnMF-9ENlh.jpg')",
+            "url('/assets/pray/DSCF7707_(1)_e1jDFreZ5uHHnMF-9ENlh.jpg')",
         }}
       >
         <div className="absolute inset-0 bg-black/50" />
@@ -31,7 +36,7 @@ export default function PrayPage() {
           <p className="text-center text-black text-sm uppercase tracking-widest mb-4">
             TOOLS
           </p>
-          <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl text-center text-black mb-12">
+          <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl text-center text-black mb-12 font-black">
             Find more ways to pray.
           </h2>
 
@@ -49,22 +54,17 @@ export default function PrayPage() {
               <h3 className="font-heading text-xl md:text-2xl text-black mb-2">
                 Echo Prayer
               </h3>
-              <p className="text-gray-400 text-base leading-relaxed mb-4">
+              <p className="text-gray-400 text-sm md:text-lg leading-relaxed mb-4">
                 Turn your phone into a prayer room.
               </p>
-              <Link
-                href="#"
-                className="inline-block bg-white text-black font-bold uppercase text-sm px-6 py-3 rounded hover:bg-gray-200 transition-colors text-center"
-              >
-                PRAY NOW
-              </Link>
+              <CTAButton href="#" variant="inverted-square">PRAY NOW</CTAButton>
             </div>
 
             {/* Lectio 365 */}
             <div className="flex flex-col">
               <div className="relative w-full aspect-video mb-4">
                 <Image
-                  src="/assets/lectio-scaled_sCGv1_aZFapAInAeye8e8.webp"
+                  src="/assets/pray/lectio-scaled_sCGv1_aZFapAInAeye8e8.webp"
                   alt="Lectio 365"
                   fill
                   className="object-cover rounded"
@@ -73,24 +73,17 @@ export default function PrayPage() {
               <h3 className="font-heading text-xl md:text-2xl text-black mb-2">
                 Lectio 365
               </h3>
-              <p className="text-gray-400 text-base leading-relaxed mb-4">
+              <p className="text-gray-400 text-sm md:text-lg leading-relaxed mb-4">
                 Help you to pray the Bible every day.
               </p>
-              <Link
-                href="https://www.24-7prayer.com/resource/lectio-365/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block bg-white text-black font-bold uppercase text-sm px-6 py-3 rounded hover:bg-gray-200 transition-colors text-center"
-              >
-                PRAY NOW
-              </Link>
+              <CTAButton href="https://www.24-7prayer.com/resource/lectio-365/" variant="inverted-square">PRAY NOW</CTAButton>
             </div>
 
             {/* How to pray */}
             <div className="flex flex-col">
               <div className="relative w-full aspect-video mb-4">
                 <Image
-                  src="/assets/inner-room-resource_content_header-scaled_13lZRk8ML9rwnORdISa6_.jpg"
+                  src="/assets/pray/inner-room-resource_content_header-scaled_13lZRk8ML9rwnORdISa6_.jpg"
                   alt="How to pray"
                   fill
                   className="object-cover rounded"
@@ -99,18 +92,11 @@ export default function PrayPage() {
               <h3 className="font-heading text-xl md:text-2xl text-black mb-2">
                 How to pray?
               </h3>
-              <p className="text-gray-400 text-base leading-relaxed mb-4">
+              <p className="text-gray-400 text-sm md:text-lg leading-relaxed mb-4">
                 Learn how to pray from 24-7 Prayer, a student-led prayer that
                 went viral and led groups all over the world to pray together.
               </p>
-              <Link
-                href="https://www.24-7prayer.com/how-to-pray/help-me/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block bg-white text-black font-bold uppercase text-sm px-6 py-3 rounded hover:bg-gray-200 transition-colors text-center"
-              >
-                LEARN MORE
-              </Link>
+              <CTAButton href="https://www.24-7prayer.com/how-to-pray/help-me/" variant="inverted-square">LEARN MORE</CTAButton>
             </div>
           </div>
         </div>
@@ -122,7 +108,7 @@ export default function PrayPage() {
           <p className="text-center text-gray-400 text-sm uppercase tracking-widest mb-4">
             TEACHINGS
           </p>
-          <p className="text-gray-400 text-center text-base md:text-lg mb-12">
+          <p className="text-gray-400 text-center text-sm md:text-lg mb-12">
             Listen to the past teachings on prayer.
           </p>
 

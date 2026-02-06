@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import Container from "./Container";
 
 // Image Card component for tribe section
 const TribeCard = ({
@@ -20,7 +21,7 @@ const TribeCard = ({
       href={href}
       className="relative block aspect-square overflow-hidden group"
     >
-      <p className="absolute inset-0 z-10 flex items-center justify-center text-white text-4xl font-heading drop-shadow-lg">
+      <p className="absolute inset-0 z-10 flex text-center items-center justify-center text-white text-4xl md:text-5xl lg:text-4xl font-heading drop-shadow-lg">
         {title}
       </p>
       <Image
@@ -39,52 +40,57 @@ export default function HomePage() {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="flex flex-col lg:flex-row items-center justify-center gap-4 mx-auto my-12 max-w-7xl px-4">
-        <div className="flex-1 text-center lg:text-left">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading leading-tight">
+      <Container className="flex flex-col lg:flex-row items-center justify-center gap-4 my-12">
+        <div className="flex-1">
+          <h1 className="text-4xl text-left md:text-5xl lg:text-6xl font-heading leading-tight">
             A God-centered community that loves people relentlessly.
           </h1>
         </div>
 
-        <div className="hidden lg:block flex-1">
+        <div className="flex-1">
           <Image
             src="/assets/Untitled_design_liR9LnHLUuLfVZyBWMD2l.jpg"
             alt="Youth photo"
-            width={600}
+            width={1200}
             height={800}
-            className="w-full max-h-[90vh] object-cover rounded-lg"
+            className="w-full lg:w-150 max-h-[90vh] object-cover rounded-lg"
           />
         </div>
-      </section>
+      </Container>
 
       {/* Find Your Tribe Section */}
-      <section className="grid grid-cols-3 gap-4 mx-auto my-12 max-w-7xl px-4">
+      <Container>
+        <h1 className="text-4xl text-center md:text-5xl lg:text-6xl font-heading leading-tight">
+          Find Your Tribe
+        </h1>
+      </Container>
+      <Container className="grid lg:grid-cols-3 gap-4 my-12">
         <TribeCard
           href="/pre-teens"
           title="Pre-Teens"
-          imageSrc="/assets/pre-teens-security.jpg"
+          imageSrc="/assets/homepage/pre-teens.jpg"
           imageAlt="Pre-teens group"
         />
         <TribeCard
           href="/teens"
           title="Teens"
-          imageSrc="/assets/349A9960-36_mmZgSDKuv_CL29wqr8c5F.jpg"
+          imageSrc="/assets/homepage/teens.jpg"
           imageAlt="Teens group"
         />
         <TribeCard
           href="/campus"
           title="Campus"
-          imageSrc="/assets/EditedDSCF4332-24_KkLjsVQfYtLLFG2nD0ZFZ.jpg"
+          imageSrc="/assets/homepage/campus.jpg"
           imageAlt="Campus group"
         />
-      </section>
+      </Container>
 
       {/* Alpha Youth Section */}
-      <section className="relative bg-[#5138e0] py-10 px-4 my-12 overflow-hidden">
-        <div className="max-w-4xl mx-auto text-center relative z-10">
+      <section className="relative bg-[#5138e0] py-10 my-12 overflow-hidden">
+        <Container className="text-center relative z-10">
           {/* Decorative Images - positioned absolutely */}
           <Image
-            src="/assets/What_s_on_your_mind_aZKPaQ0byEEFmMxIO3VG3.png"
+            src="/assets/alpha/What_s_on_your_mind_aZKPaQ0byEEFmMxIO3VG3.png"
             alt="What's on your mind"
             width={300}
             height={200}
@@ -96,17 +102,17 @@ export default function HomePage() {
             no pressure, just real conversations.
           </p>
 
-          <p className="font-bold text-lime-400 mb-6">
+          <p className="font-bold text-[#c1fe03] mb-6">
             Sunday | 1pm - 3pm | Stage 8
           </p>
 
           <Link
             href="/alpha"
-            className="inline-block bg-black text-white px-8 py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors"
+            className="inline-block bg-[#c1fe03] text-[#ff0087] px-8 py-3 rounded-lg font-bold border-2 border-[#ff0087] hover:bg-[#ff0087] hover:text-[#c1fe03] hover:border-[#c1fe03] transition-colors"
           >
             Join Alpha
           </Link>
-        </div>
+        </Container>
 
         {/* Decorative corner images */}
         <Image

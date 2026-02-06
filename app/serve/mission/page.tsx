@@ -1,8 +1,14 @@
-"use client";
-
+import type { Metadata } from "next";
 import Footer from "@/app/components/Footer";
 import Navbar from "@/app/components/Navbar";
+import CTAButton from "@/app/components/CTAButton";
 import Image from "next/image";
+
+export const metadata: Metadata = {
+  title: "Mission",
+  description:
+    "We want to care for the most vulnerable among us. See what God can do through you when you choose to support those in need.",
+};
 
 export default function MissionPage() {
   return (
@@ -11,7 +17,7 @@ export default function MissionPage() {
       {/* Hero Title Section */}
       <section className="flex flex-col items-center justify-center min-h-[50vh] relative overflow-hidden">
         <div className="flex flex-col items-center justify-center w-full h-full bg-black">
-          <h1 className="text-6xl md:text-8xl lg:text-9xl font-black text-black tracking-tight font-heading opacity-20">
+          <h1 className="text-6xl md:text-8xl lg:text-9xl font-heading text-black tracking-tight opacity-20">
             MISSION
           </h1>
         </div>
@@ -45,22 +51,17 @@ export default function MissionPage() {
       {/* Bring A Light - Content */}
       <section className="w-full flex flex-col items-center justify-center px-4 py-12 md:px-8 lg:px-16 mt-8 mb-8">
         <div className="w-full max-w-2xl flex flex-col items-center gap-6 text-center">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold font-heading">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading">
             Bring A Light
           </h2>
-          <p className="text-sm md:text-base leading-relaxed whitespace-pre-line">
+          <p className="text-sm md:text-lg leading-relaxed whitespace-pre-line">
             {`Light up homes in rural villages with no electricity.
 Location: Pulau Berhala, Sabah
 Date: 3 - 6 August
 Cost: RM 400
 Deadline: 28 May 2023`}
           </p>
-          <a
-            href="#tally-open=3lrK1V&tally-layout=modal"
-            className="inline-block px-8 py-4 bg-white text-black font-bold text-sm uppercase tracking-wider rounded-full hover:bg-gray-200 transition-colors duration-300"
-          >
-            COUNT ME IN!
-          </a>
+          <CTAButton href="#tally-open=3lrK1V&tally-layout=modal" variant="inverted-pill">COUNT ME IN!</CTAButton>
         </div>
       </section>
 
@@ -85,22 +86,17 @@ Deadline: 28 May 2023`}
       {/* Trip Up North - Content */}
       <section className="w-full flex flex-col items-center justify-center px-4 py-12 md:px-8 lg:px-16 mt-8 mb-8">
         <div className="w-full max-w-2xl flex flex-col items-center gap-6 text-center">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold font-heading">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading">
             Trip Up North
           </h2>
-          <p className="text-sm md:text-base leading-relaxed whitespace-pre-line">
+          <p className="text-sm md:text-lg leading-relaxed whitespace-pre-line">
             {`Serving other churches together!
 Location : Ascent & Soul
 Date : 28 June - 1 July
 Cost: RM 200
 Deadline: 21 May 2023`}
           </p>
-          <a
-            href="#tally-open=3xY41E&tally-layout=modal"
-            className="inline-block px-8 py-4 bg-white text-black font-bold text-sm uppercase tracking-wider rounded-full hover:bg-gray-200 transition-colors duration-300"
-          >
-            COUNT ME IN!
-          </a>
+          <CTAButton href="#tally-open=3xY41E&tally-layout=modal" variant="inverted-pill">COUNT ME IN!</CTAButton>
         </div>
       </section>
 
@@ -131,7 +127,7 @@ Deadline: 21 May 2023`}
 
       {/* Refugee School Title */}
       <section className="w-full flex flex-col items-center justify-center px-4 py-12 md:px-8 lg:px-16 mt-8 mb-8">
-        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold font-heading text-center">
+        <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading text-center">
           Refugee School
         </h2>
       </section>
@@ -144,7 +140,7 @@ Deadline: 21 May 2023`}
             <h3 className="text-xl md:text-2xl font-bold  font-heading">
               In-class Teacher
             </h3>
-            <p className="text-sm md:text-base leading-relaxed">
+            <p className="text-sm md:text-lg leading-relaxed">
               Commit 1-2 hours a week for a year to teach subjects such as
               reading &amp; writing.
             </p>
@@ -155,7 +151,7 @@ Deadline: 21 May 2023`}
             <h3 className="text-xl md:text-2xl font-bold  font-heading">
               Substitute Teacher
             </h3>
-            <p className="text-sm md:text-base leading-relaxed">
+            <p className="text-sm md:text-lg leading-relaxed">
               Fill-in and teach the lesson plans that have been left by the
               absent teacher.
             </p>
@@ -166,7 +162,7 @@ Deadline: 21 May 2023`}
             <h3 className="text-xl md:text-2xl font-bold  font-heading">
               Extra-curriculum
             </h3>
-            <p className="text-sm md:text-base  leading-relaxed">
+            <p className="text-sm md:text-lg leading-relaxed">
               Commit 1 hour a week for 2-3 months to conduct extra-curricular
               activities.
             </p>
@@ -177,21 +173,16 @@ Deadline: 21 May 2023`}
       {/* Serve Now Section */}
       <section className="w-full flex flex-col items-center justify-center px-4 py-12 md:px-8 lg:px-16 mt-8 mb-8">
         <div className="w-full max-w-2xl flex flex-col items-center gap-6 text-center">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold font-heading ">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading">
             Serve Now
           </h2>
-          <p className="text-sm md:text-base leading-relaxed max-w-xl">
+          <p className="text-sm md:text-lg leading-relaxed max-w-xl">
             We want to care for the most vulnerable among us. It&apos;s not just
             about meeting local needs, but also building relationships with
             those on the margins. See what God can do through you when you
             choose to support and stand for those who are in need.
           </p>
-          <a
-            href="#tally-open=wLpvNz&tally-layout=modal"
-            className="inline-block px-8 py-4 bg-white text-black font-bold text-sm uppercase tracking-wider rounded-full hover:bg-gray-200 transition-colors duration-300"
-          >
-            SIGN ME UP!
-          </a>
+          <CTAButton href="#tally-open=wLpvNz&tally-layout=modal" variant="inverted-pill">SIGN ME UP!</CTAButton>
         </div>
       </section>
 

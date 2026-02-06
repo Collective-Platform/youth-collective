@@ -4,7 +4,9 @@ import { useState } from "react";
 import Link from "next/link";
 import * as Dialog from "@radix-ui/react-dialog";
 import * as NavigationMenu from "@radix-ui/react-navigation-menu";
-import { Menu, X } from "lucide-react";
+import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
+import { Menu, X, ChevronDown } from "lucide-react";
+import Container from "./Container";
 
 const navLinks = {
   findYourTribe: [
@@ -28,7 +30,6 @@ const navLinks = {
       external: true,
     },
   ],
-  merch: [{ href: "/merch", label: "Store" }],
 };
 
 const NavLink = ({
@@ -65,28 +66,40 @@ const NavLink = ({
   );
 };
 
-const NavSection = ({
+const DropdownSection = ({
   title,
   links,
 }: {
   title: string;
   links: { href: string; label: string; external?: boolean }[];
 }) => (
-  <div className="flex flex-col items-center gap-1">
-    <p className="font-heading text-lg mb-3">{title}</p>
-    {links.map((link) => (
-      <NavLink key={link.href} href={link.href} external={link.external}>
-        {link.label}
-      </NavLink>
-    ))}
-  </div>
+  <NavigationMenu.Item className="relative">
+    <NavigationMenu.Trigger className="group bg-transparent inline-flex items-center justify-center gap-1 rounded-md h-10 px-4 text-sm font-medium border-0 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-400">
+      {title}
+      <ChevronDown className="w-4 h-4 transition-transform duration-200 group-data-[state=open]:rotate-180" />
+    </NavigationMenu.Trigger>
+    <NavigationMenu.Content className="absolute top-full left-1/2 -translate-x-1/2 pt-2 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0">
+      <div className="bg-white shadow-lg rounded-md border border-slate-200 p-4 min-w-40">
+        {links.map((link) => (
+          <NavLink
+            key={link.href}
+            href={link.href}
+            external={link.external}
+            className="block w-full text-left"
+          >
+            {link.label}
+          </NavLink>
+        ))}
+      </div>
+    </NavigationMenu.Content>
+  </NavigationMenu.Item>
 );
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="w-full flex items-center justify-between mx-auto my-12 max-w-7xl px-4 md:px-8">
+    <Container className="flex items-center justify-between my-12 relative z-50">
       {/* Logo */}
       <div className="shrink-0">
         <Link
@@ -100,30 +113,16 @@ export default function Navbar() {
       {/* Desktop Navigation Menu (hidden on mobile) */}
       <NavigationMenu.Root className="hidden lg:block relative">
         <NavigationMenu.List className="flex items-center gap-1 list-none m-0 p-0">
-          <NavigationMenu.Item>
-            <NavigationMenu.Trigger className="bg-transparent inline-flex items-center justify-center rounded-md h-10 px-3 text-sm font-medium border-0 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-400">
-              <Menu className="w-6 h-6" />
-            </NavigationMenu.Trigger>
-            <NavigationMenu.Content className="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0">
-              <nav className="flex gap-24 p-8">
-                <NavSection
-                  title="Find Your Tribe"
-                  links={navLinks.findYourTribe}
-                />
-                <NavSection
-                  title="Practice the Way"
-                  links={navLinks.practiceTheWay}
-                />
-                <NavSection title="Join A Team" links={navLinks.joinATeam} />
-                <NavSection title="Merch" links={navLinks.merch} />
-              </nav>
-            </NavigationMenu.Content>
-          </NavigationMenu.Item>
+          <DropdownSection
+            title="Find Your Tribe"
+            links={navLinks.findYourTribe}
+          />
+          <DropdownSection
+            title="Practice the Way"
+            links={navLinks.practiceTheWay}
+          />
+          <DropdownSection title="Join A Team" links={navLinks.joinATeam} />
         </NavigationMenu.List>
-
-        <div className="absolute top-full right-0 flex justify-end perspective-[2000px]">
-          <NavigationMenu.Viewport className="relative mt-2 origin-top-right bg-white shadow-lg rounded-md border border-slate-200 overflow-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 h-(--radix-navigation-menu-viewport-height) transition-[width,height] duration-300" />
-        </div>
       </NavigationMenu.Root>
 
       {/* Mobile Menu Trigger */}
@@ -137,11 +136,14 @@ export default function Navbar() {
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 bg-black/50 z-40" />
           <Dialog.Content className="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-xl z-50 p-6 overflow-y-auto">
+            <VisuallyHidden.Root>
+              <Dialog.Title>Navigation Menu</Dialog.Title>
+            </VisuallyHidden.Root>
             {/* Mobile Menu Header */}
             <div className="flex justify-between items-center mb-8">
               <Link
                 href="/"
-                className="text-2xl font-bold text-black no-underline"
+                className="text-2xl font-heading text-black no-underline"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Strictly Students
@@ -196,24 +198,10 @@ export default function Navbar() {
                   </Link>
                 ))}
               </div>
-
-              <div>
-                <p className="text-lg font-bold mb-2">Merch</p>
-                {navLinks.merch.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className="block py-2 text-black no-underline hover:bg-black/5 rounded px-2"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    {link.label}
-                  </Link>
-                ))}
-              </div>
             </nav>
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>
-    </header>
+    </Container>
   );
 }

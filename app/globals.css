@@ -55,6 +55,11 @@ body {
 
 :root {
   --radius: 0.625rem;
+  --alpha-blue: #0042FE;
+  --alpha-lime: #C1FE01;
+  --alpha-purple: #5038E1;
+  --alpha-pink: #FF0087;
+  --alpha-magenta: #FE22EC;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);

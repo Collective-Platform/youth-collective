@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Container from "./Container";
 
 const InstagramIcon = () => (
   <svg
@@ -30,11 +31,11 @@ const DiscordIcon = () => (
 
 export default function Footer() {
   return (
-    <footer className="text-black py-12 px-4">
-      <div className="max-w-7xl mx-auto flex flex-wrap justify-around text-center gap-8">
+    <footer className="text-black py-12">
+      <Container className="flex flex-col items-start gap-8 lg:flex-row lg:flex-wrap lg:justify-around text-center">
         {/* Find Your Tribe */}
         <div className="flex flex-col gap-2">
-          <h3 className="font-bold text-lg mb-2">Find Your Tribe</h3>
+          <h3 className="font-bold text-lg">Find Your Tribe</h3>
           <Link
             href="/pre-teens"
             className="no-underline hover:underline text-sm"
@@ -54,7 +55,7 @@ export default function Footer() {
 
         {/* Practice The Way */}
         <div className="flex flex-col gap-2">
-          <h3 className="font-bold text-lg mb-2">Practice The Way</h3>
+          <h3 className="font-bold text-lg">Practice The Way</h3>
           <Link
             href="/community"
             className="no-underline hover:underline text-sm"
@@ -79,7 +80,7 @@ export default function Footer() {
 
         {/* Join A Team */}
         <div className="flex flex-col gap-2">
-          <h3 className="font-bold text-lg mb-2">Join A Team</h3>
+          <h3 className="font-bold text-lg">Join A Team</h3>
           <Link
             href="/serve/ss"
             className="no-underline hover:underline text-sm"
@@ -140,7 +141,7 @@ export default function Footer() {
             @collectivecentral
           </a>
         </div>
-      </div>
+      </Container>
     </footer>
   );
 }

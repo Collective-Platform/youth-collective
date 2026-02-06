@@ -1,8 +1,13 @@
-"use client";
-
+import type { Metadata } from "next";
 import Footer from "@/app/components/Footer";
 import Navbar from "@/app/components/Navbar";
 import Image from "next/image";
+
+export const metadata: Metadata = {
+  title: "Serve",
+  description:
+    "We are a family, and like a family, we all must pitch in. Discover how you can care for others and be part of the team.",
+};
 
 export default function ServeIndexPage() {
   return (
@@ -16,7 +21,7 @@ export default function ServeIndexPage() {
             <span className="text-black">Youth</span>
           </h1>
 
-          <p className="text-base md:text-lg max-w-xl leading-relaxed">
+          <p className="text-sm md:text-lg max-w-xl leading-relaxed">
             <span className="block">
               We are a family, and like a family, we all must pitch in. We use
               our hands to show our hearts - for God and others. It starts from
