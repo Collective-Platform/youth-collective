@@ -18,7 +18,7 @@ const skillSetItems = [
   {
     title: "Finance",
     desc: "Learn to manage money as someone who trusts God, not someone who's just trying to survive.",
-    image: "/assets/program/finance.jpg",
+    image: "/assets/program/finance-workshop.jpg",
   },
   {
     title: "Time",

@@ -30,8 +30,8 @@ export default function InternshipContent() {
             />
             {/* Left - Text Content */}
             <div className="w-full md:w-1/2 flex flex-col justify-center px-8 md:px-16 pt-4 pb-12 md:py-16">
-              <h1 className="text-[clamp(36px,5vw,56px)] font-heading uppercase mb-8 leading-10 md:leading-12 lg:leading-13">
-                GET READY FOR THE BEST OF YOUR SCHOOL HOLIDAY
+              <h1 className="text-[clamp(36px,5vw,56px)] font-heading uppercase mb-8 leading-10 md:leading-12 lg:leading-13 text-balance">
+                GET READY FOR THE BEST SCHOOL HOLIDAY YET
               </h1>
 
               <p className="text-md font-bold w-62.5 text-white mb-12">
@@ -39,12 +39,12 @@ export default function InternshipContent() {
                 <br></br>you’ll step into it.
               </p>
 
-              <div className="mb-8">
+              <div>
                 <ProgramButton href="#register" size="sm">
                   Apply Now 🚀
                 </ProgramButton>
               </div>
-              <p className="text-white text-sm md:text-base font-medium leading-tight">
+              <p className=" text-sm md:text-base font-medium  mt-6 text-white/70 ">
                 *Registration closes on March 8, 2026
               </p>
             </div>
@@ -58,10 +58,6 @@ export default function InternshipContent() {
                   fill
                   className="object-cover"
                 />
-                <p className="absolute bottom-4 right-4 text-white/90 text-md md:text-base text-right max-w-60 md:max-w-70 font-bold">
-                  &quot;See, I am doing a new thing! Now it springs up; do you
-                  not perceive it?&quot; — Isaiah 43:19
-                </p>
               </div>
             </div>
           </div>
@@ -92,7 +88,7 @@ export default function InternshipContent() {
                 key={i}
                 className="flex items-start gap-4 group bg-[#0a34df] border-3 border-white px-10 py-6"
               >
-                <p className="text-base text-center font-bold capitalized text-white">
+                <p className="text-base text-center font-bold text-white">
                   {item}
                 </p>
               </div>
@@ -192,7 +188,7 @@ export default function InternshipContent() {
             <div>
               <h4 className="text-base capitalize tracking-wider">Fee:</h4>
               <h2 className="text-2xl md:text-4xl font-bold">RM599</h2>
-              <p className=" text-white/80 text-balance text-sm capitalize">
+              <p className=" text-white/80 text-balance text-sm normal-case">
                 Includes accommodation, meals and all materials.
               </p>
             </div>
