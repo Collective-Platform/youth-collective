@@ -98,12 +98,12 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <Container className="flex items-center justify-between my-6 md:my-12 relative z-50">
+    <Container className="min-h-12 md:min-h-16 flex items-center justify-between my-6 md:my-12 relative z-50">
       {/* Logo */}
       <div className="shrink-0">
         <Link
           href="/"
-          className="text-2xl font-heading md:text-3xl text-black no-underline tracking-tight"
+          className="whitespace-nowrap text-2xl font-heading md:text-3xl text-black no-underline tracking-tight"
         >
           Strictly Students
         </Link>

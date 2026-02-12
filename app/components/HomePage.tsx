@@ -36,7 +36,7 @@ const TribeCard = ({
 
 export default function HomePage() {
   return (
-    <main className="antialiased font-sans">
+    <main className="antialiased">
       <Navbar />
 
       {/* Hero Section */}
@@ -53,6 +53,7 @@ export default function HomePage() {
             alt="Youth photo"
             width={1200}
             height={800}
+            priority
             className="w-full lg:w-150 max-h-[90vh] object-cover rounded-lg"
           />
         </div>
