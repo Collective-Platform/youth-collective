@@ -117,6 +117,7 @@ export default function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               className="w-6 h-6 hover:text-gray-300"
+              aria-label="Strictly Students Discord"
             >
               <DiscordIcon />
             </a>
@@ -126,6 +127,7 @@ export default function Footer() {
             target="_blank"
             rel="noopener noreferrer"
             className="no-underline hover:underline text-sm"
+            aria-label="Strictly Students Instagram"
           >
             @strictlystudents
           </a>
@@ -134,6 +136,7 @@ export default function Footer() {
             target="_blank"
             rel="noopener noreferrer"
             className="no-underline hover:underline text-sm"
+            aria-label="Collective Central Instagram"
           >
             @collectivecentral
           </a>

@@ -45,7 +45,7 @@ export default function InternshipContent() {
                 </ProgramButton>
               </div>
               <p className=" text-sm md:text-base font-medium  mt-6 text-white/70 ">
-                *Registration closes on March 8, 2026
+                *Registration closes on March 17, 2026
               </p>
             </div>
 
@@ -169,14 +169,14 @@ export default function InternshipContent() {
         {/* Right - Content */}
         <div className="w-full md:w-1/2 flex flex-col justify-center items-start px-8 md:px-16 py-16 md:py-0">
           <h1 className="text-[clamp(32px,5vw,56px)] leading-10 md:leading-12 lg:leading-13 font-black uppercase mb-8 text-left">
-            Strictly Students <br /> 1 Week Program
+            Strictly Students <br /> Summer Program
           </h1>
 
           <div className="space-y-6 text-left uppercase">
             <div>
               <h4 className="text-base tracking-wider capitalize">Dates:</h4>
               <h2 className="text-2xl md:text-4xl font-bold">
-                March 23 - 29, 2026
+                March 23 - 27, 2026
               </h2>
             </div>
 
@@ -187,7 +187,7 @@ export default function InternshipContent() {
 
             <div>
               <h4 className="text-base capitalize tracking-wider">Fee:</h4>
-              <h2 className="text-2xl md:text-4xl font-bold">RM599</h2>
+              <h2 className="text-2xl md:text-4xl font-bold">RM499</h2>
               <p className=" text-white/80 text-balance text-sm normal-case">
                 Includes accommodation, meals and all materials.
               </p>
@@ -201,7 +201,7 @@ export default function InternshipContent() {
           </div>
 
           <p className="mt-6 text-white/70 text-sm">
-            *Registration closes on March 8, 2026
+            *Registration closes on March 17, 2026
           </p>
         </div>
       </section>

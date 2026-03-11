@@ -54,6 +54,8 @@ export default function HomePage() {
             width={1200}
             height={800}
             priority
+            fetchPriority="high"
+            loading="eager"
             className="w-full lg:w-150 max-h-[90vh] object-cover rounded-lg"
           />
         </div>

@@ -27,7 +27,7 @@ const faqs = [
   {
     question: "What does the fee include?",
     answer:
-      "RM599 is inclusive of your stay, transportation, activities, and meals.",
+      "RM499 is inclusive of your stay, transportation, activities, and meals.",
   },
   {
     question: "Do you offer any discounts?",
@@ -42,7 +42,7 @@ const faqs = [
   {
     question: "What are the dates?",
     answer:
-      "Arrival date: 23 March, 8:30AM. Departure date: 29 March, 12PM (after Sunday service).",
+      "Arrival date: 23 March, 8:30AM. Departure date: 27 March, 10:30PM.",
   },
   {
     question: "How will I know if I'm accepted?",
