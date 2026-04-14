@@ -22,7 +22,7 @@ const faqs = [
   {
     question: "Where will the program be held?",
     answer:
-      "The program will take place primarily at Collective's premises and at the Airbnb accommodation. Travel between destinations and the stay at the Airbnb will always be supervised by a staff member.",
+      "The program will take place primarily at Collective's premises. Travel between any destinations and Collective will always be supervised by a staff member.",
   },
   {
     question: "What does the fee include?",
@@ -35,14 +35,13 @@ const faqs = [
       "If you're unable to afford the full fee upfront, we offer an installment payment option. If cost is still a concern, please reach out to us. We're open to discussing other support options where possible!",
   },
   {
-    question: "If I'm younger or older than 16-18, can I still join?",
+    question: "If I'm younger or older than 14-18, can I still join?",
     answer:
-      "If you are 15 years old, you may still be considered on a case-by-case basis, subject to recommendation and management approval. If you are above 18, we encourage you to consider our internship program instead.",
+      "If you are 13 years old, you may still be considered on a case-by-case basis, subject to recommendation and management approval. If you are above 18, we encourage you to consider our internship program instead. You can email us at carinalau@collective.my for more information on the internship program.",
   },
   {
     question: "What are the dates?",
-    answer:
-      "Arrival date: 23 March, 8:30AM. Departure date: 27 March, 10:30PM.",
+    answer: "Arrival date: 1 June, 8:30AM. Departure date: 5 June, 10:30PM.",
   },
   {
     question: "How will I know if I'm accepted?",
@@ -52,7 +51,7 @@ const faqs = [
   {
     question: "What will a typical day look like?",
     answer:
-      "A typical day will begin with breakfast and devotions followed by teaching, training, and workshop sessions, with breaks for lunch and dinner in between. There will be a variety of other activities throughout the week as well to shake things up such as bouldering and hiking.",
+      "A typical day will begin with breakfast and devotions followed by teaching, training, and workshop sessions, with breaks for lunch and dinner in between. There will be a variety of other activities throughout the week as well to shake things up.",
   },
 ];
 

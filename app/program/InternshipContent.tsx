@@ -45,7 +45,7 @@ export default function InternshipContent() {
                 </ProgramButton>
               </div>
               <p className=" text-sm md:text-base font-medium  mt-6 text-white/70 ">
-                *Registration closes on March 17, 2026
+                *Registration closes on May 20, 2026
               </p>
             </div>
 
@@ -176,7 +176,7 @@ export default function InternshipContent() {
             <div>
               <h4 className="text-base tracking-wider capitalize">Dates:</h4>
               <h2 className="text-2xl md:text-4xl font-bold">
-                March 23 - 27, 2026
+                June 1 - 5, 2026
               </h2>
             </div>
 
@@ -201,7 +201,7 @@ export default function InternshipContent() {
           </div>
 
           <p className="mt-6 text-white/70 text-sm">
-            *Registration closes on March 17, 2026
+            *Registration closes on May 20, 2026
           </p>
         </div>
       </section>
