@@ -41,7 +41,8 @@ const faqs = [
   },
   {
     question: "What are the dates?",
-    answer: "Arrival date: 1 June, 8:30AM. Departure date: 5 June, 10:30PM.",
+    answer:
+      "Arrival date: 1 June, 9:00AM. Departure date: 5 June, 8:30PM (Subject to change).",
   },
   {
     question: "How will I know if I'm accepted?",

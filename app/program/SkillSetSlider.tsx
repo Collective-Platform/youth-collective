@@ -11,9 +11,9 @@ import {
 
 const skillSetItems = [
   {
-    title: "Communication",
-    desc: "Frustrated that people don't get you? Speak clearly. Speak authentically. Be the real you, not the nervous one trying to impress.",
-    image: "/assets/program/communication.jpg",
+    title: "The Bible",
+    desc: "Is the Bible actually trustworthy and reliable? Look at the evidence, ask honest questions, and explore it for yourself.",
+    image: "/assets/program/bible.jpg",
   },
   {
     title: "Finance",
@@ -21,8 +21,8 @@ const skillSetItems = [
     image: "/assets/program/finance-workshop.jpg",
   },
   {
-    title: "Time",
-    desc: "The goal isn't to cram more in. It's to clear space for what actually matters. Build rhythms that sustain the life you're stepping into.",
+    title: "Healthy Relationships",
+    desc: "Relationships shape us more than we think. Learn how to communicate honestly, love wisely, and build connections that last.",
     image: "/assets/program/life2.jpg",
   },
 ];
