@@ -4,12 +4,14 @@ interface ProgramButtonProps {
   href: string;
   children: React.ReactNode;
   size?: "sm" | "lg";
+  registrationOpen: boolean;
 }
 
 export default function ProgramButton({
   href,
   children,
   size = "lg",
+  registrationOpen,
 }: ProgramButtonProps) {
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (href.startsWith("#")) {
@@ -22,6 +24,18 @@ export default function ProgramButton({
       }
     }
   };
+
+  if (!registrationOpen) {
+    return (
+      <span
+        className={`inline-block bg-gray-500 text-white font-bold uppercase tracking-wider border-gray-500 border-2 cursor-not-allowed opacity-70 ${
+          size === "sm" ? "px-10 py-5 text-sm" : "px-12 py-5 text-xl"
+        }`}
+      >
+        Registration Closed
+      </span>
+    );
+  }
 
   return (
     <a

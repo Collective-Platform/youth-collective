@@ -7,6 +7,8 @@ import FeatureCards from "./FeatureCards";
 import SkillSetSlider from "./SkillSetSlider";
 import MarqueeSolid from "./MarqueeSolid";
 
+const registrationOpen = false;
+
 export default function InternshipContent() {
   return (
     <main className="font-[Inter,sans-serif] bg-black">
@@ -40,7 +42,11 @@ export default function InternshipContent() {
               </p>
 
               <div>
-                <ProgramButton href="#register" size="sm">
+                <ProgramButton
+                  href="#register"
+                  size="sm"
+                  registrationOpen={registrationOpen}
+                >
                   Apply Now 🚀
                 </ProgramButton>
               </div>
@@ -141,11 +147,17 @@ export default function InternshipContent() {
         <p className="text-center text-white text-base mt-4 capitalize md:hidden">
           &lt;&lt; Swipe for more &gt;&gt;
         </p>
-        <div className="text-center mt-12">
-          <ProgramButton href="#register" size="sm">
-            I Want In!! 🔥
-          </ProgramButton>
-        </div>
+        {registrationOpen && (
+          <div className="text-center mt-12">
+            <ProgramButton
+              href="#register"
+              size="sm"
+              registrationOpen={registrationOpen}
+            >
+              I Want In!! 🔥
+            </ProgramButton>
+          </div>
+        )}
       </section>
 
       {/* FAQ Section */}
@@ -195,7 +207,11 @@ export default function InternshipContent() {
           </div>
 
           <div className="mt-10">
-            <ProgramButton href="https://tally.so/r/VLJr2y" size="sm">
+            <ProgramButton
+              href="https://tally.so/r/VLJr2y"
+              size="sm"
+              registrationOpen={registrationOpen}
+            >
               APPLY TODAY 🚀
             </ProgramButton>
           </div>
