@@ -79,7 +79,7 @@ export default function CampusPage() {
           baptized, we encourage you to take that step.
         </p>
 
-        <CTAButton href="#tally-open=w4rXRo&tally-layout=modal&tally-overlay=1">
+        <CTAButton href="https://collective.my/baptism/">
           ENTER INTO WATERS
         </CTAButton>
       </section>

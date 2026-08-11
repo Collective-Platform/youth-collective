@@ -51,8 +51,6 @@ export default function TeensPage() {
           create space to hear from Him and pray for one another. It is in these
           moments that God meets us where we are at.
         </p>
-
-        <CTAButton href="/rockzone">ROCK ZONE</CTAButton>
       </section>
 
       {/* Experience Youth Section */}
@@ -94,7 +92,7 @@ export default function TeensPage() {
           baptized, we encourage you to take that step.
         </p>
 
-        <CTAButton href="#tally-open=w4rXRo&tally-layout=modal&tally-overlay=1">
+        <CTAButton href="https://collective.my/baptism/">
           ENTER INTO WATER
         </CTAButton>
       </section>
