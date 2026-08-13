@@ -29,7 +29,7 @@ export default function MemoryWallExperience() {
 
       <section className="bg-black px-3 py-3 text-black sm:px-5 sm:py-5 md:pb-12">
         <div className="mx-auto max-w-[92rem] overflow-hidden bg-[#f45c36]">
-          <div className="flex min-h-[31rem] flex-col justify-center border-b-2 border-black p-6 sm:p-8 md:min-h-[36rem] md:items-center md:px-10 md:py-16 md:text-center">
+          <div className="flex min-h-[31rem] flex-col justify-center border-b-2 border-black p-6 sm:p-8 md:min-h-[36rem] md:items-center md:px-10 md:py-16 md:text-center lg:min-h-[calc(100svh-5.5rem)]">
             <h1 className="mt-7 max-w-3xl font-heading text-[clamp(2rem,4.5vw,3.5rem)] uppercase leading-[1] tracking-[-0.04em] sm:mt-8 md:text-balance">
               Learning Labs: Experience
             </h1>
@@ -86,10 +86,10 @@ export default function MemoryWallExperience() {
         </div>
       </section>
 
-      <section className="relative text-white py-12 px-4 bg-cover bg-center">
+      <section className="relative text-white py-10 md:py-12 px-4 bg-cover bg-center">
         <div className="absolute inset-0 bg-[#f45c36]"></div>
         <div className="relative max-w-4xl mx-auto text-center">
-          <p className="text-white font-bold uppercase text-2xl mb-4">
+          <p className="text-white font-bold uppercase text-lg md:text-2xl">
             God is making all things new — starting from you.
           </p>
         </div>
@@ -107,14 +107,14 @@ export default function MemoryWallExperience() {
         </div>
       </section>
 
-      <section className="relative text-white py-18 px-4 bg-cover bg-center">
+      <section className="relative text-white py-10 md:py-18 px-4 bg-cover bg-center">
         <div className="absolute inset-0 bg-[#f45c36]"></div>
         <div className="relative max-w-4xl mx-auto text-center">
-          <p className="text-white font-bold uppercase text-2xl mb-4">
+          <p className="text-white font-bold uppercase text-lg md:text-2xl mb-4">
             &quot;Your life is hidden with Christ in God.&quot;
           </p>
-          <div className="w-px h-8 bg-white mx-auto my-4"></div>
-          <p className="text-white/90 text-sm uppercase mb-4">Colossians 3:3</p>
+          <div className="w-px h-4 md:h-8 bg-white mx-auto my-4"></div>
+          <p className="text-white/90 text-sm uppercase">Colossians 3:3</p>
         </div>
       </section>
 
