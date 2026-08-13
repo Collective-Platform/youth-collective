@@ -105,7 +105,7 @@ export default function InternshipFAQ({
           ))}
         </Accordion.Root>
         <div className="mt-8 text-center">
-          <p className="text-sm text-black">
+          <p className="text-sm text-balance text-black">
             Questions? Reach out to us — we&apos;d love to hear from you.
           </p>
           <a
@@ -114,7 +114,7 @@ export default function InternshipFAQ({
             target="_blank"
             rel="noreferrer"
           >
-            WhatsApp Up
+            WhatsApp Us
           </a>
         </div>
       </div>

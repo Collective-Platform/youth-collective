@@ -25,11 +25,20 @@ const familiarMoments = [
 export default function MemoryWallExperience() {
   return (
     <main className="min-h-screen bg-black font-[Inter,sans-serif] text-black">
-      <div className="bg-white"><Navbar /></div>
+      <div className="flow-root bg-white"><Navbar /></div>
 
-      <section className="bg-black px-3 py-3 text-black sm:px-5 sm:py-5 md:pb-12">
+      <section className="relative bg-cover bg-center px-4 py-2 text-white my-3 sm:my-5">
+        <div className="absolute inset-0 bg-[#f45c36]"></div>
+        <div className="relative mx-auto max-w-4xl text-center">
+          <p className="text-balance text-sm font-bold uppercase text-black md:text-lg">
+            {"God is making all things new "}<br className="md:hidden" />— starting from you.
+          </p>
+        </div>
+      </section>
+
+      <section className="bg-black px-3 pb-3 text-black sm:px-5 sm:pb-5 md:pb-12">
         <div className="mx-auto max-w-[92rem] overflow-hidden bg-[#f45c36]">
-          <div className="flex min-h-[31rem] flex-col justify-center border-b-2 border-black p-6 sm:p-8 md:min-h-[36rem] md:items-center md:px-10 md:py-16 md:text-center lg:min-h-[calc(100svh-5.5rem)]">
+          <div className="flex min-h-[31rem] flex-col justify-center border-b-2 border-black p-6 sm:p-8 md:min-h-[36rem] md:items-center md:px-10 md:py-16 md:text-center lg:min-h-[calc(100svh-12rem)]">
             <h1 className="mt-7 max-w-3xl font-heading text-[clamp(2rem,4.5vw,3.5rem)] uppercase leading-[1] tracking-[-0.04em] sm:mt-8 md:text-balance">
               Learning Labs: Experience
             </h1>
@@ -86,27 +95,6 @@ export default function MemoryWallExperience() {
         </div>
       </section>
 
-      <section className="relative text-white py-10 md:py-12 px-4 bg-cover bg-center">
-        <div className="absolute inset-0 bg-[#f45c36]"></div>
-        <div className="relative max-w-4xl mx-auto text-center">
-          <p className="text-white font-bold uppercase text-lg md:text-2xl">
-            God is making all things new — starting from you.
-          </p>
-        </div>
-      </section>
-
-      <section className="bg-[#edeae5] px-5 py-16 text-black sm:px-8 md:py-24">
-        <div className="mx-auto max-w-[76rem]">
-          <div className="flex justify-center pb-10 text-center">
-            <h2 className="font-heading text-[clamp(32px,6vw,56px)] leading-tight tracking-[-0.04em]">What you&apos;ll experience</h2>
-          </div>
-
-          <div className="mt-10">
-            <FeatureCards />
-          </div>
-        </div>
-      </section>
-
       <section className="relative text-white py-10 md:py-18 px-4 bg-cover bg-center">
         <div className="absolute inset-0 bg-[#f45c36]"></div>
         <div className="relative max-w-4xl mx-auto text-center">
@@ -115,6 +103,18 @@ export default function MemoryWallExperience() {
           </p>
           <div className="w-px h-4 md:h-8 bg-white mx-auto my-4"></div>
           <p className="text-white/90 text-sm uppercase">Colossians 3:3</p>
+        </div>
+      </section>
+
+      <section className="bg-[#edeae5] px-5 py-16 text-black sm:px-8 md:py-24">
+        <div className="mx-auto max-w-[76rem]">
+          <div className="mb-8 flex justify-center text-center">
+            <h2 className="font-heading text-[clamp(32px,6vw,56px)] leading-tight tracking-[-0.04em]">What you&apos;ll experience</h2>
+          </div>
+
+          <div>
+            <FeatureCards />
+          </div>
         </div>
       </section>
 
