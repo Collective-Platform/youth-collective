@@ -35,11 +35,6 @@ const defaultFaqs = [
       "If you are 12 years old, you may still be considered on a case-by-case basis, subject to recommendation and management approval. If you are above 17, we encourage you to consider our internship program instead. You can email us at carinalau@collective.my for more information on the internship program.",
   },
   {
-    question: "What are the dates?",
-    answer:
-      "Arrival date: 7 December, 9:00AM. Departure date: 13 December, 8:30PM (Subject to change).",
-  },
-  {
     question: "What will a typical day look like?",
     answer:
       "A typical day will begin with breakfast and devotions followed by teaching, training, and workshop sessions, with breaks for lunch and dinner in between. There will be a variety of other activities throughout the week as well to shake things up.",
