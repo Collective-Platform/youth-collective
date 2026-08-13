@@ -29,26 +29,24 @@ export default function FeatureCards() {
       {featureItems.map((item, i) => {
         const isExpanded = expandedIndex === i;
         return (
-          <button
-            type="button"
+          <div
             key={i}
             onClick={() => setExpandedIndex(isExpanded ? null : i)}
-            aria-expanded={isExpanded}
-            className="w-full cursor-pointer bg-[#f45c36] p-6 transition-all duration-300 focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-black"
+            className="cursor-pointer bg-[#f45c36] p-6 transition-all duration-300"
           >
-            <span className="block text-base font-bold text-white text-center text-balance">
+            <h3 className="text-base font-bold text-white text-center text-balance">
               {item.title}
-            </span>
-            <span
+            </h3>
+            <div
               className={`overflow-hidden transition-all duration-300 ${
                 isExpanded ? "max-h-40 mt-4 opacity-100" : "max-h-0 opacity-0"
               }`}
             >
-              <span className="block text-white text-center text-sm text-balance">
+              <p className="text-white text-center text-sm text-balance">
                 {item.desc}
-              </span>
-            </span>
-          </button>
+              </p>
+            </div>
+          </div>
         );
       })}
     </div>

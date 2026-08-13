@@ -1,8 +1,8 @@
 import Image from "next/image";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
+import FeatureCards from "./FeatureCards";
 import InternshipFAQ from "./InternshipFAQ";
-import MemoryNotesGrid from "./MemoryNotesGrid";
 import ProgramHeroGallery from "./ProgramHeroGallery";
 import RegistrationDialog from "./RegistrationDialog";
 
@@ -15,33 +15,6 @@ import RegistrationDialog from "./RegistrationDialog";
  */
 
 const registrationOpen = true;
-
-const memoryNotes = [
-  {
-    title: "Teaching that goes deeper than your feed.",
-    copy: "In a world that is constantly talking, how do we listen? Not just to others, but to the voice of God?",
-    image: "/assets/program/summer/summer-program-10.jpg",
-    alt: "Students listening as a leader teaches during a programme session",
-  },
-  {
-    title: "Space to process what’s within you.",
-    copy: "Guided reflection. Honest conversations. Room to name the patterns you’ve been carrying and let them go.",
-    image: "/assets/program/summer/summer-program-06.jpg",
-    alt: "Students reflecting together around a table",
-  },
-  {
-    title: "Practices you’ll take home.",
-    copy: "The new you needs new rhythms. You’ll be equipped with practical tools to sustain the life you’re stepping into.",
-    image: "/assets/program/summer/summer-program-01.jpg",
-    alt: "Students preparing food together during the programme",
-  },
-  {
-    title: "Community that sees you.",
-    copy: "Surround yourself with like-minded people. A week where you’re known—not just attended.",
-    image: "/assets/program/summer/summer-program-08.jpg",
-    alt: "Students taking a photo together on a forest walk",
-  },
-] as const;
 
 const familiarMoments = [
   "You've tried to change before. It didn't stick.",
@@ -57,11 +30,8 @@ export default function MemoryWallExperience() {
       <section className="bg-black px-3 py-3 text-black sm:px-5 sm:py-5 md:pb-12">
         <div className="mx-auto max-w-[92rem] overflow-hidden bg-[#f45c36]">
           <div className="flex min-h-[31rem] flex-col justify-center border-b-2 border-black p-6 sm:p-8 md:min-h-[36rem] md:items-center md:px-10 md:py-16 md:text-center">
-            <p className="text-md font-bold tracking-[0.08em]">
-              God is making all things new — starting from you.
-            </p>
             <h1 className="mt-7 max-w-3xl font-heading text-[clamp(2rem,4.5vw,3.5rem)] uppercase leading-[1] tracking-[-0.04em] sm:mt-8 md:text-balance">
-              Strictly Students Learning Labs: Experience
+              Learning Labs: Experience
             </h1>
             <p className="mt-6 max-w-md text-base font-semibold leading-snug sm:mt-7 sm:text-lg">
               A week away from distractions to experience God for yourself (while having fun).
@@ -116,12 +86,12 @@ export default function MemoryWallExperience() {
         </div>
       </section>
 
-      <section className="bg-[#f45c36] px-5 py-16 text-black sm:px-8 md:py-24">
-        <div className="mx-auto max-w-[76rem]">
-          <blockquote className="mx-auto max-w-2xl text-center text-2xl font-bold leading-tight sm:text-3xl">
-            “Your life is hidden with Christ in God.”
-            <footer className="mt-4 text-sm font-bold uppercase tracking-[0.14em]">Colossians 3:3</footer>
-          </blockquote>
+      <section className="relative text-white py-12 px-4 bg-cover bg-center">
+        <div className="absolute inset-0 bg-[#f45c36]"></div>
+        <div className="relative max-w-4xl mx-auto text-center">
+          <p className="text-white font-bold uppercase text-2xl mb-4">
+            God is making all things new — starting from you.
+          </p>
         </div>
       </section>
 
@@ -132,8 +102,19 @@ export default function MemoryWallExperience() {
           </div>
 
           <div className="mt-10">
-            <MemoryNotesGrid notes={memoryNotes} />
+            <FeatureCards />
           </div>
+        </div>
+      </section>
+
+      <section className="relative text-white py-18 px-4 bg-cover bg-center">
+        <div className="absolute inset-0 bg-[#f45c36]"></div>
+        <div className="relative max-w-4xl mx-auto text-center">
+          <p className="text-white font-bold uppercase text-2xl mb-4">
+            &quot;Your life is hidden with Christ in God.&quot;
+          </p>
+          <div className="w-px h-8 bg-white mx-auto my-4"></div>
+          <p className="text-white/90 text-sm uppercase mb-4">Colossians 3:3</p>
         </div>
       </section>
 

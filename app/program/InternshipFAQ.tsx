@@ -40,11 +40,6 @@ const defaultFaqs = [
       "Arrival date: 7 December, 9:00AM. Departure date: 13 December, 8:30PM (Subject to change).",
   },
   {
-    question: "How will I know if I'm accepted?",
-    answer:
-      "After you have submitted the form, we will review and contact you.",
-  },
-  {
     question: "What will a typical day look like?",
     answer:
       "A typical day will begin with breakfast and devotions followed by teaching, training, and workshop sessions, with breaks for lunch and dinner in between. There will be a variety of other activities throughout the week as well to shake things up.",
@@ -114,18 +109,19 @@ export default function InternshipFAQ({
             />
           ))}
         </Accordion.Root>
-        <p className="mt-8 text-center text-black text-sm">
-          Questions? Reach out to{" "}
+        <div className="mt-8 text-center">
+          <p className="text-sm text-black">
+            Questions? Reach out to us — we&apos;d love to hear from you.
+          </p>
           <a
-            className="text-[#f45c36] underline underline-offset-4 hover:text-black focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#f45c36]"
+            className="mt-4 inline-flex bg-[#f45c36] px-5 py-3 text-sm font-bold text-[#edeae5] transition-colors hover:bg-black hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#f45c36]"
             href="https://wa.me/601123646715"
             target="_blank"
             rel="noreferrer"
           >
-            WhatsApp us
-          </a>{" "}
-          — we&apos;d love to hear from you.
-        </p>
+            WhatsApp Up
+          </a>
+        </div>
       </div>
     </section>
   );
