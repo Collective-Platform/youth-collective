@@ -77,7 +77,7 @@ export default async function RegistrationSuccessPage({
           href="/program"
           className="mt-8 inline-block border-2 border-black bg-black px-6 py-3 text-sm font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#f45c36] focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#f45c36]"
         >
-          Back to the program
+          Back to the site
         </Link>
       </section>
     </main>
