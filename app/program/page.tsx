@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import InternshipContent from "./InternshipContent";
+import MemoryWallExperience from "./MemoryWallExperience";
 
 export const metadata: Metadata = {
-  title: "Program",
+  title: "Strictly Students Learning Labs: Experience",
   description:
-    "Get ready for the best school break week. Discover God, learn essential life skills, and connect meaningfully with the world beyond you.",
+    "A week away from distractions to experience God for yourself, while having fun.",
 };
 
 export default function ProgramPage() {
-  return <InternshipContent />;
+  return <MemoryWallExperience />;
 }

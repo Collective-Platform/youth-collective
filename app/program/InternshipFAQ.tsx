@@ -18,16 +18,11 @@ const ChevronDown = ({ className = "" }: { className?: string }) => (
   </svg>
 );
 
-const faqs = [
-  {
-    question: "Where will the program be held?",
-    answer:
-      "The program will take place primarily at Collective's premises. Travel between any destinations and Collective will always be supervised by a staff member.",
-  },
+const defaultFaqs = [
   {
     question: "What does the fee include?",
     answer:
-      "RM499 is inclusive of your stay, transportation, activities, and meals.",
+      "RM699 is inclusive of your stay, transportation, activities, and meals.",
   },
   {
     question: "Do you offer any discounts?",
@@ -35,14 +30,14 @@ const faqs = [
       "If you're unable to afford the full fee upfront, we offer an installment payment option. If cost is still a concern, please reach out to us. We're open to discussing other support options where possible!",
   },
   {
-    question: "If I'm younger or older than 14-18, can I still join?",
+    question: "If I'm younger or older than 13-17, can I still join?",
     answer:
-      "If you are 13 years old, you may still be considered on a case-by-case basis, subject to recommendation and management approval. If you are above 18, we encourage you to consider our internship program instead. You can email us at carinalau@collective.my for more information on the internship program.",
+      "If you are 12 years old, you may still be considered on a case-by-case basis, subject to recommendation and management approval. If you are above 17, we encourage you to consider our internship program instead. You can email us at carinalau@collective.my for more information on the internship program.",
   },
   {
     question: "What are the dates?",
     answer:
-      "Arrival date: 1 June, 9:00AM. Departure date: 5 June, 8:30PM (Subject to change).",
+      "Arrival date: 7 December, 9:00AM. Departure date: 13 December, 8:30PM (Subject to change).",
   },
   {
     question: "How will I know if I'm accepted?",
@@ -67,9 +62,9 @@ const FAQItem = ({
 }) => (
   <Accordion.Item value={value} className="border-b border-black/80 w-full">
     <Accordion.Header>
-      <Accordion.Trigger className="w-full flex justify-between items-center py-6 bg-transparent border-none cursor-pointer text-black text-base font-bold text-left tracking-wide group hover:text-[#FF6B35] transition-colors">
+      <Accordion.Trigger className="w-full flex justify-between items-center py-6 bg-transparent border-none cursor-pointer text-black text-base font-bold text-left tracking-wide group hover:text-[#f45c36] transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-[#f45c36]">
         {question}
-        <ChevronDown className="w-6 h-6 transition-transform duration-300 group-data-[state=open]:rotate-180 text-[#FF6B35]" />
+        <ChevronDown className="w-6 h-6 transition-transform duration-300 group-data-[state=open]:rotate-180 text-[#f45c36]" />
       </Accordion.Trigger>
     </Accordion.Header>
     <Accordion.Content className="overflow-hidden text-black/80 text-sm leading-relaxed data-[state=open]:animate-slideDown data-[state=closed]:animate-slideUp">
@@ -78,9 +73,27 @@ const FAQItem = ({
   </Accordion.Item>
 );
 
-export default function InternshipFAQ() {
+export default function InternshipFAQ({
+  enquiryFirst = false,
+  surfaceClassName = "bg-white",
+}: {
+  enquiryFirst?: boolean;
+  surfaceClassName?: string;
+}) {
+  const faqs = enquiryFirst
+    ? defaultFaqs.map((faq) =>
+        faq.question === "Can I pay by instalment?"
+          ? {
+              ...faq,
+              answer:
+                "Yes. Message us to check availability and ask about the payment options, including instalments.",
+            }
+          : faq,
+      )
+    : defaultFaqs;
+
   return (
-    <section id="faqs" className="bg-[#ecebe4] text-black py-20 md:py-24 px-4">
+    <section id="faqs" className={`${surfaceClassName} px-4 py-20 text-black md:py-24`}>
       <div className="max-w-3xl mx-auto">
         <h2 className="text-[clamp(32px,6vw,56px)] font-heading text-center leading-tight mb-8">
           We know you&apos;ve got questions (FAQ)
@@ -103,8 +116,13 @@ export default function InternshipFAQ() {
         </Accordion.Root>
         <p className="mt-8 text-center text-black text-sm">
           Questions? Reach out to{" "}
-          <a className="text-[#FF6B35]" href="mailto:carinalau@collective.my">
-            carinalau@collective.my
+          <a
+            className="text-[#f45c36] underline underline-offset-4 hover:text-black focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#f45c36]"
+            href="https://wa.me/601123646715"
+            target="_blank"
+            rel="noreferrer"
+          >
+            WhatsApp us
           </a>{" "}
           — we&apos;d love to hear from you.
         </p>
