@@ -1,4 +1,5 @@
 import { isProgramParticipantMinor } from "@/lib/program-age";
+import { getInstallmentTerms, isEarlyBirdPricing } from "@/lib/program-pricing";
 
 export const PROGRAM_REGISTRATION_SHEET_NAME = "Registrations";
 
@@ -159,10 +160,12 @@ export function parseProgramRegistration(payload: unknown): ProgramRegistration 
   };
 }
 
-export function registrationToRow(registration: ProgramRegistration): RegistrationRow {
+export function registrationToRow(registration: ProgramRegistration, submittedAt = new Date()): RegistrationRow {
+  const installmentTerms = getInstallmentTerms(submittedAt);
+
   return {
     "Registration ID": registration.registrationId,
-    "Created at": new Date().toISOString(),
+    "Created at": submittedAt.toISOString(),
     "Full name": registration.fullName,
     "Date of birth": registration.dateOfBirth,
     "IC number": registration.icNumber,
@@ -187,13 +190,13 @@ export function registrationToRow(registration: ProgramRegistration): Registrati
     "Signature date": registration.signatureDate,
     "Waiver accepted": "Accepted",
     Signature: registration.signature,
-    "Payment plan": registration.paymentOption === "full" ? "RM699 once" : "RM233 × 3 monthly",
+    "Payment plan": registration.paymentOption === "full" ? (isEarlyBirdPricing(submittedAt) ? "RM699 once" : "RM799 once") : `RM${installmentTerms.amount} × ${installmentTerms.count} monthly`,
     "Payment status": "Pending payment",
     "Stripe Checkout Session ID": "",
     "Stripe Payment Intent ID": "",
     "Stripe Subscription ID": "",
     "Stripe Invoice IDs": "",
-    "Installments paid": registration.paymentOption === "full" ? "Not applicable" : "0/3",
+    "Installments paid": registration.paymentOption === "full" ? "Not applicable" : `0/${installmentTerms.count}`,
     "Last payment date": "",
     "Last payment failure": "",
   };

@@ -5,6 +5,8 @@ import { Check, ChevronLeft, ChevronRight, ShieldCheck, X } from "lucide-react";
 import { useRef, useState, type FormEvent } from "react";
 
 import { isProgramParticipantMinor } from "@/lib/program-age";
+import { getInstallmentTermsForEarlyBird } from "@/lib/program-pricing";
+import { useIsEarlyBirdPricing } from "./EarlyBirdNotice";
 
 type PaymentOption = "full" | "installments";
 
@@ -18,22 +20,26 @@ type RegistrationDraft = {
 const steps = ["Participant", "Your story", "Consent", "Payment"];
 const draftStorageKey = "strictly-students-learning-labs-experience-registration-draft-v1";
 
-const paymentOptions: Array<{
+function getPaymentOptions(isEarlyBird: boolean): Array<{
   id: PaymentOption;
   label: string;
   description: string;
-}> = [
-  {
-    id: "full",
-    label: "Pay RM699 now",
-    description: "One payment today",
-  },
-  {
-    id: "installments",
-    label: "Pay RM233 × 3",
-    description: "Three monthly card payments",
-  },
-];
+}> {
+  const installmentTerms = getInstallmentTermsForEarlyBird(isEarlyBird);
+
+  return [
+    {
+      id: "full",
+      label: `Pay RM${isEarlyBird ? "699" : "799"} now`,
+      description: "One payment today",
+    },
+    {
+      id: "installments",
+      label: `Pay RM${installmentTerms.amount} × ${installmentTerms.count}`,
+      description: `${installmentTerms.count} monthly card payments`,
+    },
+  ];
+}
 
 const fieldClassName =
   "min-h-12 w-full border-2 border-black bg-white px-3 text-base font-normal normal-case tracking-normal outline-none transition-colors placeholder:text-black/45 focus:border-[#f45c36]";
@@ -181,6 +187,8 @@ export default function RegistrationDialog({ triggerClassName }: RegistrationDia
   const [submissionError, setSubmissionError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const registrationIdRef = useRef<string | null>(null);
+  const isEarlyBird = useIsEarlyBirdPricing();
+  const paymentOptions = getPaymentOptions(isEarlyBird);
 
   const needsGuardian = isProgramParticipantMinor(dateOfBirth);
 

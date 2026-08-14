@@ -55,7 +55,7 @@ export default function LearningLabsExperience() {
                 <dt className="text-sm font-medium">Fee</dt>
                 <dd className="mt-1 font-bold">RM699</dd>
                 <p className="mt-1 text-xs font-semibold leading-tight opacity-50 sm:text-sm">
-                  (RM799 after 19 October)
+                  (RM799 after 18 October)
                 </p>
               </div>
             </dl>
@@ -154,7 +154,7 @@ export default function LearningLabsExperience() {
               <h3 className="text-sm font-bold uppercase tracking-wider text-white/70">Fee</h3>
               <div className="flex items-end gap-2 mt-2 mt-2">
               <p className="text-2xl font-bold">RM699</p>
-              <p className="text-sm text-white/75 mb-1">(RM799 after 19 October)</p>
+              <p className="text-sm text-white/75 mb-1">(RM799 after 18 October)</p>
               </div>
               <p className="mt-1 text-sm text-white/75">Includes accommodation, meals and all materials.</p>
             </div>
