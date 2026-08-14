@@ -57,6 +57,12 @@ export default function Footer() {
         <div className="flex flex-col gap-2">
           <h3 className="font-bold text-lg">Practice The Way</h3>
           <Link
+            href="/learninglabs"
+            className="no-underline hover:underline text-sm"
+          >
+            Learning Labs
+          </Link>
+          <Link
             href="/community"
             className="no-underline hover:underline text-sm"
           >

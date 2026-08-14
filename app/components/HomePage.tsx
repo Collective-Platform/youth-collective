@@ -1,7 +1,5 @@
 import Link from "next/link";
 import Image from "next/image";
-import Navbar from "./Navbar";
-import Footer from "./Footer";
 import Container from "./Container";
 
 // Image Card component for tribe section
@@ -37,8 +35,6 @@ const TribeCard = ({
 export default function HomePage() {
   return (
     <main className="antialiased">
-      <Navbar />
-
       {/* Hero Section */}
       <Container className="flex flex-col lg:flex-row items-center justify-center gap-4 my-12">
         <div className="flex-1">
@@ -88,7 +84,6 @@ export default function HomePage() {
         />
       </Container>
 
-      <Footer />
     </main>
   );
 }
