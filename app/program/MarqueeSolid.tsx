@@ -3,7 +3,7 @@
 export default function MarqueeSolid({
   text,
   reverse = false,
-  containerClassName = "py-6 bg-[#0a34df] border-t-3 border-b-3 border-white",
+  containerClassName = "py-6 bg-[#f45c36] border-t-3 border-b-3 border-white",
   textClassName = "text-[clamp(16px,3vw,24px)] font-bold uppercase mx-8 text-white",
   duration = reverse ? 30 : 80,
 }: {

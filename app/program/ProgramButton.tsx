@@ -4,6 +4,7 @@ interface ProgramButtonProps {
   href: string;
   children: React.ReactNode;
   size?: "sm" | "lg";
+  variant?: "orange" | "ink";
   registrationOpen: boolean;
 }
 
@@ -11,6 +12,7 @@ export default function ProgramButton({
   href,
   children,
   size = "lg",
+  variant = "orange",
   registrationOpen,
 }: ProgramButtonProps) {
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -28,7 +30,7 @@ export default function ProgramButton({
   if (!registrationOpen) {
     return (
       <span
-        className={`inline-block bg-gray-500 text-white font-bold uppercase tracking-wider border-gray-500 border-2 cursor-not-allowed opacity-70 ${
+        className={`inline-block border-2 border-black bg-black text-white font-bold uppercase tracking-wider cursor-not-allowed opacity-70 ${
           size === "sm" ? "px-10 py-5 text-sm" : "px-12 py-5 text-xl"
         }`}
       >
@@ -37,11 +39,16 @@ export default function ProgramButton({
     );
   }
 
+  const colorClasses =
+    variant === "ink"
+      ? "border-black bg-black text-white hover:bg-white hover:text-black hover:border-white focus-visible:outline-white"
+      : "border-[#f45c36] bg-[#f45c36] text-white hover:bg-white hover:text-black hover:border-white focus-visible:outline-black";
+
   return (
     <a
       href={href}
       onClick={handleClick}
-      className={`inline-block bg-[#f45c36] text-white font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-all duration-300 transform hover:scale-105 border-white border-2 ${
+      className={`inline-block border-2 font-bold uppercase tracking-wider transition-all duration-300 hover:-translate-y-0.5 focus-visible:outline-3 focus-visible:outline-offset-4 ${colorClasses} ${
         size === "sm" ? "px-10 py-5 text-sm" : "px-12 py-5 text-xl"
       }`}
     >
