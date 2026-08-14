@@ -1,5 +1,5 @@
 import { getRegistration, updateRegistration } from "@/lib/google-sheets";
-import { INSTALLMENT_PRICE_ID, getStripeClient } from "@/lib/stripe";
+import { EARLY_BIRD_INSTALLMENT_PRICE_ID, LATE_BIRD_INSTALLMENT_PRICE_ID, getStripeClient } from "@/lib/stripe";
 import type Stripe from "stripe";
 
 export const runtime = "nodejs";
@@ -8,7 +8,18 @@ function stripeId(value: string | { id: string } | null) {
   return typeof value === "string" ? value : value?.id ?? "";
 }
 
-async function setInstallmentSchedule(subscriptionId: string, registrationId: string) {
+type InstallmentPlan = {
+  count: 2 | 3;
+  priceId: string;
+};
+
+function getInstallmentPlan(metadata: Stripe.Metadata | null): InstallmentPlan {
+  return metadata?.installmentCount === "2"
+    ? { count: 2, priceId: LATE_BIRD_INSTALLMENT_PRICE_ID }
+    : { count: 3, priceId: EARLY_BIRD_INSTALLMENT_PRICE_ID };
+}
+
+async function setInstallmentSchedule(subscriptionId: string, registrationId: string, plan: InstallmentPlan) {
   const stripe = getStripeClient();
   const schedule = await stripe.subscriptionSchedules.create(
     { from_subscription: subscriptionId },
@@ -24,9 +35,9 @@ async function setInstallmentSchedule(subscriptionId: string, registrationId: st
     phases: [
       {
         start_date: schedule.current_phase.start_date,
-        duration: { interval: "month", interval_count: 3 },
-        items: [{ price: INSTALLMENT_PRICE_ID, quantity: 1 }],
-        metadata: { registrationId },
+        duration: { interval: "month", interval_count: plan.count },
+        items: [{ price: plan.priceId, quantity: 1 }],
+        metadata: { registrationId, installmentCount: String(plan.count) },
       },
     ],
   });
@@ -54,9 +65,10 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   }
 
   if (session.mode === "subscription" && subscriptionId) {
-    await setInstallmentSchedule(subscriptionId, registrationId);
+    const installmentPlan = getInstallmentPlan(session.metadata);
+    await setInstallmentSchedule(subscriptionId, registrationId, installmentPlan);
     const existing = await getRegistration(registrationId);
-    if (existing?.row["Installments paid"] === "0/3") {
+    if (existing?.row["Installments paid"] === `0/${installmentPlan.count}`) {
       await updateRegistration(registrationId, { ...changes, "Payment status": "Subscription active" });
     } else {
       await updateRegistration(registrationId, changes);
@@ -71,16 +83,18 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
   const existing = await getRegistration(registrationId);
   if (!existing) return;
 
+  const installmentPlan = getInstallmentPlan(invoice.parent?.subscription_details?.metadata ?? null);
+
   const paidInvoiceIds = existing.row["Stripe Invoice IDs"].split(",").filter(Boolean);
   if (paidInvoiceIds.includes(invoice.id)) return;
 
-  const count = Math.min(paidInvoiceIds.length + 1, 3);
+  const count = Math.min(paidInvoiceIds.length + 1, installmentPlan.count);
   const allInvoiceIds = [...paidInvoiceIds, invoice.id].join(",");
   await updateRegistration(registrationId, {
     "Stripe Subscription ID": stripeId(invoice.parent?.subscription_details?.subscription ?? null),
     "Stripe Invoice IDs": allInvoiceIds,
-    "Installments paid": `${count}/3`,
-    "Payment status": count === 3 ? "Paid in full" : `Installment ${count}/3 paid`,
+    "Installments paid": `${count}/${installmentPlan.count}`,
+    "Payment status": count === installmentPlan.count ? "Paid in full" : `Installment ${count}/${installmentPlan.count} paid`,
     "Last payment date": new Date().toISOString(),
   });
 }
