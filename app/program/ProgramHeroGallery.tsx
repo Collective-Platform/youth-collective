@@ -1,7 +1,8 @@
 "use client";
 
-import Image from "next/image";
+import Image, { getImageProps } from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { preload } from "react-dom";
 
 const CHANGE_INTERVAL_MS = 5_200;
 const UPPER_FOCAL_POINT_IMAGES = new Set([
@@ -137,8 +138,21 @@ export default function ProgramHeroGallery() {
   }, [activeIndex, isTimerRunning, showNextImage]);
 
   useEffect(() => {
-    const nextImage = new window.Image();
-    nextImage.src = heroImages[(activeIndex + 1) % heroImages.length].src;
+    for (let offset = 1; offset <= 2; offset += 1) {
+      const nextImage = heroImages[(activeIndex + offset) % heroImages.length];
+      const { props } = getImageProps({
+        src: nextImage.src,
+        alt: "",
+        fill: true,
+        sizes: "100vw",
+      });
+
+      preload(props.src, {
+        as: "image",
+        imageSrcSet: props.srcSet,
+        imageSizes: props.sizes,
+      });
+    }
   }, [activeIndex]);
 
   const activeImage = heroImages[activeIndex];
