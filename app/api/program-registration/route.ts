@@ -34,7 +34,7 @@ export async function POST(request: Request) {
           : {
               subscription_data: { metadata: { registrationId: registration.registrationId } },
             }),
-        success_url: `${origin}/program/registration/success?session_id={CHECKOUT_SESSION_ID}`,
+        success_url: `${origin}/learninglabs/registration/success?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${origin}/program`,
       },
       { idempotencyKey: `program-registration-${registration.registrationId}` },
