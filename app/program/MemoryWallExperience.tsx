@@ -31,7 +31,7 @@ export default function MemoryWallExperience() {
         <div className="absolute inset-0 bg-[#f45c36]"></div>
         <div className="relative mx-auto max-w-4xl text-center">
           <p className="text-balance text-sm font-bold uppercase text-black md:text-lg">
-            {"God is making all things new "}<br className="md:hidden" />— starting from you.
+            {"God is making all things new, "}<br className="md:hidden" />starting with you.
           </p>
         </div>
       </section>
