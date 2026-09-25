@@ -8,6 +8,14 @@ import {
 const spreadsheetId = process.env.GOOGLE_SHEET_ID;
 const quotedSheetName = `'${PROGRAM_REGISTRATION_SHEET_NAME.replaceAll("'", "''")}'`;
 
+function columnLetter(index: number) {
+  let result = "";
+  for (let value = index + 1; value > 0; value = Math.floor((value - 1) / 26)) {
+    result = String.fromCharCode(((value - 1) % 26) + 65) + result;
+  }
+  return result;
+}
+
 function getSheetsClient() {
   const email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
   const privateKey = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY?.replace(/\\n/g, "\n");
@@ -52,11 +60,15 @@ async function ensureRegistrationSheet() {
       valueInputOption: "RAW",
       requestBody: { values: [Array.from(PROGRAM_REGISTRATION_HEADERS)] },
     });
-  } else if (
-    currentHeaders.length !== PROGRAM_REGISTRATION_HEADERS.length ||
-    currentHeaders.some((header, index) => header !== PROGRAM_REGISTRATION_HEADERS[index])
-  ) {
+  } else if (currentHeaders.some((header, index) => header !== PROGRAM_REGISTRATION_HEADERS[index])) {
     throw new Error(`The ${PROGRAM_REGISTRATION_SHEET_NAME} sheet has unexpected column headings.`);
+  } else if (currentHeaders.length < PROGRAM_REGISTRATION_HEADERS.length) {
+    await sheets.spreadsheets.values.update({
+      spreadsheetId,
+      range: `${quotedSheetName}!${columnLetter(currentHeaders.length)}1`,
+      valueInputOption: "RAW",
+      requestBody: { values: [PROGRAM_REGISTRATION_HEADERS.slice(currentHeaders.length)] },
+    });
   }
 
   return sheets;
@@ -70,7 +82,7 @@ function rowFromValues(values: string[] | undefined): RegistrationRow {
 
 export async function getRegistration(registrationId: string) {
   const sheets = await ensureRegistrationSheet();
-  const range = `${quotedSheetName}!A2:AI`;
+  const range = `${quotedSheetName}!A2:${columnLetter(PROGRAM_REGISTRATION_HEADERS.length - 1)}`;
   const result = await sheets.spreadsheets.values.get({ spreadsheetId, range });
   const rows = result.data.values ?? [];
   const index = rows.findIndex((row) => row[0] === registrationId);
@@ -86,7 +98,7 @@ export async function appendRegistration(row: RegistrationRow) {
   const sheets = await ensureRegistrationSheet();
   await sheets.spreadsheets.values.append({
     spreadsheetId,
-    range: `${quotedSheetName}!A:AI`,
+    range: `${quotedSheetName}!A:${columnLetter(PROGRAM_REGISTRATION_HEADERS.length - 1)}`,
     valueInputOption: "RAW",
     insertDataOption: "INSERT_ROWS",
     requestBody: { values: [PROGRAM_REGISTRATION_HEADERS.map((header) => row[header])] },
@@ -105,7 +117,7 @@ export async function updateRegistration(registrationId: string, changes: Partia
   const sheets = await ensureRegistrationSheet();
   await sheets.spreadsheets.values.update({
     spreadsheetId,
-    range: `${quotedSheetName}!A${existing.rowNumber}:AI${existing.rowNumber}`,
+    range: `${quotedSheetName}!A${existing.rowNumber}:${columnLetter(PROGRAM_REGISTRATION_HEADERS.length - 1)}${existing.rowNumber}`,
     valueInputOption: "RAW",
     requestBody: { values: [PROGRAM_REGISTRATION_HEADERS.map((header) => nextRow[header])] },
   });
