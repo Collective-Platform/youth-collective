@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 
+import { Button } from "@/components/ui/button";
+
 type AdminAccountControlProps = {
   email: string;
   role: string;
@@ -25,18 +27,19 @@ export function AdminAccountControl({ email, role }: AdminAccountControlProps) {
 
   return (
     <>
-      <p className="text-xs font-medium uppercase tracking-[0.12em] text-white/45">Admin account</p>
-      <button
+      <p className="text-xs font-medium text-muted-foreground">Admin account</p>
+      <Button
         aria-label={`Sign out as ${email}`}
-        className="mt-2 block max-w-full truncate text-left text-sm text-white/80 transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white disabled:cursor-wait disabled:text-white/45"
+        className="mt-1 h-auto max-w-full justify-start px-0 py-1 font-normal"
         disabled={isPending}
         onClick={signOut}
         title="Sign out"
         type="button"
+        variant="link"
       >
         {isPending ? "Signing out…" : email}
-      </button>
-      <p className="mt-1 text-xs capitalize text-white/55">{role}</p>
+      </Button>
+      <p className="text-xs capitalize text-muted-foreground">{role}</p>
     </>
   );
 }

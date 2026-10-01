@@ -33,46 +33,7 @@ const learningLabs = [
 export default function HomePage() {
   return (
     <main className="overflow-hidden bg-white text-[#292823] antialiased">
-      <section className="border-b border-black/10 bg-white py-5 md:py-8">
-        <Container>
-          <div className="grid overflow-hidden border border-black/15 bg-black lg:grid-cols-[minmax(0,1.05fr)_minmax(22rem,0.95fr)]">
-            <div className="flex min-h-[31rem] flex-col justify-between p-7 text-white sm:p-10 md:min-h-[38rem] md:p-14">
-              <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#dce8c6]">
-                Strictly Students
-              </p>
-              <div className="max-w-2xl py-10">
-                <h1 className="font-heading text-[clamp(3rem,7vw,6.25rem)] leading-[0.88] tracking-[-0.055em]">
-                  A place to bring your whole self.
-                </h1>
-                <p className="mt-7 max-w-xl text-base leading-7 text-white/75 md:text-lg md:leading-8">
-                  We&apos;re a God-centred community for students who want to know Jesus, find their people, and live for what matters most.
-                </p>
-              </div>
-              <a
-                className="inline-flex w-fit min-h-12 items-center border border-white/40 px-5 py-3 text-sm font-semibold text-white no-underline transition-colors hover:bg-white hover:text-black focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#dce8c6]"
-                href="#learning-labs"
-              >
-                Explore Learning Labs <span aria-hidden="true" className="ml-2">↓</span>
-              </a>
-            </div>
-            <div className="relative min-h-[22rem] border-t border-white/15 lg:min-h-0 lg:border-l lg:border-t-0">
-              <Image
-                src="/assets/program/summer/summer-program-08.jpg"
-                alt="Students gathered together outdoors"
-                fill
-                priority
-                sizes="(min-width: 1024px) 50vw, 100vw"
-                className="object-cover"
-              />
-              <p className="absolute bottom-0 left-0 bg-[#dce8c6] px-5 py-4 text-xs font-bold uppercase tracking-[0.12em] text-[#273022] sm:px-7">
-                Made for students
-              </p>
-            </div>
-          </div>
-        </Container>
-      </section>
-
-      <section id="learning-labs" className="scroll-mt-6 bg-white py-20 md:py-28">
+      <section id="learning-labs" className="scroll-mt-6 bg-white pt-12 pb-20 md:pt-16 md:pb-28">
         <Container>
           <div className="grid gap-7 border-b border-black/15 pb-10 md:grid-cols-[minmax(0,1fr)_minmax(16rem,0.58fr)] md:items-end md:gap-14 md:pb-14">
             <div>
@@ -139,17 +100,6 @@ export default function HomePage() {
         </Container>
       </section>
 
-      <section className="bg-white py-16 md:py-20">
-        <Container className="grid gap-8 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#4e684a]">New here?</p>
-            <h2 className="mt-4 max-w-2xl font-heading text-4xl leading-[0.9] tracking-[-0.045em] md:text-5xl">You don&apos;t have to have it all figured out to belong here.</h2>
-          </div>
-          <Link href="/about" className="inline-flex min-h-12 w-fit items-center border border-[#273022] px-5 py-3 text-sm font-semibold text-[#273022] no-underline transition-colors hover:bg-[#273022] hover:text-white focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#625e85]">
-            About Strictly Students <span aria-hidden="true" className="ml-2">↗</span>
-          </Link>
-        </Container>
-      </section>
     </main>
   );
 }

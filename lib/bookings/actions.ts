@@ -4,7 +4,14 @@ import { revalidatePath } from "next/cache";
 import { after } from "next/server";
 
 import { getCurrentUser } from "../auth/user";
-import { cancelBooking, reserveSession, type CancelBookingResult, type ReserveSessionResult } from "../db/repositories/booking-commands";
+import {
+  cancelBooking,
+  leaveWaitlist,
+  reserveSession,
+  type CancelBookingResult,
+  type LeaveWaitlistResult,
+  type ReserveSessionResult,
+} from "../db/repositories/booking-commands";
 import { findPersonProfileForUserAccount } from "../db/repositories/people";
 import { dispatchNotificationDelivery } from "../notifications/email";
 
@@ -13,6 +20,7 @@ const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}
 type BookingActionResult =
   | ReserveSessionResult
   | CancelBookingResult
+  | LeaveWaitlistResult
   | { kind: "authentication_required" }
   | { kind: "profile_required" }
   | { kind: "invalid_request" };
@@ -70,5 +78,19 @@ export async function cancelBookingAction(bookingId: string): Promise<BookingAct
   if (result.kind === "cancelled") {
     after(() => dispatchNotifications(result.notificationDeliveryId, result.promotionNotificationDeliveryId));
   }
+  return result;
+}
+
+/** Authenticated member action for leaving only the caller's active Waitlist entry. */
+export async function leaveWaitlistAction(waitlistEntryId: string): Promise<BookingActionResult> {
+  if (!uuidPattern.test(waitlistEntryId)) return { kind: "invalid_request" };
+
+  const current = await getCurrentPersonId();
+  if (!current) return { kind: "authentication_required" };
+  if (!current.personId) return { kind: "profile_required" };
+
+  const result = await leaveWaitlist(current.personId, waitlistEntryId);
+  revalidatePath("/classes");
+  revalidatePath("/dashboard");
   return result;
 }

@@ -188,6 +188,10 @@ export const sessions = collective.table(
     checkInToken: uuid("check_in_token").defaultRandom().notNull(),
     checkInOpensAt: timestamp("check_in_opens_at", { withTimezone: true }),
     checkInClosesAt: timestamp("check_in_closes_at", { withTimezone: true }),
+    attendanceFinalizedAt: timestamp("attendance_finalized_at", { withTimezone: true }),
+    attendanceFinalizedByUserAccountId: uuid("attendance_finalized_by_user_account_id").references(() => userAccounts.id, {
+      onDelete: "restrict",
+    }),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
@@ -199,9 +203,28 @@ export const sessions = collective.table(
     check("sessions_end_after_start", sql`${table.endsAt} > ${table.startsAt}`),
     check(
       "sessions_check_in_window_is_valid",
-      sql`(${table.checkInOpensAt} is null and ${table.checkInClosesAt} is null) or ${table.checkInClosesAt} > ${table.checkInOpensAt}`,
+      sql`(${table.checkInOpensAt} is null and ${table.checkInClosesAt} is null) or (${table.checkInOpensAt} is not null and ${table.checkInClosesAt} is not null and ${table.checkInClosesAt} > ${table.checkInOpensAt})`,
     ),
   ],
+);
+
+/** Durable staff audit events that are not Booking status transitions. */
+export const sessionAuditEvents = collective.table(
+  "session_audit_events",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    sessionId: uuid("session_id")
+      .notNull()
+      .references(() => sessions.id, { onDelete: "restrict" }),
+    actorUserAccountId: uuid("actor_user_account_id")
+      .notNull()
+      .references(() => userAccounts.id, { onDelete: "restrict" }),
+    type: text("type").notNull(),
+    reason: text("reason").notNull(),
+    details: text("details"),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [index("session_audit_events_session_created_idx").on(table.sessionId, table.createdAt)],
 );
 
 /** A Booking is a Person's single attendance reservation for one Session. */
@@ -283,6 +306,7 @@ export const notificationDeliveries = collective.table(
       .notNull()
       .references(() => sessions.id, { onDelete: "restrict" }),
     bookingId: uuid("booking_id").references(() => bookings.id, { onDelete: "restrict" }),
+    idempotencyKey: text("idempotency_key").default(sql`gen_random_uuid()::text`).notNull(),
     type: notificationType("type").notNull(),
     status: notificationDeliveryStatus("status").default("queued").notNull(),
     attempts: integer("attempts").default(0).notNull(),
@@ -295,11 +319,7 @@ export const notificationDeliveries = collective.table(
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [
-    uniqueIndex("notification_deliveries_person_session_type_key").on(
-      table.personId,
-      table.sessionId,
-      table.type,
-    ),
+    uniqueIndex("notification_deliveries_idempotency_key").on(table.idempotencyKey),
     index("notification_deliveries_dispatch_idx").on(table.status, table.createdAt),
   ],
 );

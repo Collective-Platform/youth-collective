@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { CoursesPanel } from "../CoursesPanel";
-import { AdminSidebar } from "../AdminSidebar";
+import { AdminPageHeader, AdminShell } from "../AdminShell";
 import { getCurrentAdminAccess } from "../../../lib/admin/authorization";
 import { listAdminCourses, type AdminCourse } from "../../../lib/db/repositories/admin";
 
@@ -23,20 +23,11 @@ export default async function ClassesPage({ searchParams }: ClassesPageProps) {
   const courses = preview ? previewCourses : await listAdminCourses();
 
   return (
-    <main className="min-h-screen bg-[#f6f6f4] text-[#25242b]">
-      <div className="mx-auto grid max-w-[1600px] lg:grid-cols-[15.5rem_minmax(0,1fr)]">
-        <AdminSidebar currentPath="/admin/classes" email={access.email} role={access.role} />
-        <div className="min-w-0">
-          <header className="border-b border-black/10 bg-white px-5 py-6 md:px-8 lg:px-10">
-            <h1 className="text-2xl font-semibold tracking-[-0.03em] text-[#25242b] md:text-3xl">Programme Setup</h1>
-            <p className="mt-1 max-w-2xl text-sm leading-6 text-black/60">Manage the Courses and Classes members can see. Create dated Sessions from Today & Upcoming when the programme is ready to run.</p>
-          </header>
-          {preview ? <div className="border-b border-[#d5c7e5] bg-[#f4eef9] px-5 py-3 text-sm font-medium text-[#68416f] md:px-8 lg:px-10">Local preview · Sample data only · Admin actions stay protected</div> : null}
-          <section className="max-w-5xl px-5 py-8 md:px-8 lg:px-10">
-            <CoursesPanel courses={courses} />
-          </section>
-        </div>
-      </div>
-    </main>
+    <AdminShell currentPath="/admin/classes" email={access.email} preview={preview} role={access.role}>
+      <AdminPageHeader description="Manage the Courses and Classes members can see. Create dated Sessions from Today & Upcoming when the programme is ready to run." title="Programme Setup" />
+      <section className="max-w-5xl px-4 py-8 md:px-8 lg:px-10">
+        <CoursesPanel courses={courses} />
+      </section>
+    </AdminShell>
   );
 }

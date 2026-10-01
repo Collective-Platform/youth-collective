@@ -34,7 +34,15 @@ Roles currently exposed by the account model are `user`, `admin`, and `su`. Ther
 └── authenticated CSV download (bookings + active waitlist)
 ```
 
-All pages share a responsive shell: a dark `#292833` sidebar becomes a horizontal top bar below `lg`; the desktop shell is a two-column `15.5rem / content` grid constrained to `max-w-[1600px]`. The operational UI uses neutral cards with a muted indigo (`#4f46a5`) action/focus color, rather than the public dashboard’s monochrome styling.
+All pages share a responsive shadcn/ui shell: a neutral sidebar becomes a horizontally scrollable top bar below `lg`; the desktop shell is a two-column `15.5rem / content` grid constrained to `max-w-[1600px]`. The admin area uses the project’s shadcn New York primitives and theme tokens rather than bespoke page-level color or control systems.
+
+### Admin visual contract
+
+- **Mode:** Operate. Familiarity, scanability, and consistent controls take priority over visual novelty.
+- **Vocabulary:** compose the area from shared shadcn `Button`, `Card`, `Badge`, `Table`, `Dialog`, `Sheet`, `Input`, `Textarea`, `Select`, `Checkbox`, `Alert`, and `Separator` primitives.
+- **Styling:** use semantic theme tokens such as `background`, `card`, `muted`, `foreground`, `border`, `destructive`, and `ring`; do not reintroduce admin-specific hex colors or custom control classes.
+- **Responsive behavior:** keep the persistent desktop sidebar and horizontally scrollable mobile navigation. Dense tables may scroll horizontally rather than collapsing data into ambiguous cards.
+- **Product contract:** preserve the canonical capitalisation of Course, Class, and Session in staff-facing copy, and preserve the existing authorization, preview-mode, route, and server-action boundaries.
 
 ## Shared navigation and shell
 

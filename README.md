@@ -18,6 +18,25 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
+## Verification
+
+Use the fast check while developing. It runs the unit tests, TypeScript, ESLint,
+and Git whitespace validation:
+
+```bash
+pnpm check
+```
+
+Before a handoff or deployment, run the full verification. It adds Drizzle
+migration-history validation and a production Next.js build:
+
+```bash
+pnpm verify
+```
+
+These commands do not apply database migrations. Schema changes still require
+`pnpm db:generate` followed by an explicitly approved `pnpm db:migrate`.
+
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
 ## Learn More

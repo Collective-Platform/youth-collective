@@ -3,18 +3,30 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { toDataURL } from "qrcode";
-import { Download, QrCode } from "lucide-react";
+import { CheckCircle2, Download, QrCode, TriangleAlert } from "lucide-react";
 
-import { finalizeAttendanceAction, updateSessionAction } from "../../../../lib/admin/actions";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { cn } from "@/lib/utils";
+import { finalizeAttendanceAction, retryFailedNotificationsAction, updateSessionAction } from "../../../../lib/admin/actions";
 import { getCurrentAdminAccess } from "../../../../lib/admin/authorization";
-import { getSessionRoster, listAdminMembers, listAdminOverview, type AdminSession } from "../../../../lib/db/repositories/admin";
+import { getAdminSession, getSessionRoster, listAdminMembers, listTransferTargetSessions, type AdminSession } from "../../../../lib/db/repositories/admin";
 import { formatSessionDateTimeInput, SESSION_TIME_ZONE } from "../../../../lib/session-time";
-import Select from "../../../components/Select";
-import { AdminSidebar } from "../../AdminSidebar";
+import { AdminShell } from "../../AdminShell";
 import AddPersonDrawer from "./AddPersonDrawer";
 import FinalizeAttendanceButton from "./FinalizeAttendanceButton";
 import ManualCheckInButton from "./ManualCheckInButton";
+import ReopenAttendanceButton from "./ReopenAttendanceButton";
+import RetryNotificationsButton from "./RetryNotificationsButton";
 import SessionSettingsDrawer from "./SessionSettingsDrawer";
+import WaitlistActions from "./WaitlistActions";
+import WalkInDrawer from "./WalkInDrawer";
 
 export const dynamic = "force-dynamic";
 
@@ -37,36 +49,46 @@ const previewSession: AdminSession = {
   className: "After-school study club",
   displayName: null,
   location: "Main Hall",
-  startsAt: new Date("2026-08-21T16:00:00+08:00"),
-  endsAt: new Date("2026-08-21T18:00:00+08:00"),
+  startsAt: new Date("2026-10-21T16:00:00+08:00"),
+  endsAt: new Date("2026-10-21T18:00:00+08:00"),
   capacity: 30,
   status: "scheduled",
   checkInToken: "70e0955d-ff4a-42bd-bd9d-ee5d9929d250",
-  checkInOpensAt: new Date("2026-08-21T15:30:00+08:00"),
-  checkInClosesAt: new Date("2026-08-21T16:30:00+08:00"),
+  checkInOpensAt: new Date("2026-10-21T15:30:00+08:00"),
+  checkInClosesAt: new Date("2026-10-21T16:30:00+08:00"),
+  attendanceFinalizedAt: null,
   confirmedCount: 18,
   waitingCount: 3,
+  failedNotificationCount: 1,
+  reminderQueuedCount: 0,
+  reminderSentCount: 17,
+  reminderFailedCount: 1,
 };
 
 const previewSessions: AdminSession[] = [
   previewSession,
   {
     id: "c9c743fe-051e-4f6f-8d39-69e5603a6650",
-    classId: "8ceddd42-c1e4-4d45-af80-17e711cc8c2e",
-    courseId: "8ceddd42-c1e4-4d45-af80-17e711cc8c2e",
-    courseName: "Creative lab",
-    className: "Creative lab",
+    classId: previewSession.classId,
+    courseId: previewSession.courseId,
+    courseName: "Knowing God",
+    className: "After-school study club",
     displayName: null,
     location: "Studio 2",
-    startsAt: new Date("2026-08-24T16:30:00+08:00"),
-    endsAt: new Date("2026-08-24T18:30:00+08:00"),
+    startsAt: new Date("2026-10-24T16:30:00+08:00"),
+    endsAt: new Date("2026-10-24T18:30:00+08:00"),
     capacity: 30,
     status: "scheduled",
     checkInToken: "c588284f-76f9-4685-909c-71a5bf0d7beb",
-    checkInOpensAt: new Date("2026-08-24T16:00:00+08:00"),
-    checkInClosesAt: new Date("2026-08-24T17:00:00+08:00"),
+    checkInOpensAt: new Date("2026-10-24T16:00:00+08:00"),
+    checkInClosesAt: new Date("2026-10-24T17:00:00+08:00"),
+    attendanceFinalizedAt: null,
     confirmedCount: 11,
     waitingCount: 0,
+    failedNotificationCount: 0,
+    reminderQueuedCount: 0,
+    reminderSentCount: 11,
+    reminderFailedCount: 0,
   },
 ];
 
@@ -91,8 +113,6 @@ const previewMemberOptions = [
 
 const dateFormatter = new Intl.DateTimeFormat("en-GB", { weekday: "short", day: "numeric", month: "short", timeZone: SESSION_TIME_ZONE });
 const timeFormatter = new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: SESSION_TIME_ZONE });
-const controlClass = "min-h-10 w-full rounded-lg border border-black/15 bg-white px-3 text-sm text-[#25242b] outline-none transition focus:border-[#4f46a5] focus:ring-2 focus:ring-[#4f46a5]/15";
-const primaryButtonClass = "inline-flex min-h-10 items-center justify-center gap-2 rounded-lg bg-[#292833] px-4 text-sm font-medium text-white transition-colors hover:bg-[#4f46a5] focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#4f46a5]";
 
 function memberHref(memberId: string, preview: boolean) {
   return preview ? `/admin/members/${memberId}?preview=1` : `/admin/members/${memberId}`;
@@ -110,19 +130,26 @@ export default async function SessionPage({ params, searchParams }: SessionPageP
   const access = preview ? previewAccess : await getCurrentAdminAccess();
   if (!access) redirect("/dashboard");
 
-  const [overview, roster, members] = preview
+  const [session, roster, members] = preview
     ? [
-        { sessions: previewSessions },
+        previewSessions.find((session) => session.id === sessionId) ?? null,
         previewSessions.some((session) => session.id === sessionId) ? previewRoster : null,
         previewMemberOptions,
       ]
     : await Promise.all([
-        listAdminOverview(),
+        getAdminSession(sessionId),
         getSessionRoster(sessionId),
         listAdminMembers(),
       ]);
-  const session = overview.sessions.find((candidate) => candidate.id === sessionId);
   if (!session || !roster) notFound();
+  const transferTargetSessions = session.status === "scheduled" && session.startsAt > new Date() && !session.attendanceFinalizedAt
+    ? preview
+      ? previewSessions.filter((candidate) => candidate.classId === session.classId && candidate.id !== session.id && candidate.status === "scheduled")
+      : await listTransferTargetSessions(session.classId, session.id)
+    : [];
+  const transferTargets = transferTargetSessions
+    .filter((candidate) => candidate.confirmedCount < candidate.capacity)
+    .map((candidate) => ({ id: candidate.id, label: `${dateFormatter.format(candidate.startsAt)} at ${timeFormatter.format(candidate.startsAt)} · ${candidate.capacity - candidate.confirmedCount} places left` }));
 
   const activeTab: RosterTab = query.tab === "checked-in" || query.tab === "waitlist" || query.tab === "cancelled" || query.tab === "no-show" ? query.tab : "expected";
   const expectedBookings = roster.bookings.filter((booking) => booking.status === "confirmed");
@@ -130,6 +157,14 @@ export default async function SessionPage({ params, searchParams }: SessionPageP
   const cancelledBookings = roster.bookings.filter((booking) => booking.status === "cancelled");
   const noShowBookings = roster.bookings.filter((booking) => booking.status === "no_show");
   const displayedBookings = activeTab === "expected" ? expectedBookings : activeTab === "checked-in" ? checkedInBookings : activeTab === "cancelled" ? cancelledBookings : noShowBookings;
+  const missingContactCount = [...roster.bookings, ...roster.waitlist].filter((person) => !person.mobile || !person.email).length;
+  const readinessChecks = [
+    { label: "Location", ready: Boolean(session.location), detail: session.location || "Add a location" },
+    { label: "Check-in window", ready: Boolean(session.checkInOpensAt && session.checkInClosesAt), detail: session.checkInOpensAt && session.checkInClosesAt ? `${timeFormatter.format(session.checkInOpensAt)}–${timeFormatter.format(session.checkInClosesAt)}` : "Set both times" },
+    { label: "Contact details", ready: missingContactCount === 0, detail: missingContactCount ? `${missingContactCount} incomplete` : "Complete" },
+    { label: "Waitlist pressure", ready: session.waitingCount === 0, detail: session.waitingCount ? `${session.waitingCount} waiting` : "None waiting" },
+    { label: "Reminder delivery", ready: session.reminderFailedCount === 0, detail: session.reminderFailedCount ? `${session.reminderFailedCount} failed` : session.reminderSentCount ? `${session.reminderSentCount} sent` : session.reminderQueuedCount ? `${session.reminderQueuedCount} queued` : "Not due yet" },
+  ];
 
   const requestHeaders = await headers();
   const siteUrl = process.env.SITE_URL ?? `${requestHeaders.get("x-forwarded-proto") ?? "https"}://${requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host")}`;
@@ -137,55 +172,57 @@ export default async function SessionPage({ params, searchParams }: SessionPageP
   const checkInQrCode = await toDataURL(checkInUrl, { width: 300, margin: 1, color: { dark: "#000000", light: "#ffffff" } });
 
   return (
-    <main className="min-h-screen bg-[#f6f6f4] text-[#25242b]">
-      <div className="mx-auto grid max-w-[1600px] lg:grid-cols-[15.5rem_minmax(0,1fr)]">
-        <AdminSidebar currentPath="/admin" email={access.email} role={access.role} />
-        <div className="min-w-0">
-          <header className="border-b border-black/10 bg-white px-5 py-6 md:px-8 lg:px-10">
-            <Link className="text-sm font-medium text-[#4f46a5] underline decoration-[#aaa6d0] underline-offset-4 hover:text-[#292833]" href={preview ? "/admin?preview=1" : "/admin"}>All Sessions</Link>
+    <AdminShell currentPath="/admin" email={access.email} preview={preview} role={access.role}>
+          <header className="border-b bg-background px-4 py-6 md:px-8 lg:px-10">
+            <Button asChild className="px-0" variant="link"><Link href={preview ? "/admin?preview=1" : "/admin"}>All Sessions</Link></Button>
             <div className="mt-4 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
               <div>
-                <p className="text-sm font-semibold text-black/55">{session.courseName}</p>
-                <h1 className="mt-1 text-2xl font-semibold tracking-[-0.03em] text-[#25242b] md:text-3xl">{session.className}</h1>
-                <p className="mt-2 text-sm text-black/60">{dateFormatter.format(session.startsAt)} · {timeFormatter.format(session.startsAt)}–{timeFormatter.format(session.endsAt)}{session.location ? ` · ${session.location}` : ""}</p>
+                <p className="text-sm text-muted-foreground">{session.courseName}</p>
+                <h1 className="mt-1 text-2xl font-semibold tracking-tight md:text-3xl">{session.className}</h1>
+                <p className="mt-2 text-sm text-muted-foreground">{dateFormatter.format(session.startsAt)} · {timeFormatter.format(session.startsAt)}–{timeFormatter.format(session.endsAt)}{session.location ? ` · ${session.location}` : ""}</p>
               </div>
               <div className="flex flex-wrap gap-2">
                 <SessionSettingsDrawer action={updateSessionAction.bind(null, session.id)}>
                   <div className="grid gap-4">
-                    <p className="text-sm font-semibold text-[#25242b]">Session details</p>
-                    <label className="text-sm font-medium">Starts <input className={`mt-1.5 block ${controlClass}`} defaultValue={formatSessionDateTimeInput(session.startsAt)} name="startsAt" required type="datetime-local" /></label>
-                    <label className="text-sm font-medium">Ends <input className={`mt-1.5 block ${controlClass}`} defaultValue={formatSessionDateTimeInput(session.endsAt)} name="endsAt" required type="datetime-local" /></label>
-                    <label className="text-sm font-medium">Status <Select className={`mt-1.5 ${controlClass}`} defaultValue={session.status} name="status"><option value="scheduled">Scheduled</option><option value="cancelled">Cancelled</option></Select></label>
-                    <label className="text-sm font-medium">Capacity <input className={`mt-1.5 block ${controlClass}`} defaultValue={session.capacity} max="500" min="1" name="capacity" required type="number" /></label>
-                    <label className="text-sm font-medium">Location <input className={`mt-1.5 block ${controlClass}`} defaultValue={session.location ?? ""} maxLength={200} name="location" placeholder="For example, Main Hall" /></label>
-                    <label className="text-sm font-medium">Display name <input className={`mt-1.5 block ${controlClass}`} defaultValue={session.displayName ?? ""} maxLength={180} name="displayName" placeholder="Leave blank to use the Class name" /></label>
-                    <label className="text-sm font-medium">Cancellation note <input className={`mt-1.5 block ${controlClass}`} name="cancellationReason" placeholder="Optional note" /></label>
-                    <label className="text-sm font-medium">Check-in opens <input className={`mt-1.5 block ${controlClass}`} defaultValue={session.checkInOpensAt ? formatSessionDateTimeInput(session.checkInOpensAt) : ""} name="checkInOpensAt" required type="datetime-local" /></label>
-                    <label className="text-sm font-medium">Check-in closes <input className={`mt-1.5 block ${controlClass}`} defaultValue={session.checkInClosesAt ? formatSessionDateTimeInput(session.checkInClosesAt) : ""} name="checkInClosesAt" required type="datetime-local" /></label>
-                    <button className={`${primaryButtonClass} w-fit`} type="submit">Save session</button>
+                    <p className="text-sm font-semibold">Session details</p>
+                    <div className="grid gap-2"><Label htmlFor="session-start">Starts</Label><Input defaultValue={formatSessionDateTimeInput(session.startsAt)} id="session-start" name="startsAt" required type="datetime-local" /></div>
+                    <div className="grid gap-2"><Label htmlFor="session-end">Ends</Label><Input defaultValue={formatSessionDateTimeInput(session.endsAt)} id="session-end" name="endsAt" required type="datetime-local" /></div>
+                    <div className="grid gap-2"><Label>Status</Label><Select defaultValue={session.status} name="status"><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="scheduled">Scheduled</SelectItem><SelectItem value="cancelled">Cancelled</SelectItem></SelectContent></Select></div>
+                    <div className="grid gap-2"><Label htmlFor="session-capacity">Capacity</Label><Input defaultValue={session.capacity} id="session-capacity" max="500" min="1" name="capacity" required type="number" /></div>
+                    <div className="grid gap-2"><Label htmlFor="session-location">Location</Label><Input defaultValue={session.location ?? ""} id="session-location" maxLength={200} name="location" placeholder="For example, Main Hall" /></div>
+                    <div className="grid gap-2"><Label htmlFor="session-display-name">Display name</Label><Input defaultValue={session.displayName ?? ""} id="session-display-name" maxLength={180} name="displayName" placeholder="Leave blank to use the Class name" /></div>
+                    <div className="grid gap-2"><Label htmlFor="session-cancellation">Cancellation note</Label><Input id="session-cancellation" name="cancellationReason" placeholder="Optional note" /></div>
+                    <div className="grid gap-2"><Label htmlFor="check-in-opens">Check-in opens</Label><Input defaultValue={session.checkInOpensAt ? formatSessionDateTimeInput(session.checkInOpensAt) : ""} id="check-in-opens" name="checkInOpensAt" required type="datetime-local" /></div>
+                    <div className="grid gap-2"><Label htmlFor="check-in-closes">Check-in closes</Label><Input defaultValue={session.checkInClosesAt ? formatSessionDateTimeInput(session.checkInClosesAt) : ""} id="check-in-closes" name="checkInClosesAt" required type="datetime-local" /></div>
+                    <Button className="w-fit" type="submit">Save Session</Button>
                   </div>
                 </SessionSettingsDrawer>
               </div>
             </div>
           </header>
 
-          {preview ? <div className="border-b border-[#d5c7e5] bg-[#f4eef9] px-5 py-3 text-sm font-medium text-[#68416f] md:px-8 lg:px-10">Local preview · Sample data only · Admin actions stay protected</div> : null}
+          <div className="px-4 py-8 md:px-8 lg:px-10">
+            <Card aria-label="Run controls">
+              <CardHeader className="min-w-0 xl:flex-row xl:items-center xl:justify-between">
+                <div><CardTitle>Run controls</CardTitle><CardDescription>Use these during arrival, then complete attendance after the Session.</CardDescription></div>
+                <div className="flex min-w-0 flex-wrap items-start gap-3"><AddPersonDrawer members={members} preview={preview} sessionId={session.id} />{session.status === "scheduled" && !session.attendanceFinalizedAt ? <WalkInDrawer members={members} preview={preview} sessionId={session.id} /> : null}<Button asChild variant="outline"><a href={`/admin/export?session=${session.id}`}><Download aria-hidden="true" />Export roster</a></Button>{session.attendanceFinalizedAt ? <ReopenAttendanceButton sessionId={session.id} /> : <FinalizeAttendanceButton action={finalizeAttendanceAction.bind(null, session.id)} canFinalize={session.endsAt <= new Date()} finalized={false} remainingCount={expectedBookings.length} />}</div>
+              </CardHeader>
+              <CardContent>
+              {session.status === "scheduled" ? <div className="grid gap-5 md:grid-cols-[auto_minmax(0,1fr)]"><Image alt={`QR code for ${session.className} check-in`} className="size-36 rounded-lg border bg-white p-2" height={144} src={checkInQrCode} unoptimized width={144} /><div><div className="flex items-center gap-2"><QrCode aria-hidden="true" className="size-4 text-muted-foreground" /><h3 className="font-semibold">QR check-in</h3></div><p className="mt-2 text-sm text-muted-foreground">Open {session.checkInOpensAt ? timeFormatter.format(session.checkInOpensAt) : "at the scheduled time"}–{session.checkInClosesAt ? timeFormatter.format(session.checkInClosesAt) : "until the Session ends"}. Show or project this code for self check-in.</p><Button asChild className="mt-2 px-0" variant="link"><a href={checkInUrl} target="_blank">Open check-in link</a></Button></div></div> : <Alert variant="destructive"><AlertDescription>This Session is cancelled. Roster and export remain available; live check-in is unavailable.</AlertDescription></Alert>}
+              </CardContent>
+            </Card>
 
-          <div className="px-5 py-8 md:px-8 lg:px-10">
-            <section aria-label="Run controls" className="rounded-xl border border-black/10 bg-white p-5 md:p-6">
-              <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
-                <div><h2 className="text-xl font-semibold tracking-[-0.02em]">Run controls</h2><p className="mt-1 text-sm text-black/60">Use these during arrival, then complete attendance after the Session.</p></div>
-                <div className="flex flex-wrap items-start gap-3"><AddPersonDrawer members={members} preview={preview} sessionId={session.id} /><a className="inline-flex min-h-10 items-center justify-center gap-2 rounded-lg border border-black/15 bg-white px-4 text-sm font-medium text-[#343242] transition-colors hover:bg-[#f4f3fa]" href={`/admin/export?session=${session.id}`}><Download aria-hidden="true" className="size-4" />Export roster</a><FinalizeAttendanceButton action={finalizeAttendanceAction.bind(null, session.id)} remainingCount={expectedBookings.length} /></div>
-              </div>
-              {session.status === "scheduled" ? <div className="mt-6 grid gap-5 border-t border-black/10 pt-6 md:grid-cols-[auto_minmax(0,1fr)]"><Image alt={`QR code for ${session.className} check-in`} className="size-36 rounded-lg border border-black/10 bg-white p-2" height={144} src={checkInQrCode} unoptimized width={144} /><div><div className="flex items-center gap-2"><QrCode aria-hidden="true" className="size-4 text-[#4f4a75]" /><h3 className="font-semibold">QR check-in</h3></div><p className="mt-2 text-sm leading-6 text-black/60">Open {session.checkInOpensAt ? timeFormatter.format(session.checkInOpensAt) : "at the scheduled time"}–{session.checkInClosesAt ? timeFormatter.format(session.checkInClosesAt) : "until the Session ends"}. Show or project this code for self check-in.</p><a className="mt-3 inline-block break-all text-sm font-medium text-[#4f46a5] underline decoration-[#aaa6d0] underline-offset-4" href={checkInUrl} target="_blank">Open check-in link</a></div></div> : <p className="mt-5 rounded-lg bg-[#f8e8ed] px-4 py-3 text-sm font-medium text-[#9e4059]">This Session is cancelled. Roster and export remain available; live check-in is unavailable.</p>}
+            <section className="mt-8" aria-labelledby="readiness-heading">
+              <div className="flex flex-wrap items-end justify-between gap-3"><div><h2 className="text-xl font-semibold tracking-tight" id="readiness-heading">Session readiness</h2><p className="mt-1 text-sm text-muted-foreground">Resolve practical and communication gaps before people arrive.</p></div>{session.failedNotificationCount > 0 && !preview ? <RetryNotificationsButton action={retryFailedNotificationsAction.bind(null, session.id)} /> : null}</div>
+              <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">{readinessChecks.map((check) => <Card className={check.ready ? "border-border" : "border-amber-500/50 bg-amber-50/50"} key={check.label}><CardContent className="flex items-start gap-3 py-4">{check.ready ? <CheckCircle2 aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-emerald-600" /> : <TriangleAlert aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-amber-700" />}<div><p className="text-sm font-medium">{check.label}</p><p className="mt-1 text-xs text-muted-foreground">{check.detail}</p></div></CardContent></Card>)}</div>
             </section>
 
             <section className="mt-10">
               <div className="flex items-center justify-between gap-4">
-                <div><h2 className="text-xl font-semibold tracking-[-0.02em]">Roster board</h2><p className="mt-1 text-sm text-black/60">People are separated by their current operational state.</p></div>
+                <div><h2 className="text-xl font-semibold tracking-tight">Roster board</h2><p className="mt-1 text-sm text-muted-foreground">People are separated by their current operational state.</p></div>
               </div>
-              <nav aria-label="Session bookings" className="mt-6 border-b border-black/10" role="tablist">
-                <div className="flex min-w-max justify-start gap-1">
+              <nav aria-label="Session bookings" className="mt-6 overflow-x-auto" role="tablist">
+                <div className="inline-flex min-w-max justify-start gap-1 rounded-lg bg-muted p-1">
                   {[
                     { id: "expected" as const, label: "Expected", count: expectedBookings.length },
                     { id: "checked-in" as const, label: "Checked in", count: checkedInBookings.length },
@@ -195,7 +232,7 @@ export default async function SessionPage({ params, searchParams }: SessionPageP
                   ].map((tab) => (
                     <Link
                       aria-selected={activeTab === tab.id}
-                      className={`border-b-2 px-4 py-3 text-left text-sm font-medium no-underline transition-colors ${activeTab === tab.id ? "border-[#4f46a5] text-[#292833]" : "border-transparent text-black/60 hover:border-black/25 hover:text-[#292833]"}`}
+                      className={cn("rounded-md px-3 py-1.5 text-left text-sm font-medium no-underline", activeTab === tab.id ? "bg-background shadow-sm" : "text-muted-foreground hover:text-foreground")}
                       href={rosterHref(session.id, tab.id, preview)}
                       key={tab.id}
                       role="tab"
@@ -205,30 +242,26 @@ export default async function SessionPage({ params, searchParams }: SessionPageP
                   ))}
                 </div>
               </nav>
-              <div className="mt-6 overflow-x-auto">
-                <table className="w-full min-w-150 border-collapse text-left">
-                  <thead className="border-b border-black/10 text-xs font-medium uppercase tracking-[0.1em] text-black/55">
-                    <tr><th className="pb-3">Person</th><th className="pb-3">Contact</th><th className="pb-3">Status</th>{activeTab === "expected" || activeTab === "checked-in" ? <th className="pb-3 text-right">Action</th> : null}</tr>
-                  </thead>
-                  <tbody>
+              <Card className="mt-6 py-0">
+                <Table className="min-w-150">
+                  <TableHeader><TableRow><TableHead>Person</TableHead><TableHead>Contact</TableHead><TableHead>Status</TableHead><TableHead className="text-right">Action</TableHead></TableRow></TableHeader>
+                  <TableBody>
                     {activeTab === "waitlist" ? roster.waitlist.map((person) => (
-                      <tr className="border-b border-black/8 last:border-0" key={person.id}><td className="py-4 font-medium"><Link className="text-[#3f3a70] underline decoration-[#b5b1d8] underline-offset-4 hover:text-[#4f46a5]" href={memberHref(person.personId, preview)}>{person.name}</Link></td><td className="py-4 text-sm text-black/60">{person.mobile} · {person.email ?? "No login email"}</td><td className="py-4"><span className="rounded-full bg-[#efedf2] px-2.5 py-1 text-xs font-semibold text-[#4f4a75]">Waiting</span></td></tr>
+                      <TableRow key={person.id}><TableCell className="font-medium"><Link className="hover:underline" href={memberHref(person.personId, preview)}>{person.name}</Link></TableCell><TableCell className="text-muted-foreground">{person.mobile} · {person.email ?? "No login email"}</TableCell><TableCell><Badge variant="secondary">Waiting</Badge></TableCell><TableCell className="text-right">{preview ? null : <WaitlistActions entryId={person.id} name={person.name} />}</TableCell></TableRow>
                     )) : displayedBookings.map((booking) => (
-                      <tr className="border-b border-black/8 last:border-0" key={booking.bookingId}>
-                        <td className="py-4 font-medium"><Link className="text-[#3f3a70] underline decoration-[#b5b1d8] underline-offset-4 hover:text-[#4f46a5]" href={memberHref(booking.personId, preview)}>{booking.name}</Link></td>
-                        <td className="py-4 text-sm text-black/60">{booking.mobile} · {booking.email ?? "No login email"}</td>
-                        <td className="py-4"><span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${booking.status === "confirmed" ? "bg-[#dce8c6] text-[#273022]" : booking.status === "attended" ? "bg-[#efedf6] text-[#4f4a75]" : booking.status === "cancelled" ? "bg-black/6 text-black/65" : "bg-[#f8e8ed] text-[#9e4059]"}`}>{booking.status === "confirmed" ? "Expected" : booking.status === "attended" ? "Checked in" : booking.status === "cancelled" ? "Cancelled" : "No show"}</span></td>
-                        {activeTab === "expected" || activeTab === "checked-in" ? <td className="py-4 text-right">{booking.status === "confirmed" || booking.status === "attended" ? <ManualCheckInButton bookingId={booking.bookingId} status={booking.status} /> : null}</td> : null}
-                      </tr>
+                      <TableRow key={booking.bookingId}>
+                        <TableCell className="font-medium"><Link className="hover:underline" href={memberHref(booking.personId, preview)}>{booking.name}</Link></TableCell>
+                        <TableCell className="text-muted-foreground">{booking.mobile} · {booking.email ?? "No login email"}</TableCell>
+                        <TableCell><Badge variant={booking.status === "cancelled" || booking.status === "no_show" ? "destructive" : "secondary"}>{booking.status === "confirmed" ? "Expected" : booking.status === "attended" ? "Checked in" : booking.status === "cancelled" ? "Cancelled" : "No show"}</Badge></TableCell>
+                        <TableCell className="text-right">{preview ? <ManualCheckInButton bookingId={booking.bookingId} name={booking.name} preview status={booking.status} transferTargets={transferTargets} /> : <ManualCheckInButton bookingId={booking.bookingId} name={booking.name} status={booking.status} transferTargets={transferTargets} />}</TableCell>
+                      </TableRow>
                     ))}
-                  </tbody>
-                </table>
-              </div>
-              {(activeTab === "waitlist" ? roster.waitlist : displayedBookings).length === 0 ? <p className="py-10 text-center text-sm text-black/60">No {activeTab === "expected" ? "people are expected" : activeTab === "checked-in" ? "one has checked in" : activeTab === "waitlist" ? "one is waiting" : activeTab === "cancelled" ? "cancelled bookings" : "no shows"} for this Session.</p> : null}
+                  </TableBody>
+                </Table>
+              </Card>
+              {(activeTab === "waitlist" ? roster.waitlist : displayedBookings).length === 0 ? <p className="py-10 text-center text-sm text-muted-foreground">No {activeTab === "expected" ? "people are expected" : activeTab === "checked-in" ? "one has checked in" : activeTab === "waitlist" ? "one is waiting" : activeTab === "cancelled" ? "cancelled bookings" : "no shows"} for this Session.</p> : null}
             </section>
           </div>
-        </div>
-      </div>
-    </main>
+    </AdminShell>
   );
 }

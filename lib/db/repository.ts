@@ -2,7 +2,7 @@ import "server-only";
 
 import type { TransactionSql } from "postgres";
 
-import { getSqlClient } from "./client";
+import { getSqlClient } from "./client.ts";
 
 /**
  * Runs booking data changes in one Postgres transaction. Repository modules

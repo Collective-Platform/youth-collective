@@ -2,7 +2,7 @@ import "server-only";
 
 import type { TransactionSql } from "postgres";
 
-import { withDatabaseTransaction } from "../repository";
+import { withDatabaseTransaction } from "../repository.ts";
 
 type LockedSession = {
   id: string;
@@ -21,6 +21,13 @@ type ExistingWaitlistEntry = {
   status: "waiting" | "promoted" | "cancelled";
 };
 
+type LockedCancellationBooking = ExistingBooking & {
+  person_id: string;
+  session_id: string;
+  starts_at: Date;
+  session_status: "scheduled" | "cancelled";
+};
+
 type IdRow = { id: string };
 
 type NotificationType =
@@ -34,9 +41,9 @@ async function queueNotification(
   input: { personId: string; sessionId: string; bookingId?: string; type: NotificationType },
 ) {
   const [delivery] = await transaction<IdRow[]>`
-    insert into notification_deliveries (person_id, session_id, booking_id, type)
-    values (${input.personId}, ${input.sessionId}, ${input.bookingId ?? null}, ${input.type})
-    on conflict (person_id, session_id, type) do nothing
+    insert into notification_deliveries (person_id, session_id, booking_id, idempotency_key, type)
+    values (${input.personId}, ${input.sessionId}, ${input.bookingId ?? null}, ${crypto.randomUUID()}, ${input.type})
+    on conflict (idempotency_key) do nothing
     returning id
   `;
   return delivery?.id ?? null;
@@ -57,6 +64,8 @@ export type CancelBookingResult =
       promotionNotificationDeliveryId: string | null;
     }
   | { kind: "booking_unavailable" };
+
+export type LeaveWaitlistResult = { kind: "left_waitlist" } | { kind: "waitlist_unavailable" };
 
 type CommandOptions = {
   now?: Date;
@@ -197,12 +206,21 @@ export async function cancelBooking(
   bookingId: string,
   options: CommandOptions = {},
 ): Promise<CancelBookingResult> {
+  return withDatabaseTransaction((transaction) => cancelBookingInTransaction(transaction, personId, bookingId, options));
+}
+
+/** The transaction-aware seam covers cancellation and fair Waitlist promotion. */
+export async function cancelBookingInTransaction(
+  transaction: TransactionSql,
+  personId: string,
+  bookingId: string,
+  options: CommandOptions = {},
+): Promise<CancelBookingResult> {
   const now = options.now ?? new Date();
 
-  return withDatabaseTransaction(async (transaction) => {
-    const [booking] = await transaction<
-      Array<ExistingBooking & { session_id: string; starts_at: Date; session_status: "scheduled" | "cancelled" }>
-    >`
+  const [booking] = await transaction<
+    Array<ExistingBooking & { session_id: string; starts_at: Date; session_status: "scheduled" | "cancelled" }>
+  >`
       select bookings.id, bookings.status, bookings.session_id, sessions.starts_at, sessions.status as session_status
       from bookings
       inner join sessions on sessions.id = bookings.session_id
@@ -210,32 +228,129 @@ export async function cancelBooking(
       for update
     `;
 
-    if (
-      !booking ||
-      booking.status !== "confirmed" ||
-      booking.session_status !== "scheduled" ||
-      booking.starts_at <= now
-    ) {
-      return { kind: "booking_unavailable" };
-    }
+  if (
+    !booking ||
+    booking.status !== "confirmed" ||
+    booking.session_status !== "scheduled" ||
+    booking.starts_at <= now
+  ) {
+    return { kind: "booking_unavailable" };
+  }
 
-    await transaction`
+  return cancelLockedBookingInTransaction(
+    transaction,
+    { ...booking, person_id: personId },
+    options.changedByUserAccountId ?? null,
+    "member_cancellation",
+  );
+}
+
+/** Removes only the caller's active entry from a future scheduled Session. */
+export async function leaveWaitlist(
+  personId: string,
+  waitlistEntryId: string,
+  options: Pick<CommandOptions, "now"> = {},
+): Promise<LeaveWaitlistResult> {
+  return withDatabaseTransaction((transaction) =>
+    leaveWaitlistInTransaction(transaction, personId, waitlistEntryId, options),
+  );
+}
+
+/** The transaction-aware seam verifies ownership and Session availability atomically. */
+export async function leaveWaitlistInTransaction(
+  transaction: TransactionSql,
+  personId: string,
+  waitlistEntryId: string,
+  options: Pick<CommandOptions, "now"> = {},
+): Promise<LeaveWaitlistResult> {
+  const now = options.now ?? new Date();
+  const [entry] = await transaction<IdRow[]>`
+    select waitlist_entries.id
+    from waitlist_entries
+    inner join sessions on sessions.id = waitlist_entries.session_id
+    where waitlist_entries.id = ${waitlistEntryId}
+      and waitlist_entries.person_id = ${personId}
+      and waitlist_entries.status = 'waiting'
+      and sessions.status = 'scheduled'
+      and sessions.starts_at > ${now}
+    for update
+  `;
+
+  if (!entry) return { kind: "waitlist_unavailable" };
+
+  await transaction`
+    update waitlist_entries
+    set status = 'cancelled', updated_at = now()
+    where id = ${entry.id}
+  `;
+  return { kind: "left_waitlist" };
+}
+
+/** Staff cancellation uses the same promotion and notification rules as member cancellation. */
+export async function cancelBookingByStaff(
+  bookingId: string,
+  changedByUserAccountId: string,
+  options: Pick<CommandOptions, "now"> & { reason?: string } = {},
+): Promise<CancelBookingResult> {
+  return withDatabaseTransaction((transaction) => cancelBookingByStaffInTransaction(transaction, bookingId, changedByUserAccountId, options));
+}
+
+export async function cancelBookingByStaffInTransaction(
+  transaction: TransactionSql,
+  bookingId: string,
+  changedByUserAccountId: string,
+  options: Pick<CommandOptions, "now"> & { reason?: string } = {},
+): Promise<CancelBookingResult> {
+  const now = options.now ?? new Date();
+  const [booking] = await transaction<LockedCancellationBooking[]>`
+    select bookings.id, bookings.person_id, bookings.status, bookings.session_id,
+      sessions.starts_at, sessions.status as session_status
+    from bookings
+    inner join sessions on sessions.id = bookings.session_id
+    where bookings.id = ${bookingId}
+    for update
+  `;
+
+  if (
+    !booking ||
+    booking.status !== "confirmed" ||
+    booking.session_status !== "scheduled" ||
+    booking.starts_at <= now
+  ) {
+    return { kind: "booking_unavailable" };
+  }
+
+  return cancelLockedBookingInTransaction(
+    transaction,
+    booking,
+    changedByUserAccountId,
+    options.reason ? `staff_cancellation: ${options.reason}` : "staff_cancellation",
+  );
+}
+
+async function cancelLockedBookingInTransaction(
+  transaction: TransactionSql,
+  booking: LockedCancellationBooking,
+  changedByUserAccountId: string | null,
+  reason: string,
+): Promise<CancelBookingResult> {
+  await transaction`
       update bookings
       set status = 'cancelled', status_changed_at = now(), updated_at = now()
       where id = ${booking.id}
     `;
-    await transaction`
+  await transaction`
       insert into booking_status_history (booking_id, previous_status, next_status, changed_by_user_account_id, reason)
-      values (${booking.id}, 'confirmed', 'cancelled', ${options.changedByUserAccountId ?? null}, 'member_cancellation')
+      values (${booking.id}, 'confirmed', 'cancelled', ${changedByUserAccountId}, ${reason})
     `;
-    const notificationDeliveryId = await queueNotification(transaction, {
-      personId,
-      sessionId: booking.session_id,
-      bookingId: booking.id,
-      type: "booking_cancellation",
-    });
+  const notificationDeliveryId = await queueNotification(transaction, {
+    personId: booking.person_id,
+    sessionId: booking.session_id,
+    bookingId: booking.id,
+    type: "booking_cancellation",
+  });
 
-    const [waitlistEntry] = await transaction<Array<IdRow & { person_id: string }>>`
+  const [waitlistEntry] = await transaction<Array<IdRow & { person_id: string }>>`
       select id, person_id
       from waitlist_entries
       where session_id = ${booking.session_id} and status = 'waiting'
@@ -244,43 +359,55 @@ export async function cancelBooking(
       for update
     `;
 
-    if (!waitlistEntry) {
-      return {
-        kind: "cancelled",
-        notificationDeliveryId,
-        promotedPersonId: null,
-        promotionNotificationDeliveryId: null,
-      };
-    }
+  if (!waitlistEntry) {
+    return {
+      kind: "cancelled",
+      notificationDeliveryId,
+      promotedPersonId: null,
+      promotionNotificationDeliveryId: null,
+    };
+  }
 
-    await transaction`
+  await transaction`
       update waitlist_entries
       set status = 'promoted', promoted_at = now(), updated_at = now()
       where id = ${waitlistEntry.id}
     `;
 
-    const [promotedBooking] = await transaction<IdRow[]>`
-      insert into bookings (person_id, session_id, status)
-      values (${waitlistEntry.person_id}, ${booking.session_id}, 'confirmed')
-      returning id
+  const [existingPromotedBooking] = await transaction<ExistingBooking[]>`
+      select id, status
+      from bookings
+      where person_id = ${waitlistEntry.person_id} and session_id = ${booking.session_id}
+      limit 1
     `;
-    await transaction`
+  const [promotedBooking] = existingPromotedBooking
+    ? await transaction<IdRow[]>`
+        update bookings
+        set status = 'confirmed', status_changed_at = now(), updated_at = now()
+        where id = ${existingPromotedBooking.id}
+        returning id
+      `
+    : await transaction<IdRow[]>`
+        insert into bookings (person_id, session_id, status)
+        values (${waitlistEntry.person_id}, ${booking.session_id}, 'confirmed')
+        returning id
+      `;
+  await transaction`
       insert into booking_status_history (booking_id, previous_status, next_status, reason)
-      values (${promotedBooking.id}, null, 'confirmed', 'waitlist_promotion')
+      values (${promotedBooking.id}, ${existingPromotedBooking?.status ?? null}, 'confirmed', 'waitlist_promotion')
     `;
 
-    const promotionNotificationDeliveryId = await queueNotification(transaction, {
-      personId: waitlistEntry.person_id,
-      sessionId: booking.session_id,
-      bookingId: promotedBooking.id,
-      type: "waitlist_promotion",
-    });
-
-    return {
-      kind: "cancelled",
-      notificationDeliveryId,
-      promotedPersonId: waitlistEntry.person_id,
-      promotionNotificationDeliveryId,
-    };
+  const promotionNotificationDeliveryId = await queueNotification(transaction, {
+    personId: waitlistEntry.person_id,
+    sessionId: booking.session_id,
+    bookingId: promotedBooking.id,
+    type: "waitlist_promotion",
   });
+
+  return {
+    kind: "cancelled",
+    notificationDeliveryId,
+    promotedPersonId: waitlistEntry.person_id,
+    promotionNotificationDeliveryId,
+  };
 }

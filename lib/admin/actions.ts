@@ -8,7 +8,14 @@ import { parseSessionDateTime } from "../session-time";
 import {
   createSessionRecords,
   createCourseRecord,
+  createWalkInRecord,
+  checkInPersonByStaff,
   finalizeAttendanceRecord,
+  promoteWaitlistEntryByStaff,
+  removeWaitlistEntryByStaff,
+  reopenAttendanceRecord,
+  retryFailedSessionNotifications,
+  transferBookingRecord,
   setClassArchiveStatus,
   setCourseArchiveStatus,
   setBookingStatusByStaff,
@@ -171,7 +178,7 @@ export async function createSessionsAction(formData: FormData) {
 }
 
 export async function updateSessionAction(sessionId: string, formData: FormData) {
-  await requireAdminAccess();
+  const user = await requireAdminAccess();
   if (!uuidPattern.test(sessionId)) throw new Error("Invalid Session.");
   const startsAt = dateTime(formData, "startsAt");
   const endsAt = dateTime(formData, "endsAt");
@@ -191,7 +198,7 @@ export async function updateSessionAction(sessionId: string, formData: FormData)
     cancellationReason: String(formData.get("cancellationReason") ?? "").trim(),
     checkInOpensAt,
     checkInClosesAt,
-  });
+  }, user.id);
   if (notificationDeliveryIds.length > 0) {
     after(() => Promise.allSettled(notificationDeliveryIds.map(dispatchNotificationDelivery)));
   }
@@ -225,7 +232,71 @@ export async function adjustBookingStatusAction(bookingId: string, formData: For
   const user = await requireAdminAccess();
   if (!uuidPattern.test(bookingId)) throw new Error("Invalid Booking.");
   const status = formData.get("status");
-  if (status !== "cancelled" && status !== "attended" && status !== "no_show") throw new Error("Invalid Booking status.");
-  await setBookingStatusByStaff(bookingId, status, user.id);
+  if (status !== "confirmed" && status !== "cancelled" && status !== "attended" && status !== "no_show") throw new Error("Invalid Booking status.");
+  const reason = requiredText(formData, "reason", 500);
+  const result = await setBookingStatusByStaff(bookingId, status, user.id, reason);
+  if (typeof result === "object" && result.kind === "cancelled") {
+    after(() => Promise.allSettled([
+      result.notificationDeliveryId,
+      result.promotionNotificationDeliveryId,
+    ].filter((id): id is string => Boolean(id)).map(dispatchNotificationDelivery)));
+  }
+  refreshAdmin();
+}
+
+export async function checkInPersonByStaffAction(sessionId: string, personId: string, formData: FormData) {
+  const user = await requireAdminAccess();
+  if (!uuidPattern.test(sessionId) || !uuidPattern.test(personId)) throw new Error("Invalid Session or Person.");
+  await checkInPersonByStaff(sessionId, personId, user.id, requiredText(formData, "reason", 500));
+  refreshAdmin();
+}
+
+export async function createWalkInAction(sessionId: string, formData: FormData) {
+  const user = await requireAdminAccess();
+  if (!uuidPattern.test(sessionId)) throw new Error("Invalid Session.");
+  await createWalkInRecord(sessionId, {
+    name: requiredText(formData, "name", 120),
+    mobile: requiredText(formData, "mobile", 30),
+    reason: requiredText(formData, "reason", 500),
+  }, user.id);
+  refreshAdmin();
+}
+
+export async function removeWaitlistEntryAction(entryId: string, formData: FormData) {
+  const user = await requireAdminAccess();
+  if (!uuidPattern.test(entryId)) throw new Error("Invalid Waitlist entry.");
+  await removeWaitlistEntryByStaff(entryId, user.id, requiredText(formData, "reason", 500));
+  refreshAdmin();
+}
+
+export async function promoteWaitlistEntryAction(entryId: string, formData: FormData) {
+  const user = await requireAdminAccess();
+  if (!uuidPattern.test(entryId)) throw new Error("Invalid Waitlist entry.");
+  const deliveryId = await promoteWaitlistEntryByStaff(entryId, user.id, requiredText(formData, "reason", 500));
+  if (deliveryId) after(() => dispatchNotificationDelivery(deliveryId));
+  refreshAdmin();
+}
+
+export async function reopenAttendanceAction(sessionId: string, formData: FormData) {
+  const user = await requireAdminAccess();
+  if (!uuidPattern.test(sessionId)) throw new Error("Invalid Session.");
+  await reopenAttendanceRecord(sessionId, user.id, requiredText(formData, "reason", 500));
+  refreshAdmin();
+}
+
+export async function retryFailedNotificationsAction(sessionId: string) {
+  const user = await requireAdminAccess();
+  if (!uuidPattern.test(sessionId)) throw new Error("Invalid Session.");
+  const deliveries = await retryFailedSessionNotifications(sessionId, user.id);
+  if (deliveries.length > 0) after(() => Promise.allSettled(deliveries.map((delivery) => dispatchNotificationDelivery(delivery.id))));
+  refreshAdmin();
+}
+
+export async function transferBookingAction(bookingId: string, formData: FormData) {
+  const user = await requireAdminAccess();
+  const targetSessionId = requiredText(formData, "targetSessionId", 50);
+  if (!uuidPattern.test(bookingId) || !uuidPattern.test(targetSessionId)) throw new Error("Invalid Booking or target Session.");
+  const deliveryIds = await transferBookingRecord(bookingId, targetSessionId, user.id, requiredText(formData, "reason", 500));
+  if (deliveryIds.length > 0) after(() => Promise.allSettled(deliveryIds.map(dispatchNotificationDelivery)));
   refreshAdmin();
 }

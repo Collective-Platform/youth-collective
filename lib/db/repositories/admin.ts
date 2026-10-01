@@ -1,9 +1,9 @@
 import "server-only";
 
-import { asc, desc, eq, gte, ilike, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gt, ilike, isNull, ne, or, sql } from "drizzle-orm";
 
 import { getDatabase } from "../client";
-import { bookings, classes, courses, people, sessions, userAccounts, waitlistEntries } from "../schema";
+import { bookings, classes, courses, notificationDeliveries, people, sessions, userAccounts, waitlistEntries } from "../schema";
 import { sessionDisplayName } from "./session-display-name";
 
 export type AdminClass = {
@@ -40,8 +40,13 @@ export type AdminSession = {
   checkInToken: string;
   checkInOpensAt: Date | null;
   checkInClosesAt: Date | null;
+  attendanceFinalizedAt: Date | null;
   confirmedCount: number;
   waitingCount: number;
+  failedNotificationCount: number;
+  reminderQueuedCount: number;
+  reminderSentCount: number;
+  reminderFailedCount: number;
 };
 
 export type RosterEntry = {
@@ -80,6 +85,13 @@ export type AdminMember = {
 };
 
 export type AdminMemberDetail = Omit<AdminMember, "bookingCount">;
+
+export type TransferTargetSession = {
+  id: string;
+  startsAt: Date;
+  capacity: number;
+  confirmedCount: number;
+};
 
 export async function listAdminClasses(): Promise<AdminClass[]> {
   return getDatabase()
@@ -158,24 +170,109 @@ export async function listAdminOverview() {
       checkInToken: sessions.checkInToken,
       checkInOpensAt: sessions.checkInOpensAt,
       checkInClosesAt: sessions.checkInClosesAt,
+      attendanceFinalizedAt: sessions.attendanceFinalizedAt,
       confirmedCount: sql<number>`(
         select count(*)::integer from ${bookings}
-        where ${bookings.sessionId} = ${sessions.id} and ${bookings.status} = 'confirmed'
+        where ${bookings.sessionId} = ${sessions.id} and ${bookings.status} in ('confirmed', 'attended')
       )`,
       waitingCount: sql<number>`(
         select count(*)::integer from ${waitlistEntries}
         where ${waitlistEntries.sessionId} = ${sessions.id} and ${waitlistEntries.status} = 'waiting'
       )`,
+      failedNotificationCount: sql<number>`(
+        select count(*)::integer from ${notificationDeliveries}
+        where ${notificationDeliveries.sessionId} = ${sessions.id} and ${notificationDeliveries.status} = 'failed'
+      )`,
+      reminderQueuedCount: sql<number>`(
+        select count(*)::integer from ${notificationDeliveries}
+        where ${notificationDeliveries.sessionId} = ${sessions.id} and ${notificationDeliveries.type} = 'session_reminder' and ${notificationDeliveries.status} in ('queued', 'sending')
+      )`,
+      reminderSentCount: sql<number>`(
+        select count(*)::integer from ${notificationDeliveries}
+        where ${notificationDeliveries.sessionId} = ${sessions.id} and ${notificationDeliveries.type} = 'session_reminder' and ${notificationDeliveries.status} = 'sent'
+      )`,
+      reminderFailedCount: sql<number>`(
+        select count(*)::integer from ${notificationDeliveries}
+        where ${notificationDeliveries.sessionId} = ${sessions.id} and ${notificationDeliveries.type} = 'session_reminder' and ${notificationDeliveries.status} = 'failed'
+      )`,
     })
     .from(sessions)
     .innerJoin(classes, eq(sessions.classId, classes.id))
     .innerJoin(courses, eq(classes.courseId, courses.id))
-    .where(gte(sessions.endsAt, new Date()))
     .orderBy(asc(sessions.startsAt))
-    .limit(100);
+    .limit(500);
 
   const [classRows, sessionRows] = await Promise.all([classesPromise, sessionsPromise]);
   return { classes: classRows as AdminClass[], sessions: sessionRows as AdminSession[] };
+}
+
+export async function listTransferTargetSessions(classId: string, sourceSessionId: string): Promise<TransferTargetSession[]> {
+  return getDatabase()
+    .select({
+      id: sessions.id,
+      startsAt: sessions.startsAt,
+      capacity: sessions.capacity,
+      confirmedCount: sql<number>`(
+        select count(*)::integer from ${bookings}
+        where ${bookings.sessionId} = ${sessions.id} and ${bookings.status} in ('confirmed', 'attended')
+      )`,
+    })
+    .from(sessions)
+    .where(and(eq(sessions.classId, classId), ne(sessions.id, sourceSessionId), eq(sessions.status, "scheduled"), gt(sessions.startsAt, new Date()), isNull(sessions.attendanceFinalizedAt)))
+    .orderBy(asc(sessions.startsAt));
+}
+
+/** Retrieves one Session independently of the upcoming overview window. */
+export async function getAdminSession(sessionId: string): Promise<AdminSession | null> {
+  const [session] = await getDatabase()
+    .select({
+      id: sessions.id,
+      classId: sessions.classId,
+      courseId: courses.id,
+      courseName: courses.name,
+      className: sessionDisplayName,
+      displayName: sessions.displayName,
+      location: sessions.location,
+      startsAt: sessions.startsAt,
+      endsAt: sessions.endsAt,
+      capacity: sessions.capacity,
+      status: sessions.status,
+      checkInToken: sessions.checkInToken,
+      checkInOpensAt: sessions.checkInOpensAt,
+      checkInClosesAt: sessions.checkInClosesAt,
+      attendanceFinalizedAt: sessions.attendanceFinalizedAt,
+      confirmedCount: sql<number>`(
+        select count(*)::integer from ${bookings}
+        where ${bookings.sessionId} = ${sessions.id} and ${bookings.status} in ('confirmed', 'attended')
+      )`,
+      waitingCount: sql<number>`(
+        select count(*)::integer from ${waitlistEntries}
+        where ${waitlistEntries.sessionId} = ${sessions.id} and ${waitlistEntries.status} = 'waiting'
+      )`,
+      failedNotificationCount: sql<number>`(
+        select count(*)::integer from ${notificationDeliveries}
+        where ${notificationDeliveries.sessionId} = ${sessions.id} and ${notificationDeliveries.status} = 'failed'
+      )`,
+      reminderQueuedCount: sql<number>`(
+        select count(*)::integer from ${notificationDeliveries}
+        where ${notificationDeliveries.sessionId} = ${sessions.id} and ${notificationDeliveries.type} = 'session_reminder' and ${notificationDeliveries.status} in ('queued', 'sending')
+      )`,
+      reminderSentCount: sql<number>`(
+        select count(*)::integer from ${notificationDeliveries}
+        where ${notificationDeliveries.sessionId} = ${sessions.id} and ${notificationDeliveries.type} = 'session_reminder' and ${notificationDeliveries.status} = 'sent'
+      )`,
+      reminderFailedCount: sql<number>`(
+        select count(*)::integer from ${notificationDeliveries}
+        where ${notificationDeliveries.sessionId} = ${sessions.id} and ${notificationDeliveries.type} = 'session_reminder' and ${notificationDeliveries.status} = 'failed'
+      )`,
+    })
+    .from(sessions)
+    .innerJoin(classes, eq(sessions.classId, classes.id))
+    .innerJoin(courses, eq(classes.courseId, courses.id))
+    .where(eq(sessions.id, sessionId))
+    .limit(1);
+
+  return (session as AdminSession | undefined) ?? null;
 }
 
 export async function getSessionRoster(sessionId: string) {
@@ -206,7 +303,7 @@ export async function getSessionRoster(sessionId: string) {
     .from(waitlistEntries)
     .innerJoin(people, eq(waitlistEntries.personId, people.id))
     .leftJoin(userAccounts, eq(userAccounts.personId, people.id))
-    .where(eq(waitlistEntries.sessionId, sessionId))
+    .where(and(eq(waitlistEntries.sessionId, sessionId), eq(waitlistEntries.status, "waiting")))
     .orderBy(asc(waitlistEntries.createdAt), asc(waitlistEntries.id));
 
   const [bookingRows, waitlistRows] = await Promise.all([bookingRowsPromise, waitlistRowsPromise]);

@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, asc, count, eq, gte } from "drizzle-orm";
+import { and, asc, count, eq, gte, inArray } from "drizzle-orm";
 import { cache } from "react";
 
 import { getDatabase } from "../client";
@@ -51,7 +51,7 @@ export const listUpcomingPublicSessions = cache(async (): Promise<PublicSession[
     .innerJoin(courses, eq(classes.courseId, courses.id))
     .leftJoin(
       bookings,
-      and(eq(bookings.sessionId, sessions.id), eq(bookings.status, "confirmed")),
+      and(eq(bookings.sessionId, sessions.id), inArray(bookings.status, ["confirmed", "attended"])),
     )
     .where(
       and(

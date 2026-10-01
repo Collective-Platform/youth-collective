@@ -2,7 +2,7 @@ import "server-only";
 
 import { sql } from "drizzle-orm";
 
-import { classes, sessions } from "../schema";
+import { classes, sessions } from "../schema.ts";
 
 /** A Session may override its generated series number with a purpose-written display name. */
 export const sessionDisplayName = sql<string>`

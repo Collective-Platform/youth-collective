@@ -1,13 +1,15 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { CalendarPlus, CheckCircle2, Clock3, MapPin } from "lucide-react";
 
 import Container from "../components/Container";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
-import KnowingGodSection from "./KnowingGodSection";
+import ScheduleList from "./ScheduleList";
 import { getCurrentUser } from "../../lib/auth/user";
-import { listBookingsForAuthSubject } from "../../lib/db/repositories/bookings";
+import { listBookingsForAuthSubject, listWaitlistForAuthSubject } from "../../lib/db/repositories/bookings";
 import { listUpcomingPublicSessions } from "../../lib/db/repositories/sessions";
+import { SESSION_TIME_ZONE } from "../../lib/session-time";
 
 export const dynamic = "force-dynamic";
 
@@ -17,29 +19,37 @@ export const metadata: Metadata = {
 };
 
 type ClassesPageProps = {
-  searchParams: Promise<{ booking?: string }>;
+  searchParams: Promise<{ booking?: string; resume?: string; session?: string; waitlist?: string }>;
 };
 
+const receiptDateFormatter = new Intl.DateTimeFormat("en-GB", { weekday: "long", day: "numeric", month: "long", timeZone: SESSION_TIME_ZONE });
+const receiptTimeFormatter = new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: SESSION_TIME_ZONE });
+
 /**
- * THESIS: A learning journey comes before the individual dates a member can book.
- * OWN-WORLD: Strictly Students’ warm neutral base, ink route markers, soft availability states, and bold display type.
- * STORY: A member sees exactly when a Session happens, whether a place remains, and where booking begins.
- * FIRST VIEWPORT: A quiet neutral field establishes the invitation; the upcoming route starts directly below with the first action visible.
- * FORM: Fourth-ranked grounded structure — a chronological station ledger; seed 7c8d2db2.
+ * THESIS: A member can scan every upcoming Class and join the one that fits their week.
+ * OWN-WORLD: Strictly Students’ warm neutral base, quiet record cards, and bold display type.
+ * STORY: Time leads each card, followed by the Class, location, and a single clear booking action.
+ * FIRST VIEWPORT: A quiet neutral field establishes the invitation; the first upcoming Class and its action follow directly below.
+ * FORM: Chronological booking feed — one card per Session, without course-level grouping.
  */
 export default async function ClassesPage({ searchParams }: ClassesPageProps) {
   const user = await getCurrentUser();
-  const [sessions, params, bookings] = await Promise.all([
+  const [sessions, params, bookings, waitlist] = await Promise.all([
     listUpcomingPublicSessions(),
     searchParams,
     user ? listBookingsForAuthSubject(user.id) : Promise.resolve([]),
+    user ? listWaitlistForAuthSubject(user.id) : Promise.resolve([]),
   ]);
-  const hasBookingConfirmation = params.booking === "confirmed";
   const bookingIdsBySessionId = Object.fromEntries(
     bookings
       .filter((booking) => booking.status === "confirmed")
       .map((booking) => [booking.sessionId, booking.id]),
   );
+  const waitlistIdsBySessionId = Object.fromEntries(waitlist.map((entry) => [entry.sessionId, entry.id]));
+  const receiptSession = sessions.find((session) => session.id === params.session);
+  const hasBookingConfirmation = params.booking === "confirmed" && receiptSession && bookingIdsBySessionId[receiptSession.id];
+  const hasWaitlistConfirmation = params.waitlist === "confirmed" && receiptSession && waitlistIdsBySessionId[receiptSession.id];
+  const resumeSessionId = sessions.some((session) => session.id === params.resume) ? params.resume : undefined;
 
   return (
     <>
@@ -60,68 +70,44 @@ export default async function ClassesPage({ searchParams }: ClassesPageProps) {
           </Container>
         </section>
 
-        <section aria-labelledby="what-we-do-heading" className="bg-white">
-          <Container className="border-b border-black/10 pt-14 pb-7 md:pt-20 md:pb-8">
-            <div className="grid gap-10 lg:grid-cols-[minmax(15rem,0.8fr)_minmax(0,2fr)] lg:gap-16">
-              <h2 className="font-heading text-4xl leading-[0.92] tracking-[-0.035em] text-[#292823] md:text-5xl" id="what-we-do-heading">
-                What we do?
-              </h2>
-
-              <div className="divide-y divide-black/10">
-                <article className="grid gap-4 pb-7 md:grid-cols-[12rem_1fr] md:gap-8 md:pb-8">
-                  <h3 className="font-heading text-2xl leading-[0.95] tracking-[-0.025em] text-[#292823]">Eat Together</h3>
-                  <p className="max-w-2xl text-sm leading-5 md:text-lg md:leading-7">
-                    We gather around the table to eat together and talk to each other. Sometimes a few of us whip up something for the rest, but most of the time we grab food together.
-                  </p>
-                </article>
-
-                <article className="grid gap-4 py-7 md:grid-cols-[12rem_1fr] md:gap-8 md:py-8">
-                  <h3 className="font-heading text-2xl leading-[0.95] tracking-[-0.025em] text-[#292823]">Learn Together</h3>
-                  <p className="max-w-2xl text-sm leading-5 md:text-lg md:leading-7">
-                    We learn about a practice from the way of Jesus and discuss how it&apos;s like for us with our small group after trying it out. Sometimes we pair up with people who are different from us because it helps us to discover a part of us that we never knew before. But we stick with the same group for the classes. Less awkward.
-                  </p>
-                </article>
-              </div>
-            </div>
-          </Container>
-        </section>
-
         <Container className="pt-14 md:pt-20">
-          {hasBookingConfirmation ? (
-            <div className="mb-10 rounded-2xl border border-black/10 bg-[#fdfcf9] px-5 py-4 text-sm font-medium text-[#292823]" role="status">
-              Your place is confirmed. We’ve saved it in your dashboard.
-            </div>
-          ) : null}
+          {(hasBookingConfirmation || hasWaitlistConfirmation) && receiptSession ? <section className="mb-12 rounded-2xl bg-[#dce8c6] p-6 text-[#273022] md:p-8" role="status">
+            <CheckCircle2 aria-hidden="true" className="size-7" />
+            <h2 className="mt-4 font-heading text-3xl leading-none tracking-[-0.03em]">{hasBookingConfirmation ? "Your place is confirmed." : "You’re on the waitlist."}</h2>
+            <p className="mt-3 max-w-2xl leading-7">{hasBookingConfirmation ? "We’ll send essential updates by email. You can manage or cancel this booking from your dashboard." : "This is not a confirmed place yet. We’ll email you if one opens, so keep an eye on your inbox."}</p>
+            <p className="mt-5 font-bold">{receiptSession.className}</p>
+            <div className="mt-2 flex flex-wrap gap-x-5 gap-y-2 text-sm"><span className="inline-flex items-center gap-2"><Clock3 aria-hidden="true" className="size-4" />{receiptDateFormatter.format(receiptSession.startsAt)} · {receiptTimeFormatter.format(receiptSession.startsAt)}–{receiptTimeFormatter.format(receiptSession.endsAt)}</span><span className="inline-flex items-center gap-2"><MapPin aria-hidden="true" className="size-4" />{receiptSession.location || "Location to be confirmed"}</span></div>
+            <div className="mt-6 flex flex-wrap gap-3"><Link className="inline-flex min-h-11 items-center rounded-full bg-[#273022] px-5 text-sm font-bold text-white" href="/dashboard">View my classes</Link>{hasBookingConfirmation ? <a className="inline-flex min-h-11 items-center gap-2 rounded-full border border-[#273022]/25 px-5 text-sm font-bold" href={`/api/calendar/session/${receiptSession.id}`}><CalendarPlus aria-hidden="true" className="size-4" />Add to calendar</a> : null}</div>
+          </section> : null}
 
           <div className="mb-9 flex flex-col justify-between gap-4 md:flex-row md:items-end">
             <div>
               {user ? <p className="mb-3 text-sm font-semibold text-[#292823]">Welcome back, {user.email}</p> : null}
               <h2 className="font-heading text-4xl leading-none tracking-[-0.03em] text-[#292823] md:text-5xl">
-                Classes
+                Upcoming Classes
               </h2>
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-black/60">Book the individual Session that fits your week. Returning for a full series helps your group go deeper, but each date is reserved separately.</p>
             </div>
             <Link className="text-sm font-semibold text-[#292823] underline decoration-1 underline-offset-4 hover:text-black/65 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#292823]" href="/dashboard">
               My Classes
             </Link>
           </div>
 
-          <KnowingGodSection bookingIdsBySessionId={bookingIdsBySessionId} sessions={sessions} />
-
-          <section aria-labelledby="community-basics-heading" className="border-y border-black/10 py-9 md:mt-6 md:py-12">
-            <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(16rem,0.7fr)] lg:items-start lg:gap-8">
-              <div>
-                <p className="mb-3 text-sm font-bold text-[#292823]">Previous Class</p>
-                <h3 className="font-heading text-2xl leading-[0.95] tracking-[-0.025em] text-[#292823]" id="community-basics-heading">Community Basics</h3>
-                <p className="mt-4 max-w-2xl text-sm leading-5 md:text-lg md:leading-7">A four-part journey into healthy community.</p>
-              </div>
-              <div className="pt-2 lg:border-l lg:border-black/10 lg:pl-8 lg:pt-0">
-                <p className="text-sm font-bold leading-5 text-[#292823] md:text-lg md:leading-7">4 sessions</p>
-                <ul className="mt-1 grid list-disc pl-5 text-xs font-medium leading-4 text-[#292823] md:text-sm md:leading-5"><li>Belonging</li><li>Friendship</li><li>Trust</li><li>Ownership</li></ul>
-              </div>
-            </div>
-          </section>
+          <ScheduleList bookingIdsBySessionId={bookingIdsBySessionId} resumeSessionId={resumeSessionId} sessions={sessions} waitlistIdsBySessionId={waitlistIdsBySessionId} />
 
         </Container>
+
+        <section aria-labelledby="what-we-do-heading" className="mt-16 bg-[#f7f4ed] md:mt-24">
+          <Container className="py-14 md:py-20">
+            <div className="grid gap-10 lg:grid-cols-[minmax(15rem,0.8fr)_minmax(0,2fr)] lg:gap-16">
+              <h2 className="font-heading text-4xl leading-[0.92] tracking-[-0.035em] text-[#292823] md:text-5xl" id="what-we-do-heading">What happens in a Class?</h2>
+              <div className="divide-y divide-black/10">
+                <article className="grid gap-4 pb-7 md:grid-cols-[12rem_1fr] md:gap-8 md:pb-8"><h3 className="font-heading text-2xl leading-[0.95] tracking-[-0.025em] text-[#292823]">Eat Together</h3><p className="max-w-2xl text-sm leading-6 md:text-lg md:leading-7">We gather around the table to eat together and talk to each other. Sometimes a few of us whip up something for the rest, but most of the time we grab food together.</p></article>
+                <article className="grid gap-4 py-7 md:grid-cols-[12rem_1fr] md:gap-8 md:py-8"><h3 className="font-heading text-2xl leading-[0.95] tracking-[-0.025em] text-[#292823]">Learn Together</h3><p className="max-w-2xl text-sm leading-6 md:text-lg md:leading-7">We learn about a practice from the way of Jesus and discuss what it is like for us after trying it out. We stay with the same small group across a series, so it gets less awkward and more honest over time.</p></article>
+              </div>
+            </div>
+          </Container>
+        </section>
       </main>
       <div className="bg-white">
         <Footer />

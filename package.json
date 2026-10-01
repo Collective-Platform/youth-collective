@@ -4,9 +4,15 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:stop": "node scripts/stop-dev.mjs",
     "build": "NODE_OPTIONS=--max-old-space-size=4096 next build",
     "start": "next start",
     "lint": "eslint",
+    "test": "node --conditions=react-server --test --experimental-strip-types '**/*.test.mts'",
+    "typecheck": "tsc --noEmit",
+    "check": "pnpm test && pnpm typecheck && pnpm lint && git diff --check",
+    "verify": "pnpm check && pnpm db:check && pnpm build",
+    "db:check": "drizzle-kit check",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio"

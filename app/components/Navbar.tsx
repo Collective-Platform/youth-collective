@@ -6,15 +6,8 @@ import { usePathname, useRouter } from "next/navigation";
 import * as Dialog from "@radix-ui/react-dialog";
 import * as NavigationMenu from "@radix-ui/react-navigation-menu";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import Container from "./Container";
-
-const navLinks = {
-  learningLabs: [
-    { href: "/classes", label: "Classes" },
-    { href: "/learninglabs", label: "Experience" },
-  ],
-};
 
 const focusRingClasses =
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--alpha-purple)]";
@@ -69,51 +62,6 @@ const NavLink = ({
     </Link>
   );
 };
-
-function DropdownSection({
-  title,
-  links,
-  pathname,
-}: {
-  title: string;
-  links: { href: string; label: string; external?: boolean }[];
-  pathname: string;
-}) {
-  const activeLink = links.find(
-    (link) => !link.external && isMatchingRoute(pathname, link.href),
-  );
-
-  return (
-    <NavigationMenu.Item className="relative">
-      <NavigationMenu.Trigger
-        className={`group inline-flex min-h-10 items-center justify-center gap-1 rounded-md border-0 px-3 py-2 text-sm font-medium tracking-[0.01em] transition-colors focus-visible:bg-black/5 ${focusRingClasses} ${activeLink ? "bg-black text-white hover:bg-black focus-visible:bg-black" : "bg-transparent text-black hover:bg-black/5 hover:text-black"}`}
-      >
-        {activeLink?.label ?? title}
-        <ChevronDown
-          aria-hidden="true"
-          className="size-4 transition-transform duration-200 group-data-[state=open]:rotate-180"
-        />
-      </NavigationMenu.Trigger>
-      <NavigationMenu.Content className="absolute left-1/2 top-full z-50 w-max -translate-x-1/2 pt-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0">
-        <div className="min-w-44 bg-white p-2 shadow-[0_14px_32px_rgba(0,0,0,0.16)]">
-          {links.map((link) => (
-            <NavLink
-              key={link.href}
-              href={link.href}
-              external={link.external}
-              isCurrent={
-                !link.external && isMatchingRoute(pathname, link.href)
-              }
-              className="flex w-full justify-start text-left"
-            >
-              {link.label}
-            </NavLink>
-          ))}
-        </div>
-      </NavigationMenu.Content>
-    </NavigationMenu.Item>
-  );
-}
 
 const MobileNavLink = ({
   href,
@@ -208,19 +156,17 @@ export default function Navbar({ userEmail }: { userEmail?: string }) {
       {/* Desktop Navigation Menu (hidden on mobile) */}
       <NavigationMenu.Root className="relative hidden lg:block" aria-label="Primary navigation">
         <NavigationMenu.List className="m-0 flex list-none items-center gap-1 p-0">
-          <DropdownSection
-            title="Learning Labs"
-            links={navLinks.learningLabs}
-            pathname={pathname}
-          />
-          <NavLink href="/pray" isCurrent={isMatchingRoute(pathname, "/pray")}>
-            Pray
+          <NavLink
+            href="/classes"
+            isCurrent={isMatchingRoute(pathname, "/classes")}
+          >
+            Classes
           </NavLink>
-          <NavLink href="/serve" isCurrent={isMatchingRoute(pathname, "/serve")}>
-            Serve
-          </NavLink>
-          <NavLink href="/about" isCurrent={isMatchingRoute(pathname, "/about")}>
-            About
+          <NavLink
+            href="/learninglabs"
+            isCurrent={isMatchingRoute(pathname, "/learninglabs")}
+          >
+            Experience
           </NavLink>
           <NavLink href="/dashboard" isCurrent={pathname === "/dashboard"}>
             {userEmail ? "Dashboard" : "Login"}
@@ -276,31 +222,17 @@ export default function Navbar({ userEmail }: { userEmail?: string }) {
             {/* Mobile Menu Links */}
             <nav aria-label="Mobile navigation" className="flex flex-col gap-8">
               <div>
-                <p className="mb-2 px-3 text-sm font-heading uppercase tracking-[0.08em] text-black">
-                  Learning Labs
-                </p>
-                {navLinks.learningLabs.map((link) => (
-                  <MobileNavLink
-                    key={link.href}
-                    href={link.href}
-                    onNavigate={closeMobileMenu}
-                  >
-                    {link.label}
-                  </MobileNavLink>
-                ))}
-              </div>
-              <div>
-                <p className="mb-2 px-3 text-sm font-heading uppercase tracking-[0.08em] text-black">
-                  More ways in
-                </p>
-                <MobileNavLink href="/pray" onNavigate={closeMobileMenu}>
-                  Pray
+                <MobileNavLink
+                  href="/classes"
+                  onNavigate={closeMobileMenu}
+                >
+                  Classes
                 </MobileNavLink>
-                <MobileNavLink href="/serve" onNavigate={closeMobileMenu}>
-                  Serve
-                </MobileNavLink>
-                <MobileNavLink href="/about" onNavigate={closeMobileMenu}>
-                  About
+                <MobileNavLink
+                  href="/learninglabs"
+                  onNavigate={closeMobileMenu}
+                >
+                  Experience
                 </MobileNavLink>
               </div>
               <div className="border-t border-black/10 pt-6">

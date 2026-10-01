@@ -1,11 +1,12 @@
 import "server-only";
 
 import { eq } from "drizzle-orm";
+import type { TransactionSql } from "postgres";
 
-import { getDatabase } from "../db/client";
-import { notificationDeliveries } from "../db/schema";
-import { withDatabaseTransaction } from "../db/repository";
-import { SESSION_TIME_ZONE } from "../session-time";
+import { getDatabase } from "../db/client.ts";
+import { notificationDeliveries } from "../db/schema.ts";
+import { withDatabaseTransaction } from "../db/repository.ts";
+import { SESSION_TIME_ZONE } from "../session-time.ts";
 
 export type NotificationDispatchResult = "sent" | "skipped" | "failed";
 
@@ -84,7 +85,7 @@ function emailContent(job: NotificationJob) {
     session_cancellation: {
       subject: `Session cancelled: ${job.class_name}`,
       heading: "This Session is cancelled",
-      body: `${className} on ${escapeHtml(when)} will no longer take place. Your Booking has been released; please browse the timetable for another Session.`,
+      body: `${className} on ${escapeHtml(when)} will no longer take place. Your place has been released; please browse the timetable for another Session.`,
       link: classesUrl,
       linkLabel: "Browse Classes",
     },
@@ -232,6 +233,7 @@ export async function enqueueSessionReminders(now = new Date()) {
       personId: row.person_id,
       sessionId: row.session_id,
       bookingId: row.booking_id,
+      idempotencyKey: `session_reminder:${row.booking_id}`,
       type: "session_reminder" as const,
     })))
     .onConflictDoNothing()
@@ -242,12 +244,18 @@ export async function enqueueSessionReminders(now = new Date()) {
 /** Returns queued/retryable notification identifiers for the protected cron route. */
 export async function listPendingNotificationDeliveryIds(limit = 100) {
   const safeLimit = Math.max(1, Math.min(limit, 100));
-  const rows = await withDatabaseTransaction((transaction) => transaction<{ id: string }[]>`
+  return withDatabaseTransaction((transaction) => listPendingNotificationDeliveryIdsInTransaction(transaction, safeLimit));
+}
+
+export async function listPendingNotificationDeliveryIdsInTransaction(transaction: TransactionSql, limit: number) {
+  const rows = await transaction<{ id: string }[]>`
     select id
     from notification_deliveries
-    where status = 'queued' or (status = 'failed' and attempts < 5)
+    where status = 'queued'
+      or (status = 'failed' and attempts < 5)
+      or (status = 'sending' and last_attempted_at < now() - interval '10 minutes')
     order by created_at asc
-    limit ${safeLimit}
-  `);
+    limit ${limit}
+  `;
   return rows.map((row) => row.id);
 }

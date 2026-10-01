@@ -1,11 +1,8 @@
 import { NextResponse } from "next/server";
 
 import { getCurrentAdminAccess } from "../../../lib/admin/authorization";
+import { csvDocument } from "../../../lib/csv";
 import { getRosterCsvRows } from "../../../lib/db/repositories/admin";
-
-function csvCell(value: string | null) {
-  return `"${(value ?? "").replaceAll('"', '""')}"`;
-}
 
 export async function GET(request: Request) {
   const access = await getCurrentAdminAccess();
@@ -31,7 +28,7 @@ export async function GET(request: Request) {
       entry.createdAt.toISOString(),
     ]),
   ];
-  const body = rows.map((row) => row.map(csvCell).join(",")).join("\n");
+  const body = csvDocument(rows);
 
   return new NextResponse(body, {
     headers: {

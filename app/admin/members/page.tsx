@@ -2,7 +2,11 @@ import Link from "next/link";
 import { Search, UsersRound } from "lucide-react";
 import { redirect } from "next/navigation";
 
-import { AdminSidebar } from "../AdminSidebar";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { AdminPageHeader, AdminShell } from "../AdminShell";
 import { getCurrentAdminAccess } from "../../../lib/admin/authorization";
 import { listAdminMembers, type AdminMember } from "../../../lib/db/repositories/admin";
 
@@ -48,66 +52,51 @@ export default async function MembersPage({ searchParams }: MembersPageProps) {
   const members = preview ? previewMembers.filter((member) => includesQuery(member, query)) : await listAdminMembers(query);
 
   return (
-    <main className="min-h-screen bg-[#f6f6f4] text-[#25242b]">
-      <div className="mx-auto grid max-w-[1600px] lg:grid-cols-[15.5rem_minmax(0,1fr)]">
-        <AdminSidebar currentPath="/admin/members" email={access.email} role={access.role} />
-        <div className="min-w-0">
-          <header className="border-b border-black/10 bg-white px-5 py-6 md:px-8 lg:px-10">
-            <div>
-              <h1 className="text-2xl font-semibold tracking-[-0.03em] text-[#25242b] md:text-3xl">People</h1>
-              <p className="mt-1 text-sm text-black/60">Find a person and check their contact and participation record.</p>
-            </div>
-          </header>
-
-          {preview ? <div className="border-b border-[#d5c7e5] bg-[#f4eef9] px-5 py-3 text-sm font-medium text-[#68416f] md:px-8 lg:px-10">Local preview · Sample data only · Member data remains protected</div> : null}
-
-          <section className="px-5 py-8 md:px-8 lg:px-10">
+    <AdminShell currentPath="/admin/members" email={access.email} preview={preview} previewMessage="Sample data only · Member data remains protected" role={access.role}>
+      <AdminPageHeader description="Find a person and check their contact and participation record." title="People" />
+          <section className="px-4 py-8 md:px-8 lg:px-10">
             <div className="max-w-5xl">
               <form action="/admin/members" className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto]" method="get" role="search">
                 {preview ? <input name="preview" type="hidden" value="1" /> : null}
                 <label className="relative block">
                   <span className="sr-only">Search members</span>
-                  <Search aria-hidden="true" className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-[#5a5688]" />
-                  <input className="min-h-11 w-full rounded-lg border border-black/15 bg-white py-2 pl-10 pr-3 text-sm outline-none transition focus:border-[#4f46a5] focus:ring-2 focus:ring-[#4f46a5]/15" defaultValue={query} name="q" placeholder="Search by name, email, or mobile" type="search" />
+                  <Search aria-hidden="true" className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input className="h-10 pl-10" defaultValue={query} name="q" placeholder="Search by name, email, or mobile" type="search" />
                 </label>
-                <button className="inline-flex min-h-11 items-center justify-center rounded-lg bg-[#292833] px-5 text-sm font-medium text-white transition-colors hover:bg-[#4f46a5] focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#4f46a5]" type="submit">Search</button>
+                <Button type="submit">Search</Button>
               </form>
 
               <div className="mt-8 flex flex-wrap items-center justify-between gap-3">
                 <p className="text-base font-semibold">{members.length} {members.length === 1 ? "member" : "members"}{query ? ` matching “${query}”` : ""}</p>
-                {query ? <Link className="text-sm font-medium text-[#4f46a5] underline decoration-[#aaa6d0] underline-offset-4 hover:text-[#292833]" href={preview ? "/admin/members?preview=1" : "/admin/members"}>Clear search</Link> : null}
+                {query ? <Button asChild variant="link"><Link href={preview ? "/admin/members?preview=1" : "/admin/members"}>Clear search</Link></Button> : null}
               </div>
 
               {members.length > 0 ? (
-                <div className="mt-4 overflow-x-auto rounded-xl border border-black/10 bg-white">
-                  <table className="w-full min-w-180 border-collapse text-left">
-                    <thead className="border-b border-black/10 bg-[#faf9fd] text-xs font-medium uppercase tracking-[0.1em] text-black/55">
-                      <tr><th className="px-5 py-3">Member</th><th className="px-5 py-3">Contact</th><th className="px-5 py-3">Birthday</th><th className="px-5 py-3 text-right">Bookings</th><th className="px-5 py-3">Joined</th></tr>
-                    </thead>
-                    <tbody>
+                <Card className="mt-4 py-0">
+                  <Table className="min-w-180">
+                    <TableHeader><TableRow><TableHead>Member</TableHead><TableHead>Contact</TableHead><TableHead>Birthday</TableHead><TableHead className="text-right">Bookings</TableHead><TableHead>Joined</TableHead></TableRow></TableHeader>
+                    <TableBody>
                       {members.map((member) => (
-                        <tr className="border-b border-black/8 last:border-0" key={member.id}>
-                          <td className="px-5 py-4 font-medium text-[#25242b]"><Link className="text-[#3f3a70] underline decoration-[#b5b1d8] underline-offset-4 hover:text-[#4f46a5]" href={preview ? `/admin/members/${member.id}?preview=1` : `/admin/members/${member.id}`}>{member.name ?? "Unnamed member"}</Link></td>
-                          <td className="px-5 py-4 text-sm leading-6 text-black/60">{member.email ? <a className="underline decoration-[#aaa6d0] underline-offset-3 hover:text-[#292833]" href={`mailto:${member.email}`}>{member.email}</a> : "No login email"}<br />{member.mobile ?? "No mobile number"}</td>
-                          <td className="px-5 py-4 text-sm text-black/60">{member.birthDate ? formatBirthDate(member.birthDate) : "Not provided"}</td>
-                          <td className="px-5 py-4 text-right text-sm font-medium tabular-nums">{member.bookingCount}</td>
-                          <td className="px-5 py-4 text-sm text-black/60">{joinedFormatter.format(member.createdAt)}</td>
-                        </tr>
+                        <TableRow key={member.id}>
+                          <TableCell className="font-medium"><Link className="hover:underline" href={preview ? `/admin/members/${member.id}?preview=1` : `/admin/members/${member.id}`}>{member.name ?? "Unnamed member"}</Link></TableCell>
+                          <TableCell className="text-muted-foreground">{member.email ? <a className="hover:underline" href={`mailto:${member.email}`}>{member.email}</a> : "No login email"}<br />{member.mobile ?? "No mobile number"}</TableCell>
+                          <TableCell className="text-muted-foreground">{member.birthDate ? formatBirthDate(member.birthDate) : "Not provided"}</TableCell>
+                          <TableCell className="text-right font-medium tabular-nums">{member.bookingCount}</TableCell>
+                          <TableCell className="text-muted-foreground">{joinedFormatter.format(member.createdAt)}</TableCell>
+                        </TableRow>
                       ))}
-                    </tbody>
-                  </table>
-                </div>
+                    </TableBody>
+                  </Table>
+                </Card>
               ) : (
-                <div className="mt-4 rounded-xl border border-dashed border-black/15 bg-white px-6 py-10 text-center">
-                  <UsersRound aria-hidden="true" className="mx-auto size-6 text-[#5a5688]" />
+                <Card className="mt-4 border-dashed"><CardContent className="py-10 text-center">
+                  <UsersRound aria-hidden="true" className="mx-auto size-6 text-muted-foreground" />
                   <h2 className="mt-4 text-lg font-semibold">No members found</h2>
-                  <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-black/60">Try a different name, email address, or mobile number.</p>
-                </div>
+                  <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">Try a different name, email address, or mobile number.</p>
+                </CardContent></Card>
               )}
             </div>
           </section>
-        </div>
-      </div>
-    </main>
+    </AdminShell>
   );
 }

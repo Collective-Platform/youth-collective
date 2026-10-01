@@ -55,13 +55,13 @@ export default function Footer() {
             href="/classes"
             className="no-underline hover:underline text-sm"
           >
-            Learning Labs: Classes
+            Classes
           </Link>
           <Link
             href="/learninglabs"
             className="no-underline hover:underline text-sm"
           >
-            Learning Labs: Experience
+            Experience
           </Link>
         </div>
 
@@ -81,9 +81,6 @@ export default function Footer() {
           </a>
           <Link href="/serve" className="no-underline hover:underline text-sm">
             Serve
-          </Link>
-          <Link href="/about" className="no-underline hover:underline text-sm">
-            About Strictly Students
           </Link>
         </div>
 

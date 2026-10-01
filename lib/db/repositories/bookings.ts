@@ -1,10 +1,10 @@
 import "server-only";
 
-import { and, asc, count, desc, eq, inArray } from "drizzle-orm";
+import { and, asc, count, desc, eq, gt, inArray } from "drizzle-orm";
 import { cache } from "react";
 
 import { getDatabase } from "../client";
-import { bookings, classes, courses, people, sessions, userAccounts } from "../schema";
+import { bookings, classes, courses, people, sessions, userAccounts, waitlistEntries } from "../schema";
 import { sessionDisplayName } from "./session-display-name";
 
 export type MemberBooking = {
@@ -33,6 +33,17 @@ export type MemberSeriesSession = {
   startsAt: Date;
   endsAt: Date;
   availableSpaces: number;
+};
+
+export type MemberWaitlist = {
+  id: string;
+  sessionId: string;
+  courseName: string;
+  className: string;
+  audience: string | null;
+  location: string | null;
+  startsAt: Date;
+  endsAt: Date;
 };
 
 /** Lists a member's Booking history for their first-party login account. */
@@ -67,6 +78,38 @@ export const listBookingsForAuthSubject = cache(async (subject: string): Promise
     .orderBy(desc(sessions.startsAt));
 });
 
+/** Lists the member's active Waitlist entries for future scheduled Sessions. */
+export const listWaitlistForAuthSubject = cache(async (subject: string): Promise<MemberWaitlist[]> => {
+  if (!process.env.DATABASE_URL) return [];
+
+  return getDatabase()
+    .select({
+      id: waitlistEntries.id,
+      sessionId: waitlistEntries.sessionId,
+      courseName: courses.name,
+      className: sessionDisplayName,
+      audience: classes.audience,
+      location: sessions.location,
+      startsAt: sessions.startsAt,
+      endsAt: sessions.endsAt,
+    })
+    .from(waitlistEntries)
+    .innerJoin(people, eq(waitlistEntries.personId, people.id))
+    .innerJoin(userAccounts, eq(userAccounts.personId, people.id))
+    .innerJoin(sessions, eq(waitlistEntries.sessionId, sessions.id))
+    .innerJoin(classes, eq(sessions.classId, classes.id))
+    .innerJoin(courses, eq(classes.courseId, courses.id))
+    .where(
+      and(
+        eq(userAccounts.id, subject),
+        eq(waitlistEntries.status, "waiting"),
+        eq(sessions.status, "scheduled"),
+        gt(sessions.startsAt, new Date()),
+      ),
+    )
+    .orderBy(asc(sessions.startsAt));
+});
+
 /**
  * Lists every scheduled Session in the Classes a member has booked, including
  * future Sessions they have not yet reserved. This lets the member see the
@@ -92,7 +135,7 @@ export async function listSeriesSessionsForClassIds(classIds: string[]): Promise
     })
     .from(sessions)
     .innerJoin(classes, eq(sessions.classId, classes.id))
-    .leftJoin(bookings, and(eq(bookings.sessionId, sessions.id), eq(bookings.status, "confirmed")))
+    .leftJoin(bookings, and(eq(bookings.sessionId, sessions.id), inArray(bookings.status, ["confirmed", "attended"])))
     .where(and(eq(sessions.status, "scheduled"), inArray(sessions.classId, classIds)))
     .groupBy(
       sessions.id,
