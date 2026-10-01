@@ -75,7 +75,7 @@ function Waiver({ participantType }: { participantType: "parent" | "participant"
       {isParent ? (
         <>
           <p>
-            In consideration of being allowed to participate in Strictly Students Learning Labs: Experience organized by Strictly Students and Collective (hereinafter referred to as &quot;the Experience Lab&quot;) happening on 7 - 13 December 2026, I, the undersigned parent/guardian, do hereby acknowledge and agree as follows:
+            In consideration of being allowed to participate in Strictly Students Learning Labs: Experience organized by Strictly Students and Collective (hereinafter referred to as &quot;the Experience Lab&quot;) happening on 5 - 11 December 2026, I, the undersigned parent/guardian, do hereby acknowledge and agree as follows:
           </p>
           <p>
             <strong>1. Assumption of Risk:</strong><br />
@@ -104,7 +104,7 @@ function Waiver({ participantType }: { participantType: "parent" | "participant"
       ) : (
         <>
           <p>
-            In consideration of being allowed to participate in the Strictly Students Learning Labs: Experience organized by Strictly Students and Collective (hereinafter referred to as &quot;the Experience Lab&quot;) happening on 7 - 13 December 2026, I, the undersigned participant, do hereby acknowledge and agree as follows:
+            In consideration of being allowed to participate in the Strictly Students Learning Labs: Experience organized by Strictly Students and Collective (hereinafter referred to as &quot;the Experience Lab&quot;) happening on 5 - 11 December 2026, I, the undersigned participant, do hereby acknowledge and agree as follows:
           </p>
           <p>
             <strong>1. Assumption of Risk:</strong><br />

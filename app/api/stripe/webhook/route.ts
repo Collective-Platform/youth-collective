@@ -1,4 +1,5 @@
 import { getRegistration, updateRegistration } from "@/lib/google-sheets";
+import { sendRegistrationResponseEmail } from "@/lib/registration-email";
 import { EARLY_BIRD_INSTALLMENT_PRICE_ID, LATE_BIRD_INSTALLMENT_PRICE_ID, getStripeClient } from "@/lib/stripe";
 import type Stripe from "stripe";
 
@@ -43,9 +44,18 @@ async function setInstallmentSchedule(subscriptionId: string, registrationId: st
   });
 }
 
+async function sendRegistrationEmailOnce(registrationId: string) {
+  const registration = await getRegistration(registrationId);
+  if (!registration || registration.row["Confirmation email sent at"]) return;
+
+  await sendRegistrationResponseEmail(registration.row);
+  await updateRegistration(registrationId, { "Confirmation email sent at": new Date().toISOString() });
+}
+
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   const registrationId = session.client_reference_id ?? session.metadata?.registrationId;
   if (!registrationId) return;
+  const paymentConfirmed = session.payment_status === "paid" || session.payment_status === "no_payment_required";
 
   const paymentIntentId = stripeId(session.payment_intent);
   const subscriptionId = stripeId(session.subscription);
@@ -55,12 +65,13 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     "Stripe Subscription ID": subscriptionId,
   };
 
-  if (session.mode === "payment" && session.payment_status === "paid") {
+  if (session.mode === "payment" && paymentConfirmed) {
     await updateRegistration(registrationId, {
       ...changes,
       "Payment status": "Paid",
       "Last payment date": new Date().toISOString(),
     });
+    await sendRegistrationEmailOnce(registrationId);
     return;
   }
 
@@ -86,7 +97,10 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
   const installmentPlan = getInstallmentPlan(invoice.parent?.subscription_details?.metadata ?? null);
 
   const paidInvoiceIds = existing.row["Stripe Invoice IDs"].split(",").filter(Boolean);
-  if (paidInvoiceIds.includes(invoice.id)) return;
+  if (paidInvoiceIds.includes(invoice.id)) {
+    await sendRegistrationEmailOnce(registrationId);
+    return;
+  }
 
   const count = Math.min(paidInvoiceIds.length + 1, installmentPlan.count);
   const allInvoiceIds = [...paidInvoiceIds, invoice.id].join(",");
@@ -97,6 +111,7 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
     "Payment status": count === installmentPlan.count ? "Paid in full" : `Installment ${count}/${installmentPlan.count} paid`,
     "Last payment date": new Date().toISOString(),
   });
+  await sendRegistrationEmailOnce(registrationId);
 }
 
 async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {

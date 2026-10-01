@@ -39,6 +39,7 @@ export const PROGRAM_REGISTRATION_HEADERS = [
   "Installments paid",
   "Last payment date",
   "Last payment failure",
+  "Confirmation email sent at",
 ] as const;
 
 export type PaymentOption = "full" | "installments";
@@ -199,5 +200,6 @@ export function registrationToRow(registration: ProgramRegistration, submittedAt
     "Installments paid": registration.paymentOption === "full" ? "Not applicable" : `0/${installmentTerms.count}`,
     "Last payment date": "",
     "Last payment failure": "",
+    "Confirmation email sent at": "",
   };
 }
