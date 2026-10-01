@@ -173,14 +173,20 @@ function applyDraftToForm(form: HTMLFormElement, fields: Record<string, string>)
 }
 
 type RegistrationDialogProps = {
+  prefill?: {
+    fullName: string;
+    dateOfBirth: string;
+    email: string;
+    whatsAppNumber: string;
+  };
   triggerClassName?: string;
 };
 
-export default function RegistrationDialog({ triggerClassName }: RegistrationDialogProps) {
+export default function RegistrationDialog({ prefill, triggerClassName }: RegistrationDialogProps) {
   const formRef = useRef<HTMLFormElement>(null);
   const dialogContentRef = useRef<HTMLDivElement>(null);
   const [currentStep, setCurrentStep] = useState(0);
-  const [dateOfBirth, setDateOfBirth] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState(prefill?.dateOfBirth ?? "");
   const [todayDate] = useState(getTodayDate);
   const [paymentOption, setPaymentOption] = useState<PaymentOption | null>(null);
   const [saveProgress, setSaveProgress] = useState(false);
@@ -350,7 +356,7 @@ export default function RegistrationDialog({ triggerClassName }: RegistrationDia
 
   function resetDialog() {
     setCurrentStep(0);
-    setDateOfBirth("");
+    setDateOfBirth(prefill?.dateOfBirth ?? "");
     setPaymentOption(null);
     setSubmissionError("");
     setIsSubmitting(false);
@@ -434,7 +440,7 @@ export default function RegistrationDialog({ triggerClassName }: RegistrationDia
                 <div className="grid gap-5 sm:grid-cols-2">
                   <label className="grid gap-2 sm:col-span-2">
                     <FieldLabel>Full name</FieldLabel>
-                    <input className={fieldClassName} name="fullName" autoComplete="name" required />
+                    <input className={fieldClassName} name="fullName" autoComplete="name" defaultValue={prefill?.fullName} required />
                   </label>
                   <label className="grid gap-2">
                     <FieldLabel>Date of birth</FieldLabel>
@@ -470,11 +476,11 @@ export default function RegistrationDialog({ triggerClassName }: RegistrationDia
                   </label>
                   <label className="grid gap-2">
                     <FieldLabel>Email</FieldLabel>
-                    <input className={fieldClassName} name="email" type="email" autoComplete="email" required />
+                    <input className={fieldClassName} name="email" type="email" autoComplete="email" defaultValue={prefill?.email} required />
                   </label>
                   <label className="grid gap-2">
                     <FieldLabel>WhatsApp contact number</FieldLabel>
-                    <input className={fieldClassName} name="whatsAppNumber" type="tel" autoComplete="tel" required />
+                    <input className={fieldClassName} name="whatsAppNumber" type="tel" autoComplete="tel" defaultValue={prefill?.whatsAppNumber} required />
                   </label>
                   <label className="grid gap-2 sm:col-span-2">
                     <FieldLabel>Current address</FieldLabel>

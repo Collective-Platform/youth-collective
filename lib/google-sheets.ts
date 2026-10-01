@@ -1,3 +1,5 @@
+import "server-only";
+
 import { google } from "googleapis";
 import {
   PROGRAM_REGISTRATION_HEADERS,
@@ -7,6 +9,18 @@ import {
 
 const spreadsheetId = process.env.GOOGLE_SHEET_ID;
 const quotedSheetName = `'${PROGRAM_REGISTRATION_SHEET_NAME.replaceAll("'", "''")}'`;
+
+export type ExperienceRegistrationSummary = {
+  registrationId: string;
+  paymentPlan: string;
+  paymentStatus: string;
+  installmentsPaid: string;
+  lastPaymentFailure: string;
+};
+
+function normaliseEmail(email: string) {
+  return email.trim().toLowerCase();
+}
 
 function columnLetter(index: number) {
   let result = "";
@@ -89,6 +103,52 @@ export async function getRegistration(registrationId: string) {
   if (index === -1) return null;
 
   return { rowNumber: index + 2, row: rowFromValues(rows[index]) };
+}
+
+/**
+ * Reads only the account-safe registration fields required by a member
+ * dashboard. Form answers and contact details never leave this module.
+ */
+export async function listExperienceRegistrationsForEmail(email: string): Promise<ExperienceRegistrationSummary[]> {
+  if (!spreadsheetId || !process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL || !process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY) {
+    return [];
+  }
+
+  try {
+    const sheets = getSheetsClient();
+    const result = await sheets.spreadsheets.values.batchGet({
+      spreadsheetId,
+      ranges: [
+        `${quotedSheetName}!A2:A`,
+        `${quotedSheetName}!H2:H`,
+        `${quotedSheetName}!AA2:AB`,
+        `${quotedSheetName}!AG2:AI`,
+      ],
+    });
+    const [identityRows = [], emailRows = [], paymentRows = [], paymentHistoryRows = []] = result.data.valueRanges?.map((range) => range.values ?? []) ?? [];
+    const accountEmail = normaliseEmail(email);
+
+    return emailRows.flatMap((row, index) => {
+      if (normaliseEmail(String(row[0] ?? "")) !== accountEmail) return [];
+
+      const [registrationId = ""] = identityRows[index] ?? [];
+      if (!registrationId) return [];
+
+      const [paymentPlan = "", paymentStatus = ""] = paymentRows[index] ?? [];
+      const [installmentsPaid = "", , lastPaymentFailure = ""] = paymentHistoryRows[index] ?? [];
+
+      return [{
+        registrationId,
+        paymentPlan,
+        paymentStatus,
+        installmentsPaid,
+        lastPaymentFailure,
+      }];
+    });
+  } catch {
+    // Registrations should not make the member's booking dashboard unavailable.
+    return [];
+  }
 }
 
 export async function appendRegistration(row: RegistrationRow) {

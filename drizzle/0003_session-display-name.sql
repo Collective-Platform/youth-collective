@@ -1,0 +1,1 @@
+ALTER TABLE "collective"."sessions" ADD COLUMN "display_name" text;

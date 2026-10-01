@@ -29,45 +29,45 @@ const DiscordIcon = () => (
   </svg>
 );
 
+const WhatsAppIcon = () => (
+  <svg
+    width="100%"
+    height="100%"
+    viewBox="0 0 32 32"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+  >
+    <path
+      fill="currentColor"
+      d="M16.003 0C7.18 0 0 7.178 0 16.002c0 2.827.738 5.588 2.142 8.027L0 32l8.182-2.094A15.942 15.942 0 0 0 16.003 32C24.824 32 32 24.822 32 16.001C32 7.178 24.824 0 16.003 0m0 29.3a13.2 13.2 0 0 1-6.733-1.844l-.483-.287-4.856 1.243 1.297-4.73-.315-.488a13.216 13.216 0 1 1 11.09 6.106m7.244-9.898c-.397-.198-2.35-1.158-2.714-1.29c-.364-.133-.63-.198-.895.198c-.265.398-1.027 1.29-1.26 1.555c-.232.264-.463.297-.86.099c-2.35-1.175-3.892-2.098-5.442-4.758c-.41-.706.41-.655 1.175-2.183c.133-.265.066-.496-.033-.696c-.1-.198-.895-2.15-1.226-2.944c-.323-.775-.652-.67-.895-.68l-.762-.013c-.265 0-.696.1-1.06.496c-.365.398-1.39 1.357-1.39 3.307c0 1.952 1.423 3.838 1.62 4.103c.199.264 2.8 4.274 6.782 5.995c2.514 1.086 3.498 1.179 4.755 1.004c.765-.107 2.35-.96 2.68-1.887c.331-.926.331-1.72.232-1.886c-.098-.165-.364-.264-.762-.463"
+    />
+  </svg>
+);
+
 export default function Footer() {
   return (
     <footer className="text-black py-12">
       <Container className="flex flex-col items-center gap-8 lg:flex-row lg:flex-wrap lg:justify-around lg:items-start text-center">
-        {/* Find Your Tribe */}
+        {/* Learning Labs */}
         <div className="flex flex-col gap-2">
-          <h3 className="font-bold text-lg">Find Your Tribe</h3>
+          <h3 className="font-bold text-lg">Learning Labs</h3>
           <Link
-            href="/pre-teens"
+            href="/classes"
             className="no-underline hover:underline text-sm"
           >
-            Pre-teens
+            Classes
           </Link>
-          <Link href="/teens" className="no-underline hover:underline text-sm">
-            Teens
-          </Link>
-          <Link
-            href="/campus"
-            className=" no-underline hover:underline text-sm"
-          >
-            Campus
-          </Link>
-        </div>
-
-        {/* Practice The Way */}
-        <div className="flex flex-col gap-2">
-          <h3 className="font-bold text-lg">Practice The Way</h3>
           <Link
             href="/learninglabs"
             className="no-underline hover:underline text-sm"
           >
-            Learning Labs
+            Experience
           </Link>
-          <Link
-            href="/community"
-            className="no-underline hover:underline text-sm"
-          >
-            Live in Community
-          </Link>
+        </div>
+
+        {/* Get Involved */}
+        <div className="flex flex-col gap-2">
+          <h3 className="font-bold text-lg">Get Involved</h3>
           <Link href="/pray" className="no-underline hover:underline text-sm">
             Pray
           </Link>
@@ -79,31 +79,9 @@ export default function Footer() {
           >
             Give
           </a>
-        </div>
-
-        {/* Join A Team */}
-        <div className="flex flex-col gap-2">
-          <h3 className="font-bold text-lg">Join A Team</h3>
-          {/* <Link
-            href="/serve/ss"
-            className="no-underline hover:underline text-sm"
-          >
-            SS
-          </Link> */}
-          {/* <Link
-            href="/serve/mission"
-            className="no-underline hover:underline text-sm"
-          >
-            Mission
-          </Link> */}
-          <a
-            href="https://collective.my/ministries/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="no-underline hover:underline text-sm"
-          >
-            Church
-          </a>
+          <Link href="/serve" className="no-underline hover:underline text-sm">
+            Serve
+          </Link>
         </div>
 
         {/* Social Links */}
@@ -115,6 +93,7 @@ export default function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               className="w-8 h-8 hover:text-gray-300"
+              aria-label="Strictly Students Instagram"
             >
               <InstagramIcon />
             </a>
@@ -126,6 +105,15 @@ export default function Footer() {
               aria-label="Strictly Students Discord"
             >
               <DiscordIcon />
+            </a>
+            <a
+              href="https://wa.me/601123646715"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-8 h-8 hover:text-gray-300"
+              aria-label="Message Strictly Students on WhatsApp"
+            >
+              <WhatsAppIcon />
             </a>
           </div>
           <a
@@ -146,6 +134,31 @@ export default function Footer() {
           >
             @collectivecentral
           </a>
+        </div>
+
+        <div className="flex w-full basis-full flex-col items-center gap-3 border-t border-black/10 pt-6 text-center text-xs text-black/70">
+          <p className="text-xs font-normal leading-normal">
+            © 2026 Collective. All Rights Reserved.
+          </p>
+          <div className="flex items-center justify-center gap-2">
+            <a
+              href="https://collective.my/terms/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs font-normal leading-normal text-black no-underline underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--alpha-purple)]"
+            >
+              Terms of Use
+            </a>
+            <span aria-hidden="true">|</span>
+            <a
+              href="https://collective.my/privacy/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs font-normal leading-normal text-black no-underline underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--alpha-purple)]"
+            >
+              Privacy Policy
+            </a>
+          </div>
         </div>
       </Container>
     </footer>

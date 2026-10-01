@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-20T08:57:23.000Z",
+  "title": "Design System: Strictly Students — Member Dashboard",
+  "extensions": {
+    "colorMeta": {
+      "ink": { "role": "neutral", "displayName": "Ink", "canonical": "#000000", "tonalRamp": ["#000000", "#292929", "#525252", "#7a7a7a", "#a3a3a3", "#cccccc", "#e6e6e6", "#ffffff"] },
+      "paper": { "role": "neutral", "displayName": "Paper Field", "canonical": "#f7f6f1", "tonalRamp": ["#292823", "#4e4d47", "#74736d", "#999892", "#bebdb7", "#dbdad4", "#ebeae5", "#f7f6f1"] },
+      "white": { "role": "neutral", "displayName": "Record White", "canonical": "#ffffff", "tonalRamp": ["#171717", "#3d3d3d", "#636363", "#8a8a8a", "#b0b0b0", "#d0d0d0", "#ebebeb", "#ffffff"] },
+      "charcoal": { "role": "primary", "displayName": "Editorial Charcoal", "canonical": "#2e302e", "tonalRamp": ["#121312", "#2e302e", "#4a4c4a", "#676966", "#858784", "#a3a5a1", "#c3c5c1", "#e5e7e2"] },
+      "charcoal-hover": { "role": "primary", "displayName": "Charcoal Hover", "canonical": "#414441", "tonalRamp": ["#151615", "#414441", "#5d605d", "#7a7d79", "#989b96", "#b6b9b3", "#d4d7d0", "#eff2eb"] },
+      "botanical-green": { "role": "primary", "displayName": "Soft Botanical Green", "canonical": "#dce8c6", "tonalRamp": ["#26301f", "#46563a", "#657a56", "#859e73", "#a6c08f", "#c6d9ad", "#dce8c6", "#f3f8eb"] },
+      "botanical-green-deep": { "role": "primary", "displayName": "Botanical Green Hover", "canonical": "#cadab0", "tonalRamp": ["#22301b", "#405632", "#5d7a4a", "#7a9e63", "#99c17c", "#b7d69a", "#cadab0", "#edf4e4"] },
+      "botanical-ink": { "role": "neutral", "displayName": "Botanical Ink", "canonical": "#273022", "tonalRamp": ["#11150f", "#273022", "#434f3a", "#617054", "#7f906f", "#9fb18d", "#c0d1ad", "#e4f0d9"] },
+      "ink-violet": { "role": "secondary", "displayName": "Ink Violet", "canonical": "#625e85", "tonalRamp": ["#201e30", "#3d3959", "#625e85", "#817dab", "#a09dca", "#c0bee0", "#deddf1", "#f4f3fc"] },
+      "muted-record": { "role": "secondary", "displayName": "Muted Record", "canonical": "#efedf2", "tonalRamp": ["#2c2935", "#514c61", "#756f88", "#9992ad", "#beb8cc", "#d9d5e0", "#efedf2", "#faf9fc"] },
+      "record-ink": { "role": "neutral", "displayName": "Record Ink", "canonical": "#29263a", "tonalRamp": ["#12111a", "#29263a", "#46435b", "#65627e", "#8582a0", "#a6a3bf", "#c9c7dc", "#eeedf7"] },
+      "record-muted": { "role": "secondary", "displayName": "Record Muted Violet", "canonical": "#4f4a75", "tonalRamp": ["#1d1a2e", "#342f4e", "#4f4a75", "#706b99", "#918db8", "#b4b1d1", "#d8d6e8", "#f2f1f9"] },
+      "attended-lilac": { "role": "tertiary", "displayName": "Attended Lilac", "canonical": "#efedf6", "tonalRamp": ["#2d2a36", "#514d62", "#767187", "#9b96ad", "#c0bbcf", "#dcd9e5", "#efedf6", "#fbfaff"] },
+      "no-show-pink": { "role": "tertiary", "displayName": "No-show Pink", "canonical": "#f8e8ed", "tonalRamp": ["#351d25", "#60313f", "#8b475a", "#b96178", "#dc8297", "#efb2c0", "#f8e8ed", "#fff8fa"] },
+      "no-show-ink": { "role": "tertiary", "displayName": "No-show Ink", "canonical": "#9e4059", "tonalRamp": ["#361622", "#62273a", "#9e4059", "#c45d78", "#df8299", "#efb0be", "#f8d9df", "#fff5f7"] },
+      "notice-green": { "role": "tertiary", "displayName": "Notice Green", "canonical": "#e4eddc", "tonalRamp": ["#293327", "#4a5c46", "#6d8067", "#90a387", "#b5c6aa", "#d3dfcc", "#e4eddc", "#f6faf3"] },
+      "notice-ink": { "role": "neutral", "displayName": "Notice Ink", "canonical": "#334230", "tonalRamp": ["#161c14", "#334230", "#51664c", "#71866b", "#93a58d", "#b5c5af", "#d6e0d2", "#f1f6ef"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Member Welcome", "purpose": "The signed-in dashboard welcome and member name emphasis." },
+      "public-heading": { "displayName": "Public Profile Heading", "purpose": "The smaller unauthenticated profile heading." },
+      "sign-in-headline": { "displayName": "Sign-in Headline", "purpose": "The 3rem / 4rem sign-in panel invitation." },
+      "headline": { "displayName": "Editorial Headline", "purpose": "The next confirmed Class and major section titles." },
+      "body": { "displayName": "Operational Body", "purpose": "Plain-language logistics and supporting instructions." },
+      "label": { "displayName": "Operational Label", "purpose": "Actions, metadata, status, navigation, and counts." },
+      "micro": { "displayName": "Calendar Month", "purpose": "Uppercase abbreviated month on schedule date blocks." }
+    },
+    "shadows": [],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Botanical Action Pill",
+      "kind": "button",
+      "refersTo": "botanical-action-pill",
+      "description": "Direct discovery or current-section action.",
+      "html": "<button class=\"ds-botanical-action\">Explore Classes <span aria-hidden=\"true\">↗</span></button>",
+      "css": ".ds-botanical-action { min-height: 44px; display: inline-flex; align-items: center; gap: 8px; border: 0; border-radius: 9999px; background: #dce8c6; color: #273022; padding: 0 20px; font: 700 14px/1.5 Inter, sans-serif; cursor: pointer; transition: background-color 150ms ease; } .ds-botanical-action:hover { background: #cadab0; } .ds-botanical-action:focus-visible { outline: 4px solid #625e85; outline-offset: 4px; }"
+    },
+    {
+      "name": "Booking Status",
+      "kind": "chip",
+      "refersTo": "booking-status-attended",
+      "description": "Text-first status label for a Booking.",
+      "html": "<span class=\"ds-booking-status\"><svg aria-hidden=\"true\" viewBox=\"0 0 24 24\"><path d=\"m5 12 4 4L19 6\"/></svg> Attended</span>",
+      "css": ".ds-booking-status { min-height: 28px; display: inline-flex; align-items: center; gap: 4px; border-radius: 9999px; background: #efedf6; color: #4f4a75; padding: 0 12px; font: 800 12px/1 Inter, sans-serif; } .ds-booking-status svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }"
+    },
+    {
+      "name": "Calendar Block",
+      "kind": "custom",
+      "refersTo": "calendar-block",
+      "description": "Date anchor used to scan a Class chronologically.",
+      "html": "<div class=\"ds-calendar-block\"><span>OCT</span><strong>17</strong></div>",
+      "css": ".ds-calendar-block { width: 92px; height: 92px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 12px; background: #dce8c6; color: #273022; } .ds-calendar-block span { font: 800 12px/1 Inter, sans-serif; letter-spacing: .13em; } .ds-calendar-block strong { margin-top: 3px; font: 400 40px/.9 'Archivo Black', sans-serif; letter-spacing: -.045em; }"
+    },
+    {
+      "name": "Desktop Section Rail",
+      "kind": "nav",
+      "refersTo": "section-rail",
+      "description": "Sticky member identity and in-page navigation on large screens.",
+      "html": "<nav class=\"ds-section-rail\" aria-label=\"Bookings sections\"><div class=\"ds-rail-identity\"><span>A</span><strong>Alex</strong><small>alex@example.com</small></div><a class=\"ds-rail-current\" href=\"#overview\">Overview</a><a href=\"#history\">Booking history</a><a href=\"#profile\">My details</a></nav>",
+      "css": ".ds-section-rail { width: 248px; overflow: hidden; border: 1px solid rgba(0,0,0,.1); border-radius: 12px; background: #fff; font: 700 14px/1.5 Inter, sans-serif; } .ds-rail-identity { display: grid; gap: 8px; padding: 28px 24px; background: #2e302e; color: #fff; } .ds-rail-identity span { width: 48px; height: 48px; display: grid; place-items: center; border-radius: 9999px; background: #dce8c6; color: #273022; font: 400 20px/1 'Archivo Black', sans-serif; } .ds-rail-identity strong { margin-top: 10px; font: 400 24px/1 'Archivo Black', sans-serif; letter-spacing: -.035em; } .ds-rail-identity small { color: rgba(255,255,255,.65); font: 400 14px/1.5 Inter, sans-serif; } .ds-section-rail a { min-height: 44px; display: flex; align-items: center; margin: 4px 12px; border-radius: 8px; color: #000; padding: 0 16px; text-decoration: none; } .ds-section-rail a:hover { background: rgba(0,0,0,.05); } .ds-section-rail a:focus-visible { outline: 4px solid #625e85; outline-offset: 2px; } .ds-section-rail .ds-rail-current { background: #dce8c6; color: #273022; }"
+    },
+    {
+      "name": "Attendance Record",
+      "kind": "card",
+      "refersTo": "record-panel",
+      "description": "Plain-text summary of real attended and no-show totals.",
+      "html": "<aside class=\"ds-record-panel\"><h3>Your record</h3><p>A quiet view of the attendance recorded for you.</p><dl><div><dt>Attended</dt><dd>12</dd></div><div><dt>No-shows</dt><dd>0</dd></div></dl></aside>",
+      "css": ".ds-record-panel { border-radius: 12px; background: #efedf2; color: #29263a; padding: 24px; } .ds-record-panel h3 { margin: 0; font: 400 24px/1 'Archivo Black', sans-serif; letter-spacing: -.035em; } .ds-record-panel > p { margin: 12px 0 0; color: #4f4a75; font: 400 14px/1.7 Inter, sans-serif; } .ds-record-panel dl { margin: 28px 0 0; } .ds-record-panel dl div { display: flex; align-items: end; justify-content: space-between; padding: 16px 0; border-top: 1px solid rgba(98,94,133,.2); } .ds-record-panel dt { color: #4f4a75; font: 600 14px/1.5 Inter, sans-serif; } .ds-record-panel dd { margin: 0; font: 400 48px/1 'Archivo Black', sans-serif; letter-spacing: -.05em; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Quiet Class Desk",
+    "overview": "This signed-in dashboard treats a member's Classes as a current, personal record rather than a profile form with a list attached. A softened botanical green signals the immediate path, ink-violet supplies restrained record and focus punctuation, and charcoal gives the next commitment and account rail enough weight without resorting to pure black feature fields. The result is calm, friendly, and operational: members can orient themselves, find their place, and act without visual noise.\n\nThe composition remains deliberately chronological. The next Class leads; the remaining schedule follows; history and the attendance record sit after it; editable details come last. The surface relies on real Booking data and purposeful empty states—never sample sessions, fabricated totals, or decorative charts.",
+    "keyCharacteristics": [
+      "A quiet command-centre hierarchy with one immediately legible next commitment.",
+      "Editorial typography and flat bordered records, kept practical by clear rows and labels.",
+      "Botanical green and ink-violet used as measured accents against paper, white, and charcoal."
+    ],
+    "rules": [
+      { "name": "The Green-Is-Now Rule", "body": "Botanical green means the current destination or a direct next action; it is not a general decorative fill.", "section": "colors" },
+      { "name": "The Violet-Is-Record Rule", "body": "Ink-violet is for retained state, visible keyboard focus, and quiet supporting punctuation—not the default action colour.", "section": "colors" },
+      { "name": "The Name-Then-Fact Rule", "body": "Use display type for a member or Class name; use compact Inter labels for the time, location, status, and count that make it actionable.", "section": "typography" },
+      { "name": "The Bordered-Record Rule", "body": "Schedule, history, details, rail, and empty-state records stay flat with a light border; reserve tonal fields, not elevation, for hierarchy.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do place the next confirmed Class ahead of the schedule, history, and editable details.",
+      "Do use botanical green only for the active destination, primary Calendar block, booked status, and direct discovery actions.",
+      "Do preserve the desktop account rail and convert it to compact identity plus scrollable pills below `lg`.",
+      "Do retain names, times, locations, statuses, and record totals as plain readable text alongside their colour treatment.",
+      "Do use flat, bordered record surfaces and a muted attendance panel to keep the long page quiet."
+    ],
+    "donts": [
+      "Don't turn the dashboard into a profile-first form or an undifferentiated Booking list.",
+      "Don't use ink-violet as a second primary action colour; it denotes record, focus, and supporting punctuation.",
+      "Don't add decorative geometry to the next-Class card.",
+      "Don't add coloured empty-state treatments, charts, fictional sessions, attendance trends, or placeholder Booking data.",
+      "Don't give every row equal visual weight to the next commitment."
+    ]
+  }
+}

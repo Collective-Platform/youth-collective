@@ -130,4 +130,14 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Archivo Black needs a little more room between lines at display sizes. */
+  h1.font-heading[class*="leading"],
+  h2.font-heading[class*="leading"],
+  h3.font-heading[class*="leading"],
+  h4.font-heading[class*="leading"],
+  h5.font-heading[class*="leading"],
+  h6.font-heading[class*="leading"] {
+    line-height: 1.15 !important;
+  }
 }

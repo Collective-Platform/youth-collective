@@ -1,4 +1,8 @@
 import type { Metadata } from "next";
+
+import { getCurrentUser } from "@/lib/auth/user";
+import { findPersonProfileForUserAccount } from "@/lib/db/repositories/people";
+
 import LearningLabsExperience from "./LearningLabsExperience";
 
 export const metadata: Metadata = {
@@ -12,6 +16,24 @@ export const metadata: Metadata = {
   },
 };
 
-export default function ProgramPage() {
-  return <LearningLabsExperience />;
+export const dynamic = "force-dynamic";
+
+export default async function ProgramPage() {
+  const user = await getCurrentUser();
+  const profile = user ? await findPersonProfileForUserAccount(user.id) : null;
+
+  return (
+    <LearningLabsExperience
+      registrationPrefill={
+        user
+          ? {
+              email: user.email,
+              fullName: profile?.name ?? "",
+              dateOfBirth: profile?.birthDate ?? "",
+              whatsAppNumber: profile?.mobile ?? "",
+            }
+          : undefined
+      }
+    />
+  );
 }
