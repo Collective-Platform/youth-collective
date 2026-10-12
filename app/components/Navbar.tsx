@@ -15,6 +15,7 @@ const navLinks = {
     { href: "/campus", label: "Campus" },
   ],
   practiceTheWay: [
+    { href: "/learninglabs", label: "Learning Labs: Experience" },
     { href: "/community", label: "Live in Community" },
     { href: "/pray", label: "Pray" },
     // { href: "/serve", label: "Serve" },
