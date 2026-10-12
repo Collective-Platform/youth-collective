@@ -55,6 +55,16 @@ function getTodayDate() {
   return `${today.getFullYear()}-${month}-${day}`;
 }
 
+function DateInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
+  return (
+    <input
+      {...props}
+      type="date"
+      className={`${fieldClassName} block min-w-0 max-w-full text-left [&::-webkit-date-and-time-value]:text-left`}
+    />
+  );
+}
+
 function FieldLabel({ children }: { children: React.ReactNode }) {
   return <span className="text-sm font-bold uppercase tracking-wide">{children}</span>;
 }
@@ -439,10 +449,8 @@ export default function RegistrationDialog({ triggerClassName }: RegistrationDia
                   </label>
                   <label className="grid gap-2">
                     <FieldLabel>Date of birth</FieldLabel>
-                    <input
-                      className={fieldClassName}
+                    <DateInput
                       name="dateOfBirth"
-                      type="date"
                       value={dateOfBirth}
                       onChange={(event) => setDateOfBirth(event.target.value)}
                       required
@@ -566,7 +574,7 @@ export default function RegistrationDialog({ triggerClassName }: RegistrationDia
                     </label>
                     <label className="grid gap-2">
                       <FieldLabel>Today&apos;s date</FieldLabel>
-                      <input className={fieldClassName} name="guardianSignatureDate" type="date" defaultValue={todayDate} required />
+                      <DateInput name="guardianSignatureDate" defaultValue={todayDate} required />
                     </label>
                     <label className="grid gap-2 sm:col-span-2">
                       <FieldLabel>Address (if different from participant)</FieldLabel>
@@ -585,7 +593,7 @@ export default function RegistrationDialog({ triggerClassName }: RegistrationDia
                     </label>
                     <label className="grid gap-2 sm:col-span-2">
                       <FieldLabel>Today&apos;s date</FieldLabel>
-                      <input className={fieldClassName} name="participantSignatureDate" type="date" defaultValue={todayDate} required />
+                      <DateInput name="participantSignatureDate" defaultValue={todayDate} required />
                     </label>
                   </div>
                 )}
