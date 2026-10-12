@@ -126,7 +126,7 @@ export function parseProgramRegistration(payload: unknown): ProgramRegistration 
   }
 
   const participantIsMinor = isProgramParticipantMinor(getString(formFields, "dateOfBirth"));
-  const guardianFields = ["guardianName", "guardianPhone", "guardianAddress"];
+  const guardianFields = ["guardianName", "guardianPhone"];
   const emergencyFields = ["emergencyContactName", "emergencyContactPhone"];
   const contactFields = participantIsMinor ? guardianFields : emergencyFields;
   if (contactFields.some((field) => !getString(formFields, field))) {

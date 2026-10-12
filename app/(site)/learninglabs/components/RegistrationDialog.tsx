@@ -1,9 +1,10 @@
 "use client";
 
 import * as Dialog from "@radix-ui/react-dialog";
-import { Check, ChevronLeft, ChevronRight, ShieldCheck, X } from "lucide-react";
+import { Check, ChevronDown, ChevronLeft, ChevronRight, ShieldCheck, X } from "lucide-react";
 import { useRef, useState, type FormEvent } from "react";
 
+import { countries, defaultCountry } from "@/lib/countries";
 import { isProgramParticipantMinor } from "@/lib/program-age";
 import { getInstallmentTermsForEarlyBird } from "@/lib/program-pricing";
 import { useIsEarlyBirdPricing } from "./EarlyBirdNotice";
@@ -466,7 +467,24 @@ export default function RegistrationDialog({ triggerClassName }: RegistrationDia
                   </fieldset>
                   <label className="grid gap-2">
                     <FieldLabel>Citizenship</FieldLabel>
-                    <input className={fieldClassName} name="citizenship" required />
+                    <div className="relative">
+                      <select
+                        className={`${fieldClassName} appearance-none pr-10`}
+                        name="citizenship"
+                        defaultValue={defaultCountry}
+                        required
+                      >
+                        {countries.map((country) => (
+                          <option key={country} value={country}>
+                            {country}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown
+                        aria-hidden="true"
+                        className="pointer-events-none absolute right-3 top-1/2 size-5 -translate-y-1/2"
+                      />
+                    </div>
                   </label>
                   <label className="grid gap-2">
                     <FieldLabel>Email</FieldLabel>

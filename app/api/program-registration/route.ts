@@ -1,3 +1,5 @@
+import { after } from "next/server";
+
 import { appendRegistration, updateRegistration } from "@/lib/google-sheets";
 import { parseProgramRegistration, registrationToRow } from "@/lib/program-registration";
 import { getInstallmentTerms } from "@/lib/program-pricing";
@@ -14,9 +16,10 @@ export async function POST(request: Request) {
     const installmentTerms = getInstallmentTerms(submittedAt);
     const priceId = registration.paymentOption === "full" ? getFullPaymentPriceId(submittedAt) : getInstallmentPriceId(submittedAt);
 
-    await appendRegistration(registrationToRow(registration, submittedAt));
-
-    const checkoutSession = await stripe.checkout.sessions.create(
+    // Save the row and create the Stripe session at the same time; neither depends on the other.
+    const [, checkoutSession] = await Promise.all([
+      appendRegistration(registrationToRow(registration, submittedAt)),
+      stripe.checkout.sessions.create(
       {
         mode: registration.paymentOption === "full" ? "payment" : "subscription",
         customer_email: registration.email,
@@ -49,13 +52,17 @@ export async function POST(request: Request) {
         cancel_url: `${origin}/program`,
       },
       { idempotencyKey: `program-registration-${registration.registrationId}` },
-    );
+      ),
+    ]);
 
     if (!checkoutSession.url) throw new Error("Stripe did not return a checkout URL.");
 
-    await updateRegistration(registration.registrationId, {
-      "Stripe Checkout Session ID": checkoutSession.id,
-    });
+    // Recording the session ID isn't needed to open checkout, so do it after the response is sent.
+    after(() =>
+      updateRegistration(registration.registrationId, {
+        "Stripe Checkout Session ID": checkoutSession.id,
+      }).catch((error) => console.error("Could not record Stripe Checkout Session ID", error)),
+    );
 
     return Response.json({ checkoutUrl: checkoutSession.url });
   } catch (error) {

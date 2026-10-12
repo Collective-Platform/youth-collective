@@ -80,8 +80,8 @@ function rowFromValues(values: string[] | undefined): RegistrationRow {
   ) as RegistrationRow;
 }
 
-export async function getRegistration(registrationId: string) {
-  const sheets = await ensureRegistrationSheet();
+export async function getRegistration(registrationId: string, preparedSheets?: Awaited<ReturnType<typeof ensureRegistrationSheet>>) {
+  const sheets = preparedSheets ?? (await ensureRegistrationSheet());
   const range = `${quotedSheetName}!A2:${columnLetter(PROGRAM_REGISTRATION_HEADERS.length - 1)}`;
   const result = await sheets.spreadsheets.values.get({ spreadsheetId, range });
   const rows = result.data.values ?? [];
@@ -92,10 +92,10 @@ export async function getRegistration(registrationId: string) {
 }
 
 export async function appendRegistration(row: RegistrationRow) {
-  const existing = await getRegistration(row["Registration ID"]);
+  const sheets = await ensureRegistrationSheet();
+  const existing = await getRegistration(row["Registration ID"], sheets);
   if (existing) return existing;
 
-  const sheets = await ensureRegistrationSheet();
   await sheets.spreadsheets.values.append({
     spreadsheetId,
     range: `${quotedSheetName}!A:${columnLetter(PROGRAM_REGISTRATION_HEADERS.length - 1)}`,
@@ -104,17 +104,17 @@ export async function appendRegistration(row: RegistrationRow) {
     requestBody: { values: [PROGRAM_REGISTRATION_HEADERS.map((header) => row[header])] },
   });
 
-  const appended = await getRegistration(row["Registration ID"]);
+  const appended = await getRegistration(row["Registration ID"], sheets);
   if (!appended) throw new Error("Could not save the registration.");
   return appended;
 }
 
 export async function updateRegistration(registrationId: string, changes: Partial<RegistrationRow>) {
-  const existing = await getRegistration(registrationId);
+  const sheets = await ensureRegistrationSheet();
+  const existing = await getRegistration(registrationId, sheets);
   if (!existing) throw new Error("Registration not found.");
 
   const nextRow = { ...existing.row, ...changes };
-  const sheets = await ensureRegistrationSheet();
   await sheets.spreadsheets.values.update({
     spreadsheetId,
     range: `${quotedSheetName}!A${existing.rowNumber}:${columnLetter(PROGRAM_REGISTRATION_HEADERS.length - 1)}${existing.rowNumber}`,
