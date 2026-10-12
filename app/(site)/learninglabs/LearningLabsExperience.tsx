@@ -21,16 +21,7 @@ const familiarMoments = [
   "You are hungry for what's next.",
 ] as const;
 
-type LearningLabsExperienceProps = {
-  registrationPrefill?: {
-    fullName: string;
-    dateOfBirth: string;
-    email: string;
-    whatsAppNumber: string;
-  };
-};
-
-export default function LearningLabsExperience({ registrationPrefill }: LearningLabsExperienceProps) {
+export default function LearningLabsExperience() {
   return (
     <main className="min-h-screen bg-black font-[Inter,sans-serif] text-black">
       <section aria-label="Learning Labs introduction" className="flex min-h-svh flex-col md:min-h-0">
@@ -45,7 +36,7 @@ export default function LearningLabsExperience({ registrationPrefill }: Learning
 
         <div className="flex flex-1 bg-black px-3 pb-3 text-black sm:px-5 sm:pb-5 md:pb-12">
           <div className="mx-auto w-full max-w-[92rem] overflow-hidden bg-[#f45c36]">
-            <div className="flex h-full min-h-[31rem] flex-col items-center justify-center border-b-2 border-black p-6 text-center sm:p-8 md:min-h-[36rem] md:px-10 md:py-16 lg:min-h-[calc(100svh-12rem)]">
+            <div className="flex h-full min-h-[31rem] flex-col justify-center border-b-2 border-black p-6 sm:p-8 md:min-h-[36rem] md:items-center md:px-10 md:py-16 md:text-center lg:min-h-[calc(100svh-12rem)]">
             <h1 className="mt-7 max-w-3xl font-heading text-[clamp(2rem,4.5vw,3.5rem)] uppercase leading-[1] tracking-[-0.04em] sm:mt-8 md:text-balance">
               Learning Labs: Experience
             </h1>
@@ -70,11 +61,8 @@ export default function LearningLabsExperience({ registrationPrefill }: Learning
               </div>
             </dl>
             {registrationOpen ? (
-              <div className="mt-8 flex flex-col items-center gap-2">
-                <RegistrationDialog
-                  prefill={registrationPrefill}
-                  triggerClassName="inline-flex w-fit border-2 border-black bg-black px-6 py-4 text-sm font-bold tracking-[0.08em] text-white transition-colors hover:bg-[#edeae5] hover:text-black focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-black"
-                />
+              <div className="mt-8 flex flex-col items-start gap-2 md:items-center">
+                <RegistrationDialog triggerClassName="inline-flex w-fit border-2 border-black bg-black px-6 py-4 text-sm font-bold tracking-[0.08em] text-white transition-colors hover:bg-[#edeae5] hover:text-black focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-black" />
                 <p className="mt-1 text-xs font-semibold leading-tight opacity-50 sm:text-sm">
                   Registration closes 15 November
                 </p>
@@ -182,7 +170,7 @@ export default function LearningLabsExperience({ registrationPrefill }: Learning
           <div className="mt-10">
             {registrationOpen ? (
               <>
-                <RegistrationDialog prefill={registrationPrefill} />
+                <RegistrationDialog />
                 <p className="mt-4 text-sm leading-tight opacity-75 sm:text-sm">
                   Registration closes 15 November
                 </p>

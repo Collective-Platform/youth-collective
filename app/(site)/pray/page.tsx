@@ -25,10 +25,8 @@ export default function PrayPage() {
         </p>
       </section>
 
-      <TaglineBanner imageSrc="/assets/program/summer/summer-program-06.jpg" justify="left">
-        <span className="block leading-[1.3]">
-          &apos;By praying, we learn to pray.&apos; - Richard Foster
-        </span>
+      <TaglineBanner imageSrc="/assets/pray/DSCF7707_(1).jpg" justify="left">
+        &apos;By praying, we learn to pray.&apos; <br></br> Richard Foster
       </TaglineBanner>
 
       <section className="py-4 md:py-16 px-4 max-w-4xl mx-auto">

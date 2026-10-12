@@ -8,21 +8,6 @@ const nextConfig: NextConfig = {
         destination: "/learninglabs/:path*",
         permanent: true,
       },
-      {
-        source: "/pre-teens",
-        destination: "/",
-        permanent: true,
-      },
-      {
-        source: "/teens",
-        destination: "/",
-        permanent: true,
-      },
-      {
-        source: "/campus",
-        destination: "/",
-        permanent: true,
-      },
     ];
   },
 };
