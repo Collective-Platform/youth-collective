@@ -33,7 +33,7 @@ export default function EarlyBirdNotice({ className, lineBreak = false }: EarlyB
 
   return (
     <p className={className}>
-      (Early Bird: RM699{lineBreak ? <br /> : " "}ends 18 October)
+      (Early Bird: RM699{lineBreak ? <br /> : " "}ends 1 November)
     </p>
   );
 }
