@@ -24,7 +24,7 @@ const draftStorageKey = "strictly-students-learning-labs-experience-registration
 function getPaymentOptions(isEarlyBird: boolean): Array<{
   id: PaymentOption;
   label: string;
-  description: string;
+  note?: string;
 }> {
   const installmentTerms = getInstallmentTermsForEarlyBird(isEarlyBird);
 
@@ -32,12 +32,11 @@ function getPaymentOptions(isEarlyBird: boolean): Array<{
     {
       id: "full",
       label: `Pay RM${isEarlyBird ? "699" : "799"} now`,
-      description: "One payment today",
     },
     {
       id: "installments",
       label: `Pay RM${installmentTerms.amount} × ${installmentTerms.count}`,
-      description: `${installmentTerms.count} monthly card payments`,
+      note: `* RM${installmentTerms.amount} for ${installmentTerms.count} months, charged to your card automatically every month.`,
     },
   ];
 }
@@ -621,9 +620,9 @@ export default function RegistrationDialog({ triggerClassName }: RegistrationDia
                     {paymentOptions.map((option) => {
                       const isSelected = paymentOption === option.id;
                       return (
+                        <div key={option.id}>
                         <label
-                          key={option.id}
-                          className={`cursor-pointer border-2 p-5 transition-colors ${
+                          className={`block cursor-pointer border-2 p-5 transition-colors ${
                             isSelected
                               ? "border-black bg-[#f45c36] text-white"
                               : "border-black bg-white text-black hover:bg-black hover:text-white"
@@ -642,10 +641,9 @@ export default function RegistrationDialog({ triggerClassName }: RegistrationDia
                             }}
                           />
                           <span className="block text-lg font-bold">{option.label}</span>
-                          <span className={`mt-1 block text-sm ${isSelected ? "text-white/85" : "text-black/65"}`}>
-                            {option.description}
-                          </span>
                         </label>
+                        {option.note ? <p className="mt-2 text-sm text-[#f45c36]">{option.note}</p> : null}
+                        </div>
                       );
                     })}
                   </div>
