@@ -15,6 +15,11 @@ import StudentStoryVideo from "./components/StudentStoryVideo";
 
 const registrationOpen = true;
 
+const location = {
+  name: "Villa Narqes",
+  mapUrl: "https://maps.app.goo.gl/vBjxBzztpoEWF8sJ9",
+};
+
 const familiarMoments = [
   "You've tried to change before. It didn't stick.",
   "You know you’re called to more, but you don’t know where to start.",
@@ -43,7 +48,7 @@ export default function LearningLabsExperience() {
             <p className="mt-6 max-w-md text-base font-semibold leading-snug sm:mt-7 sm:text-lg">
               A week away from distractions to experience God for yourself (while having fun).
             </p>
-            <dl className="mt-8 grid w-full max-w-2xl grid-cols-2 gap-3 border-y-2 border-black py-4 text-base sm:gap-5 sm:text-lg md:grid-cols-3">
+            <dl className="mt-8 grid w-full max-w-3xl grid-cols-2 gap-3 border-y-2 border-black py-4 text-base sm:gap-5 sm:text-lg md:grid-cols-4">
               <div>
                 <dt className="text-sm font-medium">Dates</dt>
                 <dd className="mt-1 font-bold">5–11 Dec 2026</dd>
@@ -52,7 +57,20 @@ export default function LearningLabsExperience() {
                 <dt className="text-sm font-medium">Age</dt>
                 <dd className="mt-1 font-bold">13–17</dd>
               </div>
-              <div className="col-span-2 md:col-span-1">
+              <div>
+                <dt className="text-sm font-medium">Location</dt>
+                <dd className="mt-1 font-bold">
+                  <a
+                    href={location.mapUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline decoration-2 underline-offset-4 hover:opacity-70"
+                  >
+                    {location.name}
+                  </a>
+                </dd>
+              </div>
+              <div>
                 <dt className="text-sm font-medium">Fee</dt>
                 <dd className="mt-1 font-bold">RM699</dd>
                 <p className="mt-1 text-xs font-semibold leading-tight opacity-50 sm:text-sm">
@@ -156,6 +174,17 @@ export default function LearningLabsExperience() {
             <div>
               <h3 className="text-sm font-bold uppercase tracking-wider text-white/70">Age</h3>
               <p className="mt-2 text-2xl font-bold">13–17</p>
+            </div>
+            <div>
+              <h3 className="text-sm font-bold uppercase tracking-wider text-white/70">Location</h3>
+              <a
+                href={location.mapUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2 inline-block text-2xl font-bold underline decoration-2 underline-offset-4 hover:opacity-75"
+              >
+                {location.name}
+              </a>
             </div>
             <div>
               <h3 className="text-sm font-bold uppercase tracking-wider text-white/70">Fee</h3>
