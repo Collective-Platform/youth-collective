@@ -17,6 +17,7 @@ const registrationOpen = true;
 
 const location = {
   name: "Villa Narqes",
+  area: "Mantin, Negeri Sembilan",
   mapUrl: "https://maps.app.goo.gl/vBjxBzztpoEWF8sJ9",
 };
 
@@ -69,6 +70,9 @@ export default function LearningLabsExperience() {
                     {location.name}
                   </a>
                 </dd>
+                <p className="mt-1 text-xs font-semibold leading-tight opacity-50 sm:text-sm">
+                  {location.area}
+                </p>
               </div>
               <div>
                 <dt className="text-sm font-medium">Fee</dt>
@@ -185,6 +189,7 @@ export default function LearningLabsExperience() {
               >
                 {location.name}
               </a>
+              <p className="mt-1 text-sm font-semibold text-white/70">{location.area}</p>
             </div>
             <div>
               <h3 className="text-sm font-bold uppercase tracking-wider text-white/70">Fee</h3>
