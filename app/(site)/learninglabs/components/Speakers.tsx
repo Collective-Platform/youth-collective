@@ -11,6 +11,13 @@ const speakers = [
       "Co-founder of Collective, Relationship Coach",
     ],
     roleJoiner: " & ",
+    people: [
+      { name: "Pr. Kevin Loo", role: "Lead Pastor at Collective" },
+      {
+        name: "Esther Ku",
+        role: "Co-founder of Collective, Relationship Coach",
+      },
+    ],
     topic: "Love At First Pasta. Made by hand. Share with Love",
     image: "/assets/learning/speakers/kevin-esther.jpg",
     mobileImage: "/assets/learning/speakers/kevin-esther-mobile.jpg",
@@ -105,22 +112,37 @@ export default function Speakers() {
               )}
               <div className="absolute inset-0 bg-linear-to-t from-black/85 via-black/20 to-transparent transition-opacity duration-300 md:opacity-0 md:group-hover/card:opacity-100" />
               <div className="absolute inset-x-0 bottom-0 p-4 text-white transition-[opacity,transform] duration-300 ease-out sm:p-6 md:translate-y-6 md:opacity-0 md:group-hover/card:translate-y-0 md:group-hover/card:opacity-100">
-                <h3 className="text-base font-bold">{speaker.name}</h3>
-                <p className="mt-1 text-xs text-white/80 sm:text-sm">
-                  {speaker.role.map((line, i) => (
-                    <Fragment key={line}>
-                      {i > 0 && (
-                        <>
-                          <br className="sm:hidden" />
-                          <span className="max-sm:hidden">
-                            {speaker.roleJoiner}
-                          </span>
-                        </>
-                      )}
-                      {line}
-                    </Fragment>
-                  ))}
-                </p>
+                {speaker.people ? (
+                  <div className="space-y-2">
+                    {speaker.people.map((person) => (
+                      <div key={person.name}>
+                        <h3 className="text-base font-bold">{person.name}</h3>
+                        <p className="mt-0.5 text-xs text-white/80 sm:text-sm">
+                          {person.role}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <>
+                    <h3 className="text-base font-bold">{speaker.name}</h3>
+                    <p className="mt-1 text-xs text-white/80 sm:text-sm">
+                      {speaker.role.map((line, i) => (
+                        <Fragment key={line}>
+                          {i > 0 && (
+                            <>
+                              <br className="sm:hidden" />
+                              <span className="max-sm:hidden">
+                                {speaker.roleJoiner}
+                              </span>
+                            </>
+                          )}
+                          {line}
+                        </Fragment>
+                      ))}
+                    </p>
+                  </>
+                )}
                 <p className="mt-3 inline-block bg-[#f45c36] px-3 py-1.5 text-xs font-bold whitespace-pre-line sm:text-sm">
                   {speaker.topic}
                 </p>
