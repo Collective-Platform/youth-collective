@@ -3,6 +3,7 @@ import FeatureCards from "./components/FeatureCards";
 import FAQ from "./components/FAQ";
 import HeroGallery from "./components/HeroGallery";
 import RegistrationDialog from "./components/RegistrationDialog";
+import Speakers from "./components/Speakers";
 import StudentStoryVideo from "./components/StudentStoryVideo";
 
 /*
@@ -152,6 +153,8 @@ export default function LearningLabsExperience() {
           <StudentStoryVideo />
         </div>
       </section>
+
+      <Speakers />
 
       <FAQ surfaceClassName="bg-[#edeae5]" />
 
