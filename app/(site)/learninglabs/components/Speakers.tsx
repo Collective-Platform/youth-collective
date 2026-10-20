@@ -13,6 +13,7 @@ const speakers = [
     roleJoiner: " & ",
     topic: "Love At First Pasta. Made by hand. Share with Love",
     image: "/assets/learning/speakers/kevin-esther.jpg",
+    mobileImage: "/assets/learning/speakers/kevin-esther-mobile.jpg",
   },
   {
     name: "Jentz Tan",
@@ -23,6 +24,7 @@ const speakers = [
     roleJoiner: ", ",
     topic: "Human-Centered Design",
     image: "/assets/learning/speakers/jentz-tan.jpg",
+    mobileImage: "/assets/learning/speakers/jentz-tan-mobile.jpg",
     credit: "© Thomas Roese",
   },
   {
@@ -35,6 +37,7 @@ const speakers = [
     topic:
       'How to make people think "Wow, we could really click"\nafter you leave the room.',
     image: "/assets/learning/speakers/gary-chong.jpg",
+    mobileImage: "/assets/learning/speakers/gary-chong-mobile.jpg",
   },
   {
     name: "Kysern Lim",
@@ -42,6 +45,7 @@ const speakers = [
     roleJoiner: "",
     topic: "No Script. Just Speak",
     image: "/assets/learning/speakers/kysern-lim.jpg",
+    mobileImage: "/assets/learning/speakers/kysern-lim-mobile.jpg",
   },
 ];
 
@@ -74,18 +78,25 @@ export default function Speakers() {
               onPointerUp={release}
               onPointerCancel={release}
               onPointerLeave={release}
-              className={`group/card relative aspect-video w-[85%] shrink-0 snap-center md:w-auto ${
+              className={`group/card relative aspect-[3/4] w-[85%] shrink-0 snap-center md:aspect-video md:w-auto ${
                 pressedIndex === null || pressedIndex === index
                   ? ""
                   : "max-md:grayscale max-md:contrast-125 max-md:brightness-90"
               } overflow-hidden overflow-hidden rounded-2xl bg-black transition-[filter] duration-300 md:group-hover/list:grayscale md:group-hover/list:contrast-125 md:group-hover/list:brightness-90 md:hover:!grayscale-0 md:hover:!contrast-100 md:hover:!brightness-100`}
             >
               <Image
-                src={speaker.image}
+                src={speaker.mobileImage}
                 alt={speaker.name}
                 fill
-                sizes="(min-width: 768px) 50vw, 100vw"
-                className="object-cover"
+                sizes="85vw"
+                className="object-cover md:hidden"
+              />
+              <Image
+                src={speaker.image}
+                alt=""
+                fill
+                sizes="50vw"
+                className="hidden object-cover md:block"
               />
               {"credit" in speaker && (
                 <span className="absolute top-2 right-3 z-10 text-[10px] text-white/90 [text-shadow:0_1px_2px_rgb(0_0_0/0.7)]">
