@@ -1,0 +1,222 @@
+{
+  "name": "Path",
+  "children": [
+    {
+      "name": "Uninterested",
+      "children": [
+        {
+          "name": "Join us for lunch",
+          "logo": true,
+          "text": "Come join us for lunch. We'll be nice. Promise.",
+          "url": "https://ig.me/m/strictlystudents"
+        },
+        {
+          "name": "Got questions? DM us",
+          "url": "https://ig.me/m/strictlystudents"
+        },
+        {
+          "name": "Need a prayer?",
+          "logo": true,
+          "text": "Need a prayer? Add it to the Prayer Wall.",
+          "url": "http://strictlystudents.com/"
+        },
+        {
+          "name": "Mission Trips",
+          "url": "https://collective.my/missions/"
+        },
+        {
+          "name": "May's Story",
+          "text": "May's story.",
+          "url": "https://www.instagram.com/p/DHLdE3vpoW2/"
+        }
+      ]
+    },
+    {
+      "name": "Spiritually Curious",
+      "children": [
+        {
+          "name": "Why Jesus?",
+          "text": "Why Jesus? with Erwin McManus.",
+          "url": "https://www.youtube.com/watch?v=cfyLGhG1EVI"
+        },
+        {
+          "name": "Heaven & Earth",
+          "text": "Heaven and Earth (Bible Project).",
+          "url": "https://www.youtube.com/watch?v=Zy2AQlK6C5k"
+        },
+        {
+          "name": "The Trinity",
+          "children": [
+            {
+              "name": "The Holy Spirit",
+              "text": "The Holy Spirit (Bible Project).",
+              "url": "https://www.youtube.com/watch?v=1_JMZNIWybs"
+            },
+            {
+              "name": "Character of God",
+              "text": "The Character of God (Bible Project playlist).",
+              "url": "https://youtube.com/playlist?list=PLH0Szn1yYNefOC-fdPanitIai5o1im6jA&si=jNzBeojgkZjdGcGU"
+            },
+            {
+              "name": "God",
+              "text": "God (Bible Project).",
+              "url": "https://www.youtube.com/watch?v=eAvYmE2YYIU"
+            }
+          ],
+          "grow": "down"
+        },
+        {
+          "name": "Satan & Demons",
+          "text": "The Satan and Demons (Bible Project).",
+          "url": "https://www.youtube.com/watch?v=CamYtVpoTNk"
+        },
+        {
+          "name": "Character of God",
+          "children": [
+            {
+              "name": "Character of God",
+              "text": "Character of God",
+              "url": "https://youtu.be/nxwzq1PJImM"
+            },
+            {
+              "name": "Compassion",
+              "text": "How God begins to describe Himself in the Bible",
+              "url": "https://youtu.be/qJEtyAiAQik"
+            },
+            {
+              "name": "Grace",
+              "text": "God's consistent posture toward all humanity",
+              "url": "https://youtu.be/ABPVVw_aw44"
+            },
+            {
+              "name": "Slow to Anger",
+              "text": "Why a good God gets angry",
+              "url": "https://youtu.be/TeQ1nq_YJD0"
+            },
+            {
+              "name": "Loyal Love",
+              "text": "God loves you, but what does that mean? ",
+              "url": "https://youtu.be/UfbyFLgs_NM"
+            },
+            {
+              "name": "Is God trustworthy?",
+              "text": "The reason you can trust God (Even when it seems risky)",
+              "url": "https://youtu.be/HCLuq_5o7_o"
+            }
+          ],
+          "grow": "down"
+        },
+        {
+          "name": "What is Sin?",
+          "children": [
+            {
+              "name": "Sin",
+              "text": "Sin.",
+              "url": "https://youtu.be/aNOZ7ocLD74"
+            },
+            {
+              "name": "Transgression",
+              "text": "Transgression.",
+              "url": "https://youtu.be/cq-r9FFN5ew"
+            },
+            {
+              "name": "Iniquity",
+              "text": "Iniquity.",
+              "url": "https://youtu.be/w1zkwkI9oAw"
+            }
+          ],
+          "grow": "left"
+        },
+        {
+          "name": "What is the Bible?",
+          "url": "https://www.youtube.com/watch?v=ak06MSETeo4&list=PLH0Szn1yYNef03x4AMm38V3VyeISNo19b"
+        },
+        {
+          "name": "Class: Community Basics",
+          "logo": true,
+          "text": "Class: Community Basics."
+        },
+        {
+          "name": "Prayer",
+          "text": "Pray with Lectio 365.",
+          "url": "https://lectio365.com/"
+        },
+        {
+          "name": "Bible App",
+          "text": "The YouVersion Bible App.",
+          "url": "https://www.bible.com/app"
+        },
+        {
+          "name": "Serve",
+          "text": "Serving: join a team.",
+          "url": "https://www.collective.my/ministries"
+        }
+      ]
+    },
+    {
+      "name": "Believers",
+      "children": [
+        {
+          "name": "What is the Bible?",
+          "url": "https://www.youtube.com/watch?v=ak06MSETeo4&list=PLH0Szn1yYNef03x4AMm38V3VyeISNo19b"
+        },
+        {
+          "name": "Bible App",
+          "text": "The YouVersion Bible App.",
+          "url": "https://www.bible.com/app"
+        },
+        {
+          "name": "Prayer",
+          "text": "Pray with Lectio 365.",
+          "url": "https://lectio365.com/"
+        },
+        {
+          "name": "Serve",
+          "text": "Serving: join a team.",
+          "url": "https://www.collective.my/ministries"
+        },
+        {
+          "name": "Baptism",
+          "url": "https://collective.my/baptism/"
+        },
+        {
+          "name": "Class: Conversations with God",
+          "logo": true,
+          "text": "Class: Conversations with God."
+        },
+        {
+          "name": "Learning Labs: Experience",
+          "logo": true,
+          "text": "Learning Labs: Experience.",
+          "url": "/learninglabs"
+        }
+      ]
+    },
+    {
+      "name": "Being Discipled",
+      "children": [
+        {
+          "name": "Learning Labs: Experience",
+          "logo": true,
+          "text": "Learning Labs: Experience.",
+          "url": "/learninglabs"
+        },
+        {
+          "name": "Discipleship",
+          "logo": true,
+          "text": "This is a 2-way relationship. There's going to be changes and truth."
+        }
+      ]
+    },
+    {
+      "name": "Disciple Maker",
+      "children": [
+        {
+          "name": "Untitled",
+          "logo": true,
+          "text": "Untitled: a place where we learn how to journey with others."
+        }
+      ]
+    }
+  ]
+}
