@@ -536,6 +536,10 @@ export function mountFileTree(root: HTMLElement): () => void {
 
   // YouTube previews start as a thumbnail with a play button; the heavy player only loads on tap.
   function openFile(node: TreeNode) {
+    if (node.newTab && node.url) {
+      window.open(node.url, '_blank', 'noopener,noreferrer');
+      return;
+    }
     root.querySelectorAll('.item.picked').forEach((e) => e.classList.remove('picked'));
     node.el.classList.add('picked');
     const where = pathOf(node.parent!).replaceAll('/', ' › ');
