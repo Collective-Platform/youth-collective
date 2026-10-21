@@ -7,11 +7,11 @@
         {
           "name": "Join us for lunch",
           "logo": true,
-          "text": "Come join us for lunch. We'll be nice. Promise.",
-          "url": "https://ig.me/m/strictlystudents"
+          "text": "Come join us for lunch after Sunday service. We'll be nice. Promise."
         },
         {
           "name": "Got questions? DM us",
+          "newTab": true,
           "url": "https://ig.me/m/strictlystudents"
         },
         {

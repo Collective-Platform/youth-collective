@@ -99,4 +99,12 @@
 
     @media (max-width: 640px) { .ft .item { font-size: 12.5px; } }
 .ft .ql-embed { display: block; width: 100%; max-height: 62svh; border: 0; border-radius: 6px; background: #f3f3f3; }
+/* YouTube previews get a bigger card on desktop; phones keep the default width */
+@media (min-width: 900px) {
+  .ft .ql.wide .ql-card { width: min(960px, calc(100% - 64px)); }
+  .ft .ql.wide .ql-embed { max-height: 70svh; }
+}
+.ft .ql-play { display: block; position: relative; width: 100%; max-height: 62svh; border: 0; padding: 0; border-radius: 6px; background: #1d1d1d center / cover no-repeat; cursor: pointer; }
+.ft .ql-play span { position: absolute; inset: 0; margin: auto; width: 56px; height: 40px; border-radius: 10px; background: rgba(0,0,0,.72); }
+.ft .ql-play span::after { content: ''; position: absolute; inset: 0; margin: auto; width: 0; height: 0; border-left: 16px solid #fff; border-top: 9px solid transparent; border-bottom: 9px solid transparent; transform: translateX(2px); }
 .ft .ql-link { color: #6e6e6e; font-size: 11px; text-decoration: underline; }
