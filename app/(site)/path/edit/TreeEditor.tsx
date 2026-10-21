@@ -4,17 +4,18 @@ import { useRef, useState, useTransition } from "react";
 import type { TreeSpec } from "../tree-spec";
 import { saveTree } from "./actions";
 
-type N = { id: string; name: string; text: string; url: string; logo?: boolean; grow?: 'left' | 'down'; children?: N[] };
+type N = { id: string; name: string; text: string; url: string; logo?: boolean; newTab?: boolean; grow?: 'left' | 'down'; children?: N[] };
 type Pos = "before" | "after" | "inside";
 
 let counter = 0;
 const uid = () => `n${++counter}`;
-const toN = (s: TreeSpec): N => ({ id: uid(), name: s.name, text: s.text ?? "", url: s.url ?? "", logo: s.logo, grow: s.grow, children: s.children?.map(toN) });
+const toN = (s: TreeSpec): N => ({ id: uid(), name: s.name, text: s.text ?? "", url: s.url ?? "", logo: s.logo, newTab: s.newTab, grow: s.grow, children: s.children?.map(toN) });
 const toSpec = (n: N): TreeSpec => ({
   name: n.name,
   ...(n.text && { text: n.text }),
   ...(n.url && { url: n.url }),
   ...(n.logo && { logo: true }),
+  ...(n.newTab && { newTab: true }),
   ...(n.grow && { grow: n.grow }),
   ...(n.children && { children: n.children.map(toSpec) }),
 });

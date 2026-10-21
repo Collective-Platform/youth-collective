@@ -13,6 +13,7 @@ export type TreeNode = {
   type: 'folder' | 'file';
   text?: string;
   url?: string;
+  newTab?: boolean; // open the link straight in a new tab instead of the preview
   logo?: boolean; // show the site favicon as the icon
   flip: boolean; // grows to the left
   down: boolean; // always grows downwards
@@ -40,7 +41,7 @@ type Branch = {
 
 // A folder has a "children" list in tree-data.json; a file does not.
 const build = (s: TreeSpec): TreeNode =>
-  ({ name: s.name, type: s.children ? "folder" : "file", text: s.text, url: s.url, logo: s.logo, flip: s.grow === "left", down: s.grow === "down", children: (s.children ?? []).map(build) }) as unknown as TreeNode;
+  ({ name: s.name, type: s.children ? "folder" : "file", text: s.text, url: s.url, logo: s.logo, newTab: s.newTab, flip: s.grow === "left", down: s.grow === "down", children: (s.children ?? []).map(build) }) as unknown as TreeNode;
 
 // The content lives in tree-data.json. Rearrange it at /path/edit (dev only) or edit the JSON by hand.
 const TREE = build(treeData as TreeSpec);
@@ -92,14 +93,14 @@ const LINK_ICONS = {
 };
 
 /** The address to put in an iframe for a link, and how tall to make it. */
-function embedOf(url: string): { src: string; ratio: string } {
+function embedOf(url: string): { src: string; ratio: string; thumb?: string } {
   const u = new URL(url, location.origin);
   const host = u.hostname.replace(/^www\./, '');
   if (host === 'youtube.com' || host === 'youtu.be') {
     const list = u.searchParams.get('list');
     const id = host === 'youtu.be' ? u.pathname.slice(1) : u.searchParams.get('v');
-    if (u.pathname === '/playlist' && list) return { src: `https://www.youtube.com/embed/videoseries?list=${encodeURIComponent(list)}`, ratio: '16 / 9' };
-    return { src: `https://www.youtube.com/embed/${encodeURIComponent(id ?? '')}`, ratio: '16 / 9' };
+    if (u.pathname === '/playlist' && list) return { src: `https://www.youtube.com/embed/videoseries?list=${encodeURIComponent(list)}`, ratio: '16 / 9', thumb: '' };
+    return { src: `https://www.youtube.com/embed/${encodeURIComponent(id ?? '')}`, ratio: '16 / 9', thumb: `https://i.ytimg.com/vi/${encodeURIComponent(id ?? '')}/hqdefault.jpg` };
   }
   if (host === 'instagram.com') return { src: `https://www.instagram.com${u.pathname.replace(/\/?$/, '/')}embed`, ratio: '9 / 14' };
   if (host === 'tiktok.com') return { src: `https://www.tiktok.com/embed/v2/${u.pathname.split('/').pop()}`, ratio: '9 / 15' };
@@ -531,24 +532,45 @@ export function mountFileTree(root: HTMLElement): () => void {
   // ---------------------------------------------------------------- quick look
 
   const ql = root.querySelector<HTMLElement>('#ft-ql')!;
+  const qlBody = root.querySelector<HTMLElement>('#ft-ql-body')!;
+
+  // YouTube previews start as a thumbnail with a play button; the heavy player only loads on tap.
   function openFile(node: TreeNode) {
     root.querySelectorAll('.item.picked').forEach((e) => e.classList.remove('picked'));
     node.el.classList.add('picked');
     const where = pathOf(node.parent!).replaceAll('/', ' › ');
     let body = `<p>${esc(node.text ?? '')}</p>`;
+    let frame: (autoplay: boolean) => string = () => '';
+    let wide = false;
+    let thumb: string | undefined;
     if (node.url) {
-      const { src, ratio } = embedOf(node.url);
-      body += `<iframe class="ql-embed" style="aspect-ratio:${ratio}" src="${esc(src)}" title="${esc(node.name)}" loading="lazy" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`
-        + `<p><a class="ql-link" href="${esc(node.url)}" target="_blank" rel="noopener noreferrer">Open in a new tab ↗</a></p>`;
+      const e = embedOf(node.url);
+      const { src, ratio } = e;
+      thumb = e.thumb;
+      wide = ratio === '16 / 9';
+      frame = (autoplay) => `<iframe class="ql-embed" style="aspect-ratio:${ratio}" src="${esc(autoplay ? src + (src.includes('?') ? '&' : '?') + 'autoplay=1' : src)}" title="${esc(node.name)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
+      body += thumb !== undefined
+        ? `<button class="ql-play" style="aspect-ratio:${ratio}${thumb ? `;background-image:url(${esc(thumb)})` : ''}" aria-label="Play ${esc(node.name)}"><span></span></button>`
+        : frame(false);
+      body += `<p><a class="ql-link" href="${esc(node.url)}" target="_blank" rel="noopener noreferrer">Open in a new tab ↗</a></p>`;
     }
+    qlBody.innerHTML = body + `<div class="meta">${esc(where)}</div>`;
+    // show the quick small thumbnail now, then swap in the HD one once it has loaded (not every video has one)
+    const play = qlBody.querySelector<HTMLElement>('.ql-play');
+    const hd = new Image();
+    hd.onload = () => { if (play?.isConnected && hd.naturalWidth > 480) play.style.backgroundImage = `url(${hd.src})`; };
+    if (play && thumb) hd.src = thumb.replace('hqdefault', 'maxresdefault');
+    qlBody.querySelector('.ql-play')?.addEventListener('click', (e) => {
+      (e.currentTarget as HTMLElement).outerHTML = frame(true);
+    });
     root.querySelector<HTMLElement>('#ft-ql-icon')!.innerHTML = ICONS.file;
     root.querySelector<HTMLElement>('#ft-ql-name')!.textContent = node.name;
-    root.querySelector<HTMLElement>('#ft-ql-body')!.innerHTML = body + `<div class="meta">${esc(where)}</div>`;
+    ql.classList.toggle('wide', wide);
     ql.classList.add('on');
   }
   const closeQl = () => {
     ql.classList.remove('on');
-    root.querySelector<HTMLElement>('#ft-ql-body')!.replaceChildren(); // stops any playing video
+    qlBody.replaceChildren(); // stops any playing video
   };
   root.querySelector<HTMLElement>('#ft-ql-close')!.addEventListener('click', closeQl, { signal });
   ql.addEventListener('click', (e) => e.target === ql && closeQl(), { signal });
