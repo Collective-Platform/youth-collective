@@ -76,10 +76,10 @@ const LIME = ['#a8d848', '#b8e650', '#cdea5c', '#93c83a'].map(hex);
 const GRID = 2.4; // dots snap to this grid, which gives the halftone / ASCII look
 const REDUCED = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 const FLOW = 0; // the vine always grows sideways, like the reference
+const ROOT_LEAD = 2600; // the main branch carries on this far to the left of where it used to start, so its end is never in view
 const SMALL = typeof innerWidth !== 'undefined' && innerWidth < 640; // phones: shorter branches so more fits on screen
 const GROW_S = REDUCED ? 0.15 : 1.7;
 const SHRINK_S = REDUCED ? 0.1 : 0.55;
-const REVEAL_STEP = 3; // a folder shows this many items, and this many more each time one of its items is opened
 const READ_MS = 10000; // how long a preview must stay open to count as read (videos count by watch time instead)
 const TRUNK_PX_S = 420; // the colour runs along a branch at about this many px a second (but never faster than 1.2s or slower than 4s end to end)
 // The switch plays in three steps along one 0..1 clock (growing: main branch, then the item branches, then the names; shrinking: the reverse)
@@ -422,9 +422,11 @@ export function mountFileTree(root: HTMLElement, spec: TreeSpec, view: PathView,
     const isRoot = !folder.parent;
     const len = (isRoot ? 1500 : kids.length === 1 ? 110 : (150 + 85 * total) * lenVar) * (SMALL ? 0.72 : 1); // a folder with one item only needs a short branch
     const t0 = isRoot ? 0.4 : 0.16, t1 = 0.96;
+    const lead = isRoot ? ROOT_LEAD * (SMALL ? 0.72 : 1) : 0; // extra branch before the old start: positions along the old branch are squeezed to make room
+    const place = (t: number) => (lead + len * t) / (lead + len);
     const mid = (j: number) => rooms.slice(0, j).reduce((a, b) => a + b, 0) + rooms[j] / 2; // where item j sits if each takes room along the branch
     const ts = kids.map((_, i) => (kids.length === 1 ? t1 : lerp(t0, t1, (mid(i) - mid(0)) / (mid(kids.length - 1) - mid(0)))));
-    return { len, ts, t0 };
+    return { len: len + lead, ts: ts.map(place), t0: place(t0), lead, pad: 0.015 * len / (lead + len) }; // pad: the bit of branch left past the last item
   }
 
   /** Lays out the branch for an open folder at a given angle: the curve, the twigs and where every label lands. */
@@ -437,21 +439,23 @@ export function mountFileTree(root: HTMLElement, spec: TreeSpec, view: PathView,
     const L = slot.len * lenMul;
     const flip = folder.flip;
     const d = V(Math.cos(angle) * (flip ? -1 : 1), Math.sin(angle)), n = V(-d.y, d.x); // flip mirrors the branch to grow left
-    const P = folder.anchor;
+    const P = folder.anchor.clone().addScaledVector(d, -slot.lead);
     const at = (f: number, w: number) => P.clone().addScaledVector(d, L * f).addScaledVector(n, w);
+    const f0 = slot.lead / L; // where the old start sits along the branch: the wave starts there, and before it the branch runs straight
     // a smooth S-curve: a sine wave along the branch, eased in so it leaves the folder cleanly
     const cycles = isRoot ? 1.5 : 1 + rng() * 0.6;
     const amp = (isRoot ? 14 : 20 + L * 0.03) * (SMALL ? 0.8 : 1);
     const phase = rng() * Math.PI * 2;
     const pts: THREE.Vector2[] = [];
-    for (let i = 0; i <= 24; i++) {
-      const f = i / 24;
-      const env = ease(Math.min(1, f / 0.35));
-      pts.push(at(f, amp * env * (Math.sin(phase + f * cycles * Math.PI * 2) - Math.sin(phase))));
+    const steps = Math.ceil(24 * L / (L - slot.lead)); // as many points along the old stretch as before
+    for (let i = 0; i <= steps; i++) {
+      const f = i / steps;
+      const g = Math.max(0, (f - f0) / (1 - f0)); // 0..1 along the old branch
+      const env = ease(Math.min(1, g / 0.35));
+      pts.push(at(f, amp * env * (Math.sin(phase + g * cycles * Math.PI * 2) - Math.sin(phase))));
     }
     const curve = new THREE.SplineCurve(pts);
-    const t1 = 0.96;
-    const tEnd = kids.length ? t1 + 0.015 : 0.3; // the branch stops at its last item: no stretch of branch past it, nothing to fork into
+    const tEnd = kids.length ? slot.ts[kids.length - 1] + slot.pad : 0.3; // the branch stops at its last item: no stretch of branch past it, nothing to fork into
     const samples: THREE.Vector2[] = [];
     sample(curve, samples, tEnd);
     const mainPts = [...samples];
@@ -695,16 +699,8 @@ export function mountFileTree(root: HTMLElement, spec: TreeSpec, view: PathView,
   /** A file is done once it was watched / read; a folder is done once everything in it is. */
   const live = (folder: TreeNode) => folder.children.filter((c) => !c.hidden); // the items the current view shows
   const isDone = (n: TreeNode): boolean => (n.type === 'folder' ? live(n).length > 0 && live(n).every(isDone) : viewDone.has(pathOf(n)));
-  /** How many of a folder's items are visible: a first batch, then another batch for every item opened. */
-  const revealedCount = (folder: TreeNode) =>
-    Math.min(live(folder).length, REVEAL_STEP * (1 + live(folder).filter((c) => progress.opened.has(pathOf(c))).length));
-  /** Is this item unlocked in the current view? Reach practice also keeps whatever By us would have unlocked, so nothing disappears when you switch. */
-  const isRevealed = (folder: TreeNode, kid: TreeNode) => {
-    if (kid.hidden) return false;
-    if (live(folder).indexOf(kid) < revealedCount(folder)) return true;
-    const mine = folder.children.filter((c) => !c.usHidden);
-    return !kid.usHidden && mine.indexOf(kid) < Math.min(mine.length, REVEAL_STEP * (1 + mine.filter((c) => progress.opened.has(pathOf(c))).length));
-  };
+  /** Is this item shown in the current view? Every item is, unless the view leaves it out. */
+  const isRevealed = (_folder: TreeNode, kid: TreeNode) => !kid.hidden;
   /** Has anything at or below this node been finished? Colour flows down to it from the start of the tree. */
   const isTouched = (n: TreeNode): boolean => (n.type === 'folder' ? live(n).some(isTouched) : viewDone.has(pathOf(n)));
   /** How far the colour should reach along a folder's own branch: to its furthest touched item, or all the way when everything is done.
@@ -723,7 +719,7 @@ export function mountFileTree(root: HTMLElement, spec: TreeSpec, view: PathView,
     const shown = folder.children.filter((c) => isRevealed(folder, c));
     if (!shown.length) return 0;
     if (shown.length === folder.children.length) return 1;
-    return Math.min(1, Math.max(...shown.map((c) => c.t)) + 0.015); // stops at the last unlocked item
+    return Math.min(1, Math.max(...shown.map((c) => c.t)) + slots(folder, folder.children).pad); // stops at the last unlocked item
   };
   /** Where an item's twig leaves the main branch: further in for By us (p = 0), its full-layout place for Reach practice (p = 1). */
   const teOf = (n: TreeNode, p: number) => (n.usHidden ? n.t : lerp(n.tc, n.t, clamp(p / MAIN_END, 0, 1))); // an item only Reach practice shows never moves: it sprouts where it belongs as the branch grows past
@@ -731,7 +727,8 @@ export function mountFileTree(root: HTMLElement, spec: TreeSpec, view: PathView,
   function tipEnds(folder: TreeNode) {
     const shown = folder.children.filter((c) => isRevealed(folder, c));
     if (!shown.length) return null;
-    return { shown, a: Math.min(1, Math.max(...shown.map((c) => c.tc)) + 0.015), b: Math.min(1, Math.max(...shown.map((c) => c.t)) + 0.015) };
+    const pad = slots(folder, folder.children).pad;
+    return { shown, a: Math.min(1, Math.max(...shown.map((c) => c.tc)) + pad), b: Math.min(1, Math.max(...shown.map((c) => c.t)) + pad) };
   }
   /** How much of the main branch is drawn at view position `p`: only as far as the last unlocked item, which sits further in for By us. */
   function tipOf(folder: TreeNode, p: number) {
@@ -1081,6 +1078,12 @@ export function mountFileTree(root: HTMLElement, spec: TreeSpec, view: PathView,
       cam.x += (cam.tx - cam.x) * k;
       cam.y += (cam.ty - cam.y) * k;
       cam.zoom += (cam.tzoom - cam.zoom) * k;
+    }
+    // the main branch's far left end is the edge of the world: the screen's left edge never goes past it
+    if (TREE.branch) {
+      const minX = TREE.branch.curve.getPointAt(0).x + W / 2 / cam.zoom;
+      cam.x = Math.max(cam.x, minX);
+      cam.tx = Math.max(cam.tx, minX);
     }
     camera.position.x = cam.x;
     camera.position.y = cam.y;
