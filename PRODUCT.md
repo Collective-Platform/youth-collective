@@ -14,6 +14,14 @@ The primary audience is young people in the church community. They come to the s
 
 Strictly Students is the church's youth community. It helps young people draw closer to God, learn to love one another, and form a strong community. Success means young people can readily discover the next relevant way to participate and understand what the community is inviting them into.
 
+## Mission and Framework
+
+We are a church youth group (a collective) helping people follow Jesus through spiritual formation.
+
+- **Formation rhythm:** Be with Jesus, become like Jesus, do what Jesus did.
+- **Three spaces we want to create:** a space to find **identity**, a space to **belong**, and a space to find **purpose**.
+- The `/path` page (the interactive file tree in `app/(site)/path/`) is where this becomes a journey: Uninterested → Spiritually Curious → Believers → Being Discipled → Disciple Maker. Content for a newcomer should be short, gentle, and ordered from easy to deeper, not a long flat list.
+
 ## Positioning
 
 Formation is the product's stated centre: youth are encouraged to grow closer to God and, in turn, toward one another in a strong community. A more specific competitive distinction is deliberately undecided.

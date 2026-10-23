@@ -1,16 +1,33 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { mountFileTree } from "./file-tree";
+import { useEffect, useRef, useState } from "react";
+import { mountFileTree, type FileTreeHandle } from "./file-tree";
+import treeData from "./tree-data.json";
+import type { TreeSpec } from "./tree-spec";
+import { VIEW_LABEL, type PathView } from "./tree-views";
 import "./file-tree.css";
+
+const FIRST_VIEW: PathView = "us";
+const VIEWS: { id: PathView; label: string }[] = [
+  { id: "us", label: VIEW_LABEL.us },
+  { id: "reach", label: VIEW_LABEL.reach },
+];
 
 export default function FileTree() {
   const rootRef = useRef<HTMLDivElement>(null);
+  const treeRef = useRef<FileTreeHandle>(null);
+  const [view, setView] = useState<PathView>(FIRST_VIEW);
 
+  // the scene is built once; the toggle only changes what it shows
   useEffect(() => {
     if (!rootRef.current) return;
-    return mountFileTree(rootRef.current);
+    const tree = mountFileTree(rootRef.current, treeData as TreeSpec, FIRST_VIEW, VIEW_LABEL[FIRST_VIEW]);
+    treeRef.current = tree;
+    return tree.destroy;
   }, []);
+  useEffect(() => {
+    treeRef.current?.setView(view, VIEW_LABEL[view]);
+  }, [view]);
 
   return (
     <div ref={rootRef} className="ft">
@@ -22,6 +39,13 @@ export default function FileTree() {
           <b>Path</b>
         </span>
       </nav>
+      <div className="views" role="group" aria-label="Show">
+        {VIEWS.map((v) => (
+          <button key={v.id} aria-pressed={view === v.id} onClick={() => setView(v.id)}>
+            {v.label}
+          </button>
+        ))}
+      </div>
       <div className="viewport">
         <div className="labels" />
         <div className="hint" id="ft-hint">
