@@ -4,19 +4,21 @@ import { useRef, useState, useTransition } from "react";
 import type { TreeSpec } from "../tree-spec";
 import { saveTree } from "./actions";
 
-type N = { id: string; name: string; text: string; url: string; logo?: boolean; newTab?: boolean; grow?: 'left' | 'down'; children?: N[] };
+type N = { id: string; name: string; text: string; url: string; logo?: boolean; newTab?: boolean; by?: TreeSpec['by']; grow?: TreeSpec['grow']; side?: TreeSpec['side']; children?: N[] };
 type Pos = "before" | "after" | "inside";
 
 let counter = 0;
 const uid = () => `n${++counter}`;
-const toN = (s: TreeSpec): N => ({ id: uid(), name: s.name, text: s.text ?? "", url: s.url ?? "", logo: s.logo, newTab: s.newTab, grow: s.grow, children: s.children?.map(toN) });
+const toN = (s: TreeSpec): N => ({ id: uid(), name: s.name, text: s.text ?? "", url: s.url ?? "", logo: s.logo, newTab: s.newTab, by: s.by, grow: s.grow, side: s.side, children: s.children?.map(toN) });
 const toSpec = (n: N): TreeSpec => ({
   name: n.name,
   ...(n.text && { text: n.text }),
   ...(n.url && { url: n.url }),
   ...(n.logo && { logo: true }),
   ...(n.newTab && { newTab: true }),
+  ...(n.by && { by: n.by }),
   ...(n.grow && { grow: n.grow }),
+  ...(n.side && { side: n.side }),
   ...(n.children && { children: n.children.map(toSpec) }),
 });
 
@@ -124,6 +126,16 @@ export default function TreeEditor({ initial }: { initial: TreeSpec }) {
     update((root) => {
       locate(root, id)!.node[key] = value;
     });
+  // empty string = automatic
+  const setDir = (id: string, key: "grow" | "side", value: string) =>
+    update((root) => {
+      (locate(root, id)!.node as Record<string, unknown>)[key] = value || undefined;
+    });
+
+  const setBy = (id: string, on: boolean) =>
+    update((root) => {
+      locate(root, id)!.node.by = on ? "us" : undefined;
+    });
 
   const save = () =>
     startSave(async () => {
@@ -219,6 +231,33 @@ export default function TreeEditor({ initial }: { initial: TreeSpec }) {
               <Btn onClick={() => remove(n.id)} label="Delete">✕</Btn>
             </span>
           )}
+          {!isRoot && (
+            <label className="flex items-center gap-1 text-xs text-neutral-500">
+              Side
+              <select value={n.side ?? ""} onChange={(e) => setDir(n.id, "side", e.target.value)} className="rounded border border-neutral-200 bg-white px-1 py-1 text-neutral-800">
+                <option value="">Auto</option>
+                <option value="up">Up ↑</option>
+                <option value="down">Down ↓</option>
+              </select>
+            </label>
+          )}
+          {!isFolder && (
+            <label className="flex items-center gap-1 text-xs text-neutral-500">
+              <input type="checkbox" checked={n.by === "us"} onChange={(e) => setBy(n.id, e.target.checked)} />
+              By us
+            </label>
+          )}
+          {isFolder && !isRoot && (
+            <label className="flex items-center gap-1 text-xs text-neutral-500">
+              Grows
+              <select value={n.grow ?? ""} onChange={(e) => setDir(n.id, "grow", e.target.value)} className="rounded border border-neutral-200 bg-white px-1 py-1 text-neutral-800">
+                <option value="">Auto (right)</option>
+                <option value="left">Left ←</option>
+                <option value="down">Down ↓</option>
+                <option value="down-left">Down-left ↙</option>
+              </select>
+            </label>
+          )}
           {isFolder && (
             <span className="flex gap-1 text-xs">
               <Btn onClick={() => add(n.id, false)} label="Add file">+ file</Btn>
@@ -250,7 +289,7 @@ export default function TreeEditor({ initial }: { initial: TreeSpec }) {
       <h1 className="text-xl font-bold">Rearrange the path</h1>
       <p className="mb-4 mt-1 text-sm text-neutral-600">
         Drag a ⠿ handle onto the top or bottom of a row to place it before or after, or onto the middle of a folder to put it inside. The arrow buttons do the same
-        without dragging. Nothing changes on the real page until you press Save.
+        without dragging. <b>Side</b> picks whether an item hangs above or below its branch, and <b>Grows</b> picks which way a folder&apos;s own branch heads. Nothing changes on the real page until you press Save.
       </p>
       <ul className="space-y-1.5">{row(tree, 0, null, 1, 0)}</ul>
       <div className="fixed inset-x-0 bottom-0 flex items-center gap-3 border-t bg-white/95 p-3 backdrop-blur">
