@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import ListFallback from "./ListFallback";
 import { mountFileTree, type FileTreeHandle } from "./file-tree";
 import treeData from "./tree-data.json";
 import type { TreeSpec } from "./tree-spec";
@@ -18,17 +19,26 @@ export default function FileTree() {
   const treeRef = useRef<FileTreeHandle>(null);
   const [view, setView] = useState<PathView>(FIRST_VIEW);
   const [percent, setPercent] = useState(0);
+  const [unsupported, setUnsupported] = useState(false);
 
   // the scene is built once; the toggle only changes what it shows
   useEffect(() => {
     if (!rootRef.current) return;
-    const tree = mountFileTree(rootRef.current, treeData as TreeSpec, FIRST_VIEW, VIEW_LABEL[FIRST_VIEW], setPercent);
-    treeRef.current = tree;
-    return tree.destroy;
+    try {
+      const tree = mountFileTree(rootRef.current, treeData as TreeSpec, FIRST_VIEW, VIEW_LABEL[FIRST_VIEW], setPercent);
+      treeRef.current = tree;
+      return tree.destroy;
+    } catch (err) {
+      // most often WebGL is switched off or missing in this browser: show the plain list instead of crashing the page
+      console.error("Could not start the path view", err);
+      setUnsupported(true); // eslint-disable-line react-hooks/set-state-in-effect -- WebGL can only be tested in the browser, after mount
+    }
   }, []);
   useEffect(() => {
     treeRef.current?.setView(view, VIEW_LABEL[view]);
   }, [view]);
+
+  if (unsupported) return <ListFallback />;
 
   return (
     <div ref={rootRef} className="ft">
