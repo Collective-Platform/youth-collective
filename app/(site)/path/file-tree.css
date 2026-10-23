@@ -132,3 +132,6 @@
 .ft .ql-done.on { background: #f3f9e2; border-color: #93c83a; color: #3f5a12; }
 .ft .ql-done.on i { background: #93c83a; border-color: #93c83a; }
 .ft .ql-done.on i::after { content: ''; position: absolute; left: 5px; top: 1px; width: 5px; height: 10px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+/* share of the current view that is done, bottom right */
+.ft .progress { position: absolute; z-index: 3; right: calc(16px + env(safe-area-inset-right)); bottom: calc(18px + env(safe-area-inset-bottom)); color: #8a8a8a; font-size: 12px; font-variant-numeric: tabular-nums; pointer-events: none; }
+@media (max-width: 640px) { .ft .progress span { display: none; } } /* keeps clear of the centred hint on phones */
