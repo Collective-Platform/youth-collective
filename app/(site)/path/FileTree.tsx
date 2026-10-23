@@ -17,11 +17,12 @@ export default function FileTree() {
   const rootRef = useRef<HTMLDivElement>(null);
   const treeRef = useRef<FileTreeHandle>(null);
   const [view, setView] = useState<PathView>(FIRST_VIEW);
+  const [percent, setPercent] = useState(0);
 
   // the scene is built once; the toggle only changes what it shows
   useEffect(() => {
     if (!rootRef.current) return;
-    const tree = mountFileTree(rootRef.current, treeData as TreeSpec, FIRST_VIEW, VIEW_LABEL[FIRST_VIEW]);
+    const tree = mountFileTree(rootRef.current, treeData as TreeSpec, FIRST_VIEW, VIEW_LABEL[FIRST_VIEW], setPercent);
     treeRef.current = tree;
     return tree.destroy;
   }, []);
@@ -48,6 +49,9 @@ export default function FileTree() {
       </div>
       <div className="viewport">
         <div className="labels" />
+        <div className="progress" aria-live="polite">
+          {percent}%<span> complete</span>
+        </div>
         <div className="hint" id="ft-hint">
           Tap a folder to grow it · drag to look around
         </div>

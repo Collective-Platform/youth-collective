@@ -37,7 +37,6 @@ export type TreeNode = {
   el: HTMLElement;
   branch: Branch | null;
   twig: THREE.Curve<THREE.Vector2>; // the twig that leads to it
-  glow: number; // 0..1: strength of the green glow riding the colour along its twig
   idx: number; // position among its siblings
   t: number; // where its twig leaves the parent's branch (0..1)
   showP: number; // 0..1: how far its twig has grown in (it stays hidden until unlocked)
@@ -54,9 +53,10 @@ type Branch = {
   trunkP: number; // 0..1: how far the green has grown along the main branch
   curve: THREE.Curve<THREE.Vector2>; // the main branch
   tEnd: number; // where along the curve the main branch stops
-  glow: number; // 0..1: strength of the green glow riding the colour along the main branch
   cutP: number; // 0..1: how far along the main branch is drawn: only up to the last unlocked item
   len: number; // length of the main branch in world px
+  lead: number; // 0..1: how much of the main branch is the extra stretch before its old start (the colour crosses it faster)
+  trunkQ: number; // trunkP on the clock the colour is eased on (see warpTrunk)
   end: THREE.Vector2;
   pts: THREE.Vector2[];
   rects: { x0: number; x1: number; y0: number; y1: number; node: TreeNode }[];
@@ -76,11 +76,12 @@ const LIME = ['#a8d848', '#b8e650', '#cdea5c', '#93c83a'].map(hex);
 const GRID = 2.4; // dots snap to this grid, which gives the halftone / ASCII look
 const REDUCED = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 const FLOW = 0; // the vine always grows sideways, like the reference
-const ROOT_LEAD = 2600; // the main branch carries on this far to the left of where it used to start, so its end is never in view
+const ROOT_LEAD = 325; // the main branch carries on this far to the left of where it used to start, so its end is never in view
 const SMALL = typeof innerWidth !== 'undefined' && innerWidth < 640; // phones: shorter branches so more fits on screen
 const GROW_S = REDUCED ? 0.15 : 1.7;
 const SHRINK_S = REDUCED ? 0.1 : 0.55;
 const READ_MS = 10000; // how long a preview must stay open to count as read (videos count by watch time instead)
+const LEAD_SPEED = 10; // the colour runs this many times faster along the extra stretch at the start of the main branch
 const TRUNK_PX_S = 420; // the colour runs along a branch at about this many px a second (but never faster than 1.2s or slower than 4s end to end)
 // The switch plays in three steps along one 0..1 clock (growing: main branch, then the item branches, then the names; shrinking: the reverse)
 const MAIN_END = 0.55; // the main branch grows / shrinks during 0..MAIN_END
@@ -178,7 +179,6 @@ type Dots = any[];
 const V = (x: number, y: number) => new THREE.Vector2(x, y);
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
-const smooth01 = (x: number) => { const t = clamp(x, 0, 1); return t * t * (3 - 2 * t); };
 const ease = (t: number) => 0.5 - Math.cos(Math.PI * clamp(t, 0, 1)) / 2;
 function seeded(str: string): Rng {
   let h = 2166136261;
@@ -196,7 +196,7 @@ const pathOf = (n: TreeNode): string => (n.parent ? pathOf(n.parent) + '/' + n.n
 
 /** Starts the scene inside `root` (which holds the markup from FileTree.tsx). Returns a cleanup function. */
 export type FileTreeHandle = { destroy: () => void; setView: (view: PathView, label: string) => void };
-export function mountFileTree(root: HTMLElement, spec: TreeSpec, view: PathView, label: string): FileTreeHandle {
+export function mountFileTree(root: HTMLElement, spec: TreeSpec, view: PathView, label: string, onProgress?: (percent: number) => void): FileTreeHandle {
   const TREE = build(spec); // always laid out in full: a view hides items, it never moves them
   let rootLabel = label; // the root is shown under the name of the view, but keeps its own name for the vine shapes and saved progress
   // ---------------------------------------------------------------- scene
@@ -268,61 +268,6 @@ export function mountFileTree(root: HTMLElement, spec: TreeSpec, view: PathView,
       gl_FragColor = vec4(vColor, vAlpha);
     }`;
 
-  // ---------------------------------------------------------------- glow
-
-  // A faint green halo lies along the whole coloured part of a branch while its colour is growing, and fades out as the colour reaches its point.
-  const GLOW_TRAIL = 64, GLOW_MAX = 48; // points per branch, and how many branches can glow at once
-  const glowPos = new Float32Array(GLOW_MAX * GLOW_TRAIL * 3), glowAlpha = new Float32Array(GLOW_MAX * GLOW_TRAIL), glowSize = new Float32Array(GLOW_MAX * GLOW_TRAIL);
-  const glowGeo = new THREE.BufferGeometry();
-  glowGeo.setAttribute('position', new THREE.BufferAttribute(glowPos, 3).setUsage(THREE.DynamicDrawUsage));
-  glowGeo.setAttribute('aAlpha', new THREE.BufferAttribute(glowAlpha, 1).setUsage(THREE.DynamicDrawUsage));
-  glowGeo.setAttribute('aSize', new THREE.BufferAttribute(glowSize, 1).setUsage(THREE.DynamicDrawUsage));
-  glowGeo.setDrawRange(0, 0);
-  const glowMat = new THREE.ShaderMaterial({
-    uniforms: { uScale },
-    vertexShader: /* glsl */ `
-      attribute float aAlpha, aSize;
-      uniform float uScale;
-      varying float vAlpha;
-      void main() {
-        vAlpha = aAlpha;
-        gl_PointSize = min(aSize * uScale, 160.0);
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-      }`,
-    fragmentShader: /* glsl */ `
-      varying float vAlpha;
-      void main() {
-        float d = length(gl_PointCoord - 0.5) * 2.0;
-        if (d > 1.0) discard;
-        float a = pow(1.0 - d, 1.5) * vAlpha;
-        gl_FragColor = vec4(0.66, 0.85, 0.28, a); // the lime of the branch itself
-      }`,
-    transparent: true, depthTest: false, depthWrite: false,
-  });
-  const glowPoints = new THREE.Points(glowGeo, glowMat);
-  glowPoints.renderOrder = -1; // under every branch
-  glowPoints.frustumCulled = false;
-  scene.add(glowPoints);
-  let glowN = 0; // points in use this frame
-  /** Lays a glow along the curve from its start to `front` (0..1); it fades out as `front` gets to `goal`. */
-  function addGlow(curve: THREE.Curve<THREE.Vector2>, front: number, goal: number, strength: number, size: number, at: (t: number) => THREE.Vector2) {
-    const arrive = smooth01(Math.abs(goal - front) / 0.12); // 0 once the colour has reached its point
-    const s = strength * arrive;
-    if (glowN + GLOW_TRAIL > GLOW_MAX * GLOW_TRAIL || s < 0.02 || front < 0.001) return;
-    const n = clamp(Math.ceil(front * curve.getLength() / (size * 0.35)) + 1, 2, GLOW_TRAIL);
-    for (let j = 0; j < n; j++) {
-      const q = at(front * j / (n - 1));
-      const i = glowN + j;
-      glowPos[i * 3] = q.x; glowPos[i * 3 + 1] = q.y; glowPos[i * 3 + 2] = 0;
-      glowAlpha[i] = s * 0.05;
-      glowSize[i] = size;
-    }
-    glowN += n;
-  }
-  /** Eases a glow's strength up while its colour is moving and down once it stops. */
-  const glowTo = (cur: number, moving: boolean, dt: number) => cur + ((moving ? 1 : 0) - cur) * (1 - Math.exp(-dt * (moving ? 12 : 3.5)));
-  // where the visible edge of the colour is (the shader's soft edge sits a little behind the raw progress)
-  const edgeOf = (p: number, max = 1) => clamp(p * 1.08 - 0.04, 0, max);
 
   // ---------------------------------------------------------------- tree model
 
@@ -349,7 +294,6 @@ export function mountFileTree(root: HTMLElement, spec: TreeSpec, view: PathView,
   // 0 = the compact By us layout, 1 = the full layout. It eases between them when the switch is flipped.
   const viewState = { p: view === 'reach' ? 1 : 0 };
   let viewTarget = viewState.p;
-  let quiet = 0; // seconds after a switch during which nothing glows: the glow is only for finishing something new, not for the switch
   TREE.angle = FLOW;
   TREE.anchor = V(-Math.cos(FLOW) * 820, -Math.sin(FLOW) * 820 - 10);
 
@@ -613,7 +557,6 @@ export function mountFileTree(root: HTMLElement, spec: TreeSpec, view: PathView,
       tw.kid.idx = i;
       tw.kid.tc = tcs[i];
       tw.kid.twig = tw.curve;
-      tw.kid.glow = 0;
       tw.kid.t = tw.t;
       tw.kid.showP = isRevealed(folder, tw.kid) ? 1 : 0;
       tw.kid.doneP = isTouched(tw.kid) ? 1 : 0;
@@ -662,7 +605,7 @@ export function mountFileTree(root: HTMLElement, spec: TreeSpec, view: PathView,
       labels.appendChild(kid.el);
     });
 
-    return { folder, points, mat, p: 0, target: 1, trunkP: trunkTarget(folder), cutP: cutTarget(folder), curve, tEnd: lay.tEnd, glow: 0, len: curve.getLength() * lay.tEnd, end: curve.getPointAt(lay.tEnd), pts: lay.pts, rects: lay.rects };
+    return { folder, points, mat, p: 0, target: 1, trunkP: trunkTarget(folder), trunkQ: warpTrunk(full.lead / full.len, trunkTarget(folder)), lead: full.lead / full.len, cutP: cutTarget(folder), curve, tEnd: lay.tEnd, len: curve.getLength() * lay.tEnd, end: curve.getPointAt(lay.tEnd), pts: lay.pts, rects: lay.rects };
   }
 
   function makeLabel(node: TreeNode) {
@@ -690,8 +633,19 @@ export function mountFileTree(root: HTMLElement, spec: TreeSpec, view: PathView,
     try { localStorage.setItem(STORE_KEY, JSON.stringify({ opened: [...progress.opened], done: [...progress.done] })); } catch { /* ignore */ }
   };
   const markOpened = (n: TreeNode) => { if (!progress.opened.has(pathOf(n))) { progress.opened.add(pathOf(n)); save(); } };
-  const markDone = (n: TreeNode) => { if (!progress.done.has(pathOf(n))) { progress.done.add(pathOf(n)); save(); syncDoneButton(); } };
-  const unmarkDone = (n: TreeNode) => { if (progress.done.delete(pathOf(n))) { save(); syncDoneButton(); } };
+  /** Share of the files in the current view that are done, as a whole percent. */
+  const reportProgress = () => {
+    let total = 0, done = 0;
+    const walk = (n: TreeNode) => n.children.forEach((c) => {
+      if (c.hidden) return;
+      if (c.type === 'folder') walk(c);
+      else { total++; if (progress.done.has(pathOf(c))) done++; }
+    });
+    walk(TREE);
+    onProgress?.(total ? Math.round((done / total) * 100) : 0);
+  };
+  const markDone = (n: TreeNode) => { if (!progress.done.has(pathOf(n))) { progress.done.add(pathOf(n)); save(); syncDoneButton(); reportProgress(); } };
+  const unmarkDone = (n: TreeNode) => { if (progress.done.delete(pathOf(n))) { save(); syncDoneButton(); reportProgress(); } };
   // The tree is coloured from `viewDone`. While a preview is open it stays a frozen copy, so the colouring
   // only plays once the card is closed; otherwise it is the live set.
   let viewDone = progress.done;
@@ -737,6 +691,14 @@ export function mountFileTree(root: HTMLElement, spec: TreeSpec, view: PathView,
     if (p >= 1 && e.shown.length === folder.children.length) return 1;
     return lerp(e.a, e.b, clamp(p / MAIN_END, 0, 1));
   }
+  /** The colour crosses the extra stretch at the start of the main branch (`lead`, as a fraction of it) faster: the colour is eased on a clock
+   *  where that stretch is squeezed, and these turn a position on the branch into a place on that clock and back. */
+  const warpNorm = (lead: number) => lead / LEAD_SPEED + 1 - lead;
+  const warpTrunk = (lead: number, x: number) => (x <= lead ? x / LEAD_SPEED : lead / LEAD_SPEED + x - lead) / warpNorm(lead);
+  const unwarpTrunk = (lead: number, q: number) => {
+    const y = q * warpNorm(lead);
+    return y <= lead / LEAD_SPEED ? y * LEAD_SPEED : y - lead / LEAD_SPEED + lead;
+  };
   // Eased tween: moves o[key] to `target` over (distance x secsPerUnit) seconds, starting and stopping gently.
   const tweens = new WeakMap<object, Record<string, { from: number; to: number; t: number; dur: number }>>();
   function tween(o: Record<string, any>, key: string, target: number, secsPerUnit: number, dt: number): number { // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -1091,9 +1053,7 @@ export function mountFileTree(root: HTMLElement, spec: TreeSpec, view: PathView,
     camera.updateProjectionMatrix();
     uScale.value = cam.zoom * renderer.getPixelRatio();
 
-    glowN = 0;
     viewState.p = tween(viewState, 'p', viewTarget, SWITCH_S, dt);
-    quiet = Math.max(0, quiet - dt);
     for (const b of branches) {
       const fx = b.folder.xf;
       b.points.position.set(fx.x, fx.y, 0);
@@ -1103,15 +1063,16 @@ export function mountFileTree(root: HTMLElement, spec: TreeSpec, view: PathView,
       const g = ease(b.p);
       b.mat.uniforms.uGrow.value = g;
       // unlock items, and grow the colour along the branch (the main branch first, then each twig leading to something finished)
-      const trunkWas = b.trunkP;
       if (viewState.p !== viewTarget) {
-        // the switch is growing or shrinking the branch: the colour and its glow ride along with it instead of easing on their own clock
+        // the switch is growing or shrinking the branch: the colour rides along with it instead of easing on their own clock
         b.trunkP = trunkTarget(b.folder);
+        b.trunkQ = warpTrunk(b.lead, b.trunkP);
         const tw = tweens.get(b);
-        if (tw) delete tw.trunkP; // so the normal easing starts fresh afterwards
-      } else b.trunkP = tween(b as unknown as Record<string, number>, 'trunkP', trunkTarget(b.folder), clamp(b.len / TRUNK_PX_S, 1.2, 4), dt);
-      b.glow = glowTo(b.glow, !REDUCED && quiet <= 0 && Math.abs(b.trunkP - trunkWas) > 1e-5, dt);
-      addGlow(b.curve, edgeOf(b.trunkP, b.tEnd), edgeOf(trunkTarget(b.folder), b.tEnd), b.glow * g, 34, (t) => xfApply(fx, b.curve.getPointAt(t)));
+        if (tw) delete tw.trunkQ; // so the normal easing starts fresh afterwards
+      } else {
+        b.trunkQ = tween(b as unknown as Record<string, number>, 'trunkQ', warpTrunk(b.lead, trunkTarget(b.folder)), clamp(b.len * warpNorm(b.lead) / TRUNK_PX_S, 1.2, 4), dt);
+        b.trunkP = unwarpTrunk(b.lead, b.trunkQ);
+      }
       b.mat.uniforms.uTrunk.value = b.trunkP;
       if (viewState.p !== viewTarget) {
         b.cutP = cutTarget(b.folder); // the switch sets the pace of the growth, so this must not lag behind it
@@ -1137,11 +1098,8 @@ export function mountFileTree(root: HTMLElement, spec: TreeSpec, view: PathView,
         } else kid.showP = tween(kid, 'showP', isRevealed(b.folder, kid) && cut >= teOf(kid, viewState.p) ? 1 : 0, SHOW_S, dt);
         // a folder's twig keeps its colour until the branch beyond it has shrunk back to nothing
         const holding = !isTouched(kid) && (kid.branch?.trunkP ?? 0) > 0.001;
-        const doneWas = kid.doneP;
         const doneGoal = (isTouched(kid) && b.trunkP >= teOf(kid, viewState.p)) || holding ? 1 : 0;
         kid.doneP = tween(kid, 'doneP', doneGoal, TWIG_S, dt);
-        kid.glow = glowTo(kid.glow, !REDUCED && quiet <= 0 && Math.abs(kid.doneP - doneWas) > 1e-5, dt);
-        addGlow(kid.twig, edgeOf(kid.doneP), edgeOf(doneGoal), kid.glow * g, 24, (t) => xfApply(kid.xf, kid.twig.getPointAt(t)));
         b.mat.uniforms.uShow.value[kid.idx] = kid.showP;
         b.mat.uniforms.uDone.value[kid.idx] = kid.doneP;
       }
@@ -1165,15 +1123,12 @@ export function mountFileTree(root: HTMLElement, spec: TreeSpec, view: PathView,
       }
     }
 
-    glowGeo.setDrawRange(0, glowN);
-    glowGeo.attributes.position.needsUpdate = true;
-    glowGeo.attributes.aAlpha.needsUpdate = true;
-    glowGeo.attributes.aSize.needsUpdate = true;
     renderer.render(scene, camera);
     raf = requestAnimationFrame(frame);
   }
 
   resize();
+  reportProgress();
   open(TREE);
   setActive(TREE);
   cam.x = cam.tx; cam.y = cam.ty; cam.zoom = cam.tzoom;
@@ -1184,7 +1139,7 @@ export function mountFileTree(root: HTMLElement, spec: TreeSpec, view: PathView,
     rootLabel = nextLabel;
     applyView(next);
     viewTarget = next === 'reach' ? 1 : 0;
-    quiet = 4;
+    reportProgress();
     const closeHidden = (f: TreeNode) => f.children.forEach((c) => c.type === 'folder' && (c.hidden ? close(c) : closeHidden(c)));
     closeHidden(TREE);
     let a = active;
@@ -1201,8 +1156,6 @@ export function mountFileTree(root: HTMLElement, spec: TreeSpec, view: PathView,
       b.points.geometry.dispose();
       b.mat.dispose();
     }
-    glowGeo.dispose();
-    glowMat.dispose();
     renderer.dispose();
     renderer.domElement.remove();
     labels.replaceChildren();
