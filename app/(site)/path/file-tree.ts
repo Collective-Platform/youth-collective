@@ -4,6 +4,7 @@
 import * as THREE from 'three';
 import type { TreeSpec } from './tree-spec';
 import type { PathView } from './tree-views';
+import { STORE_KEY } from './path-progress';
 
 
 // ---------------------------------------------------------------- content
@@ -90,7 +91,6 @@ const LABEL_AT = 0.9; // their names fade in past this, and out below it
 const SWITCH_S = 1.8; // seconds for the whole switch
 const SHOW_S = 0.9; // seconds for a newly unlocked twig to grow in
 const TWIG_S = 1.0; // seconds for the colour to run out along a twig
-const STORE_KEY = 'path-progress-v1';
 
 // Pixel icons: each is a 12 x 12 grid, "#" is a filled square.
 const PIXELS = {
