@@ -14,7 +14,7 @@ import StudentStoryVideo from "./components/StudentStoryVideo";
  * FORM: A responsive memory wall: big moments, clipped notes, proof photos, then an unmissable practical close.
  */
 
-const registrationOpen = true;
+const registrationOpen = false;
 
 const location = {
   name: "Villa Narqes",
@@ -83,14 +83,18 @@ export default function LearningLabsExperience() {
                 </p>
               </div>
             </dl>
-            {registrationOpen ? (
-              <div className="mt-8 flex flex-col items-start gap-2 md:items-center">
+            <div className="mt-8 flex flex-col items-start gap-2 md:items-center">
+              {registrationOpen ? (
                 <RegistrationDialog triggerClassName="inline-flex w-fit border-2 border-black bg-black px-6 py-4 text-sm font-bold tracking-[0.08em] text-white transition-colors hover:bg-[#edeae5] hover:text-black focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-black" />
-                <p className="mt-1 text-xs font-semibold leading-tight opacity-50 sm:text-sm">
-                  Registration closes 15 November
-                </p>
-              </div>
-            ) : null}
+              ) : (
+                <button type="button" disabled className="inline-flex w-fit cursor-not-allowed border-2 border-black/30 bg-black/30 px-6 py-4 text-sm font-bold tracking-[0.08em] text-white">
+                  Registration closed
+                </button>
+              )}
+              <p className="mt-1 text-xs font-semibold leading-tight opacity-50 sm:text-sm">
+                {registrationOpen ? "Registration closes 15 November" : "Registration for Experience Lab has closed"}
+              </p>
+            </div>
           </div>
           </div>
         </div>
@@ -206,13 +210,15 @@ export default function LearningLabsExperience() {
 
           <div className="mt-10">
             {registrationOpen ? (
-              <>
-                <RegistrationDialog />
-                <p className="mt-4 text-sm leading-tight opacity-75 sm:text-sm">
-                  Registration closes 15 November
-                </p>
-              </>
-            ) : null}
+              <RegistrationDialog />
+            ) : (
+              <button type="button" disabled className="inline-block cursor-not-allowed border-2 border-white/30 bg-white/20 px-12 py-5 text-xl font-bold uppercase tracking-wider text-white/60">
+                Registration closed
+              </button>
+            )}
+            <p className="mt-4 text-sm leading-tight opacity-75 sm:text-sm">
+              {registrationOpen ? "Registration closes 15 November" : "Registration for Experience Lab has closed"}
+            </p>
           </div>
         </div>
       </section>
